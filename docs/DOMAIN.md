@@ -1,7 +1,7 @@
 # Domain: 1devteam.com
 
-**Registrar:** Northwest (unchanged — do not transfer)  
-**DNS + CDN + SSL + site delivery:** Cloudflare  
+**Registrar:** Northwest (unchanged — do not transfer)
+**DNS + CDN + SSL + site delivery:** Cloudflare
 **App hosting:** Cloudflare Pages project `1devteam`
 
 ## Model
@@ -32,7 +32,7 @@ Wrangler OAuth in this environment can deploy Pages but **cannot create zones** 
 2. Enter `1devteam.com`
 3. Choose a plan (Free is fine)
 4. Select **Full** DNS setup (recommended)
-5. Cloudflare shows **two nameservers**, e.g. `*.ns.cloudflare.com`  
+5. Cloudflare shows **two nameservers**, e.g. `*.ns.cloudflare.com`
    Copy both exactly.
 
 Optional: during scan, remove or ignore old WordPress A records — Pages will own the apex and `www` after custom domains are attached.
@@ -59,8 +59,8 @@ npm run build
 npm run deploy
 ```
 
-Project name: `1devteam`  
-Production branch: `main`  
+Project name: `1devteam`
+Production branch: `main`
 Build output: `dist`
 
 Temporary URL after first deploy: `https://1devteam.pages.dev`
@@ -71,9 +71,9 @@ After the zone is **Active** in Cloudflare:
 
 **Dashboard path**
 
-1. Workers & Pages → `1devteam` → Custom domains  
-2. Add `1devteam.com`  
-3. Add `www.1devteam.com`  
+1. Workers & Pages → `1devteam` → Custom domains
+2. Add `1devteam.com`
+3. Add `www.1devteam.com`
 4. Cloudflare creates DNS + issues SSL automatically
 
 **CLI (after zone is active)**
@@ -106,9 +106,9 @@ If you keep email at Northwest or another provider, **copy MX/TXT records into C
 
 ### 6. HTTPS and www policy
 
-- Cloudflare issues Universal SSL for the zone  
-- Always Use HTTPS: On  
-- Optional redirect rule: `www` → apex (or reverse) via Redirect Rules / Bulk Redirects  
+- Cloudflare issues Universal SSL for the zone
+- Always Use HTTPS: On
+- Optional redirect rule: `www` → apex (or reverse) via Redirect Rules / Bulk Redirects
 
 SPA routing is covered by `public/_redirects` (`/* → /index.html 200`).
 
@@ -142,8 +142,8 @@ Expect:
 
 If something fails after NS cutover:
 
-1. In Northwest, restore previous Northwest nameservers  
-2. Wait for DNS to re-point at old hosting  
+1. In Northwest, restore previous Northwest nameservers
+2. Wait for DNS to re-point at old hosting
 
 Or keep Cloudflare NS and point apex A/CNAME back to the old host IP temporarily.
 
