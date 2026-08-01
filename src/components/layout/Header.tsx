@@ -18,9 +18,9 @@ export function Header() {
           onClick={() => setOpen(false)}
         >
           <img
-            src="/brand/1devteam-logo-dark.svg"
+            src="/brand/1devteam-header-dark.svg"
             alt="1devteam"
-            className="h-9 w-auto sm:h-10"
+            className="h-10 w-auto sm:h-11"
           />
         </Link>
 
