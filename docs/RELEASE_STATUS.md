@@ -7,6 +7,8 @@
 - The complete React site is routed and buildable; the former construction-only
   shell is removed.
 - Search indexing is enabled and the sitemap covers every public route.
+- `/robots.txt` is served by a Pages Function with no-store semantics so the
+  retired construction policy cannot remain cached at the custom domain.
 - Ajenda AI is presented as the flagship product and explicitly described as a
   private, locally operational development system—not a generally available
   hosted service.
