@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import { navLinks, siteConfig } from '@/data/site'
+import { navLinks } from '@/data/site'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -13,16 +13,15 @@ export function Header() {
       <div className="container-site flex h-16 items-center justify-between gap-4">
         <Link
           to="/"
-          className="flex items-center gap-2.5 font-semibold tracking-tight text-[var(--text)]"
+          className="flex items-center"
+          aria-label="1devteam home"
           onClick={() => setOpen(false)}
         >
-          <span
-            className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[var(--navy-900)] text-sm font-bold text-white"
-            aria-hidden
-          >
-            1
-          </span>
-          <span>{siteConfig.name}</span>
+          <img
+            src="/brand/1devteam-logo-dark.svg"
+            alt="1devteam"
+            className="h-9 w-auto sm:h-10"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
