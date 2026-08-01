@@ -10,15 +10,13 @@ export function Footer() {
       <div className="container-site section-pad !pb-10 !pt-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <div className="mb-4 flex items-center gap-2.5 font-semibold">
-              <span
-                className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[var(--brand)] text-sm font-bold"
-                aria-hidden
-              >
-                1
-              </span>
-              <span>{siteConfig.name}</span>
-            </div>
+            <Link to="/" className="mb-4 inline-flex" aria-label="1devteam home">
+              <img
+                src="/brand/1devteam-logo-light.svg"
+                alt="1devteam"
+                className="h-11 w-auto"
+              />
+            </Link>
             <p className="max-w-xs text-sm leading-relaxed text-slate-300">
               AI product studio and systems builder. Governed systems that move
               businesses from goals to execution.
