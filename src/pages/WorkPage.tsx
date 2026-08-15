@@ -1,10 +1,19 @@
 import { Link } from 'react-router-dom'
 import { workItems } from '@/data/site'
+import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+function formatDate(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(`${iso}T00:00:00Z`))
+}
 
 export function WorkPage() {
   return (
@@ -33,10 +42,23 @@ export function WorkPage() {
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <Badge variant="outline">{item.type}</Badge>
                     <Badge variant="brand">{item.status}</Badge>
+                    {item.date && (
+                      <time
+                        dateTime={item.date}
+                        className="text-xs font-medium text-[var(--text-muted)]"
+                      >
+                        {formatDate(item.date)}
+                      </time>
+                    )}
                   </div>
                   <CardTitle className="text-2xl">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {item.slug === 'ajenda-ai' && (
+                    <div className="mb-6 max-w-3xl">
+                      <AjendaCommandCenter caption="Local Ajenda command center captured 31 July 2026." />
+                    </div>
+                  )}
                   <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">
                     {item.summary}
                   </p>

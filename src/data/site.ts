@@ -5,7 +5,9 @@ export const siteConfig = {
   description:
     '1devteam is an AI product studio and systems builder. We design and ship governed AI systems, SaaS tools, and operational software — with Ajenda AI as our flagship product.',
   url: 'https://1devteam.com',
+  title: '1devteam · Governed AI systems',
   email: 'hello@1devteam.com',
+  ogImage: '/og.png',
   social: {
     github: 'https://github.com/1devteam',
     linkedin: 'https://www.linkedin.com/company/1devteam',
@@ -82,15 +84,28 @@ export const buildAreas = [
   },
 ] as const
 
-export const workItems = [
+export type WorkItem = {
+  slug: string
+  title: string
+  type: string
+  summary: string
+  tags: readonly string[]
+  status: string
+  date?: string
+  href?: string
+}
+
+export const workItems: readonly WorkItem[] = [
   {
     slug: 'ajenda-ai',
     title: 'Ajenda AI',
     type: 'Flagship product',
     summary:
-      'A governed execution system that turns goals into structured plans, tasks, and accountable progress — not open-ended chat.',
+      'A governed execution system that turns goals into structured plans, tasks, and accountable progress — not open-ended chat. The command center below is from the local build, not a concept mock.',
     tags: ['Product', 'AI systems', 'Governance'],
     status: 'Private development — locally operational',
+    date: '2026-07-31',
+    href: '/products/ajenda',
   },
   {
     slug: 'omnipath-original-evolved',

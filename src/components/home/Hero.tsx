@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { siteConfig } from '@/data/site'
 
 export function Hero() {
@@ -52,42 +53,7 @@ export function Hero() {
             </p>
           </div>
 
-          <div className="relative">
-            <div className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-white p-5 shadow-[0_24px_60px_-28px_rgba(8,20,38,0.35)]">
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  System surface
-                </span>
-                <span className="rounded-full bg-[color-mix(in_srgb,var(--success)_12%,transparent)] px-2.5 py-1 text-xs font-medium text-[var(--success)]">
-                  Governed
-                </span>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { label: 'Goal', value: 'Ship Q3 ops automation' },
-                  { label: 'Plan', value: '4 workstreams · 12 tasks' },
-                  { label: 'Controls', value: 'Human review on external actions' },
-                  { label: 'Status', value: '3/12 complete · on track' },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-start justify-between gap-4 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3.5 py-3"
-                  >
-                    <span className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-                      {row.label}
-                    </span>
-                    <span className="text-right text-sm font-medium text-[var(--text)]">
-                      {row.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 rounded-[var(--radius-sm)] border border-dashed border-[var(--border)] bg-[var(--bg)] px-3.5 py-3 text-sm text-[var(--text-muted)]">
-                Product UI over abstract “AI” visuals — clarity is the trust
-                signal.
-              </div>
-            </div>
-          </div>
+          <AjendaCommandCenter />
         </div>
       </div>
     </section>

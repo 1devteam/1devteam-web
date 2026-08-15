@@ -1,11 +1,22 @@
 import { Link } from 'react-router-dom'
 import { workItems } from '@/data/site'
+import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { SectionHeading } from '@/components/shared/SectionHeading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+function formatDate(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(`${iso}T00:00:00Z`))
+}
+
 export function WorkPreview() {
+  const [featured, ...rest] = workItems
+
   return (
     <section className="section-pad">
       <div className="container-site">
@@ -19,12 +30,47 @@ export function WorkPreview() {
             <Link to="/work">View all work</Link>
           </Button>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {workItems.slice(0, 4).map((item) => (
-            <Card
-              key={item.slug}
-              className="transition-shadow hover:shadow-md"
-            >
+
+        <article className="mt-10 grid gap-8 rounded-[var(--radius-lg)] border border-[var(--border)] bg-white p-5 md:grid-cols-2 md:p-8">
+          <AjendaCommandCenter caption="Local Ajenda command center, 31 July 2026." />
+          <div>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Badge variant="outline">{featured.type}</Badge>
+              <Badge variant="brand">{featured.status}</Badge>
+              {featured.date && (
+                <time
+                  dateTime={featured.date}
+                  className="text-xs font-medium text-[var(--text-muted)]"
+                >
+                  {formatDate(featured.date)}
+                </time>
+              )}
+            </div>
+            <h3 className="text-2xl font-semibold tracking-tight">
+              <Link
+                to={`/work#${featured.slug}`}
+                className="hover:text-[var(--brand)]"
+                data-analytics="work-card-click"
+              >
+                {featured.title}
+              </Link>
+            </h3>
+            <p className="mt-3 text-[15px] leading-relaxed text-[var(--text-muted)]">
+              {featured.summary}
+            </p>
+            <div className="mt-5">
+              <Button asChild variant="outline">
+                <Link to={featured.href ?? `/work#${featured.slug}`}>
+                  Open the journal
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </article>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-3">
+          {rest.map((item) => (
+            <Card key={item.slug} className="transition-shadow hover:shadow-md">
               <CardHeader>
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <Badge variant="outline">{item.type}</Badge>
@@ -44,16 +90,6 @@ export function WorkPreview() {
                 <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
                   {item.summary}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--text-muted)]"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
               </CardContent>
             </Card>
           ))}

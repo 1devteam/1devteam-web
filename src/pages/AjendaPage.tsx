@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
@@ -67,10 +68,12 @@ export function AjendaPage() {
       </PageHero>
 
       <section className="section-pad">
-        <div className="container-site">
-          <h2 className="max-w-2xl text-3xl font-semibold tracking-tight">
-            What makes Ajenda different
-          </h2>
+        <div className="container-site grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+          <AjendaCommandCenter caption="Local Ajenda command center, 31 July 2026 — not a concept mock." />
+          <div>
+            <h2 className="max-w-2xl text-3xl font-semibold tracking-tight">
+              What makes Ajenda different
+            </h2>
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {features.map((feature) => (
               <Card key={feature.title}>
@@ -90,6 +93,7 @@ export function AjendaPage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
           </div>
         </div>
       </section>

@@ -36,8 +36,9 @@ export function Seo({
   type = 'website',
   jsonLd,
 }: SeoProps) {
-  const fullTitle = title ? `${title} · ${siteConfig.name}` : `${siteConfig.name} · AI product studio`
+  const fullTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.title
   const url = `${siteConfig.url}${path}`
+  const image = `${siteConfig.url}${siteConfig.ogImage}`
 
   useEffect(() => {
     document.title = fullTitle
@@ -46,10 +47,12 @@ export function Seo({
     upsertMeta('property', 'og:description', description)
     upsertMeta('property', 'og:type', type)
     upsertMeta('property', 'og:url', url)
+    upsertMeta('property', 'og:image', image)
     upsertMeta('property', 'og:site_name', siteConfig.name)
     upsertMeta('name', 'twitter:card', 'summary_large_image')
     upsertMeta('name', 'twitter:title', fullTitle)
     upsertMeta('name', 'twitter:description', description)
+    upsertMeta('name', 'twitter:image', image)
     upsertLink('canonical', url)
 
     const scriptId = 'json-ld-primary'
@@ -65,7 +68,7 @@ export function Seo({
     } else if (script) {
       script.remove()
     }
-  }, [fullTitle, description, url, type, jsonLd])
+  }, [fullTitle, description, url, image, type, jsonLd])
 
   return null
 }
