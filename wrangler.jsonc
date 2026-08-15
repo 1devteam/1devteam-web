@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "1devteam",
-  "pages_build_output_dir": "./dist",
-  "compatibility_date": "2026-07-14"
+  "name": "1devteam-web",
+  "compatibility_date": "2026-08-15",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
 }
