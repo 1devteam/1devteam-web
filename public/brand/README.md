@@ -1,26 +1,24 @@
 # 1devteam brand assets
 
-Production-ready SVG assets derived from the approved 1devteam visual direction.
+Vectorized from the 9 July 2026 company kit. Full rules: [`docs/brand/SCHEMA.md`](../../docs/brand/SCHEMA.md).
 
 ## Files
 
-- `1devteam-mark.svg` — standalone 1D mark for dark backgrounds
-- `1devteam-mark-dark.svg` — standalone 1D mark for light backgrounds
-- `1devteam-wordmark-light.svg` — wordmark for dark backgrounds
-- `1devteam-wordmark-dark.svg` — wordmark for light backgrounds
-- `1devteam-logo-light.svg` — horizontal logo for dark backgrounds
-- `1devteam-logo-dark.svg` — horizontal logo for light backgrounds
-- `1devteam-banner.svg` — 1584 × 396 company banner
+- `1devteam-mark.svg` / `1devteam-mark-dark.svg` / `1devteam-mark-on-blue.svg`
+- `1devteam-profile.svg` / `1devteam-profile-blue.svg` — 1:1 avatars
+- `1devteam-logo-dark.svg` / `1devteam-logo-light.svg` — horizontal lockups
+- `1devteam-logo-stacked-dark.svg`
+- `1devteam-wordmark-dark.svg` / `1devteam-wordmark-light.svg`
+- `1devteam-banner.svg` — 1584 × 396
 
-## Brand colors
+## Ajenda
 
-- Electric blue: `#0066FF`
-- Deep blue: `#0047B3`
-- Midnight: `#0A1120`
-- Slate: `#667085`
-- Silver: `#D1D5DB`
-- White: `#FFFFFF`
+- `ajenda-mark.svg`
+- `ajenda-logo-dark.svg` / `ajenda-logo-light.svg`
+- `ajenda-wordmark-dark.svg` / `ajenda-wordmark-light.svg`
+- `ajenda-icon-navy.svg` / `ajenda-icon-blue.svg` / `ajenda-icon-light.svg`
 
-Use the light asset variants on dark surfaces and the dark asset variants on white or other light surfaces.
+## Color
 
-These assets are clean SVG reconstructions, not embedded raster images. Text remains editable and uses an Inter/Arial/Helvetica fallback stack.
+1devteam: `#0066FF` `#0047B3` `#0A1120` `#667085` `#D1D5DB` `#FFFFFF`  
+Ajenda: `#0B1220` `#2563FF` `#60A5FA` `#F7F6F2` `#E0243B` `#35D68A`

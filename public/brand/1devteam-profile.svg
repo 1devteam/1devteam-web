@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title">
+  <title id="title">1devteam LinkedIn profile picture 400x400</title>
+  <rect width="400" height="400" rx="72" fill="#0A1120"/>
+  <g transform="translate(100 46) scale(.95)">
+    <path fill="#0066FF" d="M42 18h34L60 38H56v74H42V18z"/>
+    <path fill="#FFFFFF" d="M80 22h42c24 0 42 18 42 42s-18 42-42 42h-20l16-16h4c14 0 26-12 26-26s-12-26-26-26H80V22z"/>
+    <path fill="#FFFFFF" d="M86 98 116 68l14 12-36 36H70z"/>
+  </g>
+  <text x="200" y="268" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="4" fill="#FFFFFF">1DEVTEAM</text>
+  <text x="200" y="302" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="11" font-weight="500" letter-spacing="2.4" fill="#0066FF">BUILDING INTELLIGENT SOLUTIONS</text>
+</svg>

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 import { AboutPage } from '@/pages/AboutPage'
+import { BrandPage } from '@/pages/BrandPage'
 import { AjendaPage } from '@/pages/AjendaPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { HomePage } from '@/pages/HomePage'
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="insights" element={<InsightsPage />} />
           <Route path="insights/:slug" element={<InsightArticlePage />} />
           <Route path="about" element={<AboutPage />} />
+          <Route path="brand" element={<BrandPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="terms" element={<TermsPage />} />

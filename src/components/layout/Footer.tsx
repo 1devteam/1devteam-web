@@ -75,14 +75,26 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-sm text-slate-400">
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="transition-colors hover:text-white"
-              >
-                {siteConfig.email}
-              </a>
-            </p>
+            <div className="mt-4 space-y-1 text-sm text-slate-400">
+              <p>
+                Studio{' '}
+                <a
+                  href={`mailto:${siteConfig.email}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {siteConfig.email}
+                </a>
+              </p>
+              <p>
+                Ajenda{' '}
+                <a
+                  href={`mailto:${siteConfig.productEmail}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {siteConfig.productEmail}
+                </a>
+              </p>
+            </div>
           </div>
         </div>
 

@@ -7,12 +7,26 @@ export const siteConfig = {
   url: 'https://1devteam.com',
   title: '1devteam · Governed AI systems',
   email: 'hello@1devteam.com',
+  productEmail: 'ajenda@1devteam.com',
   ogImage: '/og.png',
+  brand: {
+    companyOnLight: '/brand/1devteam-logo-dark.svg',
+    companyOnDark: '/brand/1devteam-logo-light.svg',
+    productOnLight: '/brand/ajenda-logo-dark.svg',
+    productOnDark: '/brand/ajenda-logo-light.svg',
+    productMark: '/brand/ajenda-mark.svg',
+  },
   social: {
     github: 'https://github.com/1devteam',
     linkedin: 'https://www.linkedin.com/company/1devteam',
   },
 } as const
+
+export function inboxForInterest(interest: string) {
+  return interest.startsWith('Ajenda')
+    ? siteConfig.productEmail
+    : siteConfig.email
+}
 
 export const navLinks = [
   { label: 'Work', href: '/work' },
@@ -27,6 +41,7 @@ export const navLinks = [
 export const footerLinks = {
   company: [
     { label: 'About', href: '/about' },
+    { label: 'Brand', href: '/brand' },
     { label: 'Work', href: '/work' },
     { label: 'Insights', href: '/insights' },
     { label: 'Contact', href: '/contact' },

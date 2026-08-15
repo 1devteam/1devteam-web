@@ -30,6 +30,11 @@ export function ProductsPage() {
                     <Badge variant="brand">Flagship</Badge>
                     <Badge variant="outline">Private development</Badge>
                   </div>
+                  <img
+                    src="/brand/ajenda-wordmark-dark.svg"
+                    alt="Ajenda AI"
+                    className="mb-3 h-9 w-auto"
+                  />
                   <CardTitle className="text-2xl md:text-3xl">Ajenda AI</CardTitle>
                 </CardHeader>
                 <CardContent>

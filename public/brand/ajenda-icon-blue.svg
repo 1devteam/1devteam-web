@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Ajenda AI app icon on electric blue</title>
+  <rect width="128" height="128" rx="28" fill="#2563FF"/>
+  <g transform="translate(8 8) scale(.875)">
+    <path fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" d="M89.7 94.6 A 40 40 0 1 1 89.7 33.4"/>
+    <path fill="#FFFFFF" d="M88 42 L94 58 L110 64 L94 70 L88 86 L82 70 L66 64 L82 58 Z"/>
+  </g>
+</svg>

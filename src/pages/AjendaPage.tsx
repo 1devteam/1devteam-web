@@ -57,6 +57,11 @@ export function AjendaPage() {
         title="From goals to execution — with governance"
         description="Ajenda is not another chatbot. It is a system for structured work: plans, ownership, progress, and human oversight. Built by 1devteam as the flagship of a broader AI systems practice."
       >
+        <img
+          src={siteConfig.brand.productOnLight}
+          alt="Ajenda AI"
+          className="mb-2 h-10 w-auto"
+        />
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
             <Link to="/contact">Request a demo</Link>
@@ -123,6 +128,15 @@ export function AjendaPage() {
               also design custom AI systems, SaaS products, and operations
               infrastructure for clients who need more than a single product
               surface.
+            </p>
+            <p className="mt-4 text-sm text-[var(--text-muted)]">
+              Product inbox:{' '}
+              <a
+                href={`mailto:${siteConfig.productEmail}`}
+                className="font-medium text-[var(--brand)] hover:underline"
+              >
+                {siteConfig.productEmail}
+              </a>
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button asChild>

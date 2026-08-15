@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 130" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 148" role="img" aria-labelledby="title">
   <title id="title">1devteam logo for light backgrounds</title>
-  <g transform="translate(0 0) scale(.9)">
-    <path fill="#0066FF" d="M42 22h32v73H58V44H36z"/>
-    <path fill="#0A1120" d="M82 22h42c24 0 42 18 42 42s-18 42-42 42H96l18-18h10c14 0 24-10 24-24s-10-24-24-24H82z"/>
-    <path fill="#0A1120" d="M84 95 112 67l13 13-28 28H58z"/>
+  <g transform="translate(0 0)">
+    <path fill="#0066FF" d="M42 18h34L60 38H56v74H42V18z"/>
+    <path fill="#0A1120" d="M80 22h42c24 0 42 18 42 42s-18 42-42 42h-20l16-16h4c14 0 26-12 26-26s-12-26-26-26H80V22z"/>
+    <path fill="#0A1120" d="M86 98 116 68l14 12-36 36H70z"/>
   </g>
-  <g transform="translate(190 20)">
-    <text x="0" y="58" font-family="Inter, Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="5" fill="#0A1120">1DEVTEAM</text>
-    <text x="4" y="88" font-family="Inter, Arial, Helvetica, sans-serif" font-size="13" font-weight="500" letter-spacing="6" fill="#0066FF">BUILDING INTELLIGENT SOLUTIONS</text>
-  </g>
+  <text x="210" y="78" font-family="Inter, Arial, Helvetica, sans-serif" font-size="52" font-weight="700" letter-spacing="6" fill="#0A1120">1DEVTEAM</text>
+  <text x="214" y="108" font-family="Inter, Arial, Helvetica, sans-serif" font-size="12" font-weight="500" letter-spacing="5.5" fill="#0066FF">BUILDING INTELLIGENT SOLUTIONS</text>
 </svg>

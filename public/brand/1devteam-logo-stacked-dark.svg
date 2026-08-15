@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title">
+  <title id="title">1devteam stacked logo for light backgrounds</title>
+  <g transform="translate(100 28) scale(.95)">
+    <path fill="#0066FF" d="M42 18h34L60 38H56v74H42V18z"/>
+    <path fill="#0A1120" d="M80 22h42c24 0 42 18 42 42s-18 42-42 42h-20l16-16h4c14 0 26-12 26-26s-12-26-26-26H80V22z"/>
+    <path fill="#0A1120" d="M86 98 116 68l14 12-36 36H70z"/>
+  </g>
+  <text x="200" y="230" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="42" font-weight="700" letter-spacing="5" fill="#0A1120">1DEVTEAM</text>
+  <text x="200" y="268" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="12" font-weight="500" letter-spacing="3.5" fill="#0066FF">BUILDING INTELLIGENT SOLUTIONS</text>
+</svg>

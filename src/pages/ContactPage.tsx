@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { projectInterests, siteConfig } from '@/data/site'
+import { inboxForInterest, projectInterests, siteConfig } from '@/data/site'
 
 type FormState = {
   name: string
@@ -28,6 +28,7 @@ export function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>(
     'idle',
   )
+  const [destination, setDestination] = useState<string>(siteConfig.email)
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -44,11 +45,13 @@ export function ContactPage() {
         setStatus('error')
         return
       }
+      const inbox = inboxForInterest(form.interest)
+      setDestination(inbox)
       const subject = encodeURIComponent(`[1devteam] ${form.interest}`)
       const body = encodeURIComponent(
         `Name: ${form.name}\nEmail: ${form.email}\nCompany or role: ${form.company || 'Not provided'}\nInterest: ${form.interest}\n\nContext:\n${form.context || 'Not provided'}`,
       )
-      window.location.href = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`
+      window.location.href = `mailto:${inbox}?subject=${subject}&body=${body}`
       setStatus('success')
       setForm(initial)
     } catch {
@@ -88,7 +91,7 @@ export function ContactPage() {
                     href={`mailto:${siteConfig.email}`}
                     className="font-medium text-[var(--brand)] hover:underline"
                   >
-                    {siteConfig.email}
+                    {destination}
                   </a>
                   .
                 </p>
@@ -208,14 +211,21 @@ export function ContactPage() {
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
               <h2 className="text-lg font-semibold">Prefer email?</h2>
               <p className="mt-2 text-[15px] leading-relaxed text-[var(--text-muted)]">
-                Write us at{' '}
+                Studio and custom work:{' '}
                 <a
                   href={`mailto:${siteConfig.email}`}
                   className="font-medium text-[var(--brand)] hover:underline"
                 >
                   {siteConfig.email}
                 </a>
-                . We read everything.
+                . Ajenda product:{' '}
+                <a
+                  href={`mailto:${siteConfig.productEmail}`}
+                  className="font-medium text-[var(--brand)] hover:underline"
+                >
+                  {siteConfig.productEmail}
+                </a>
+                .
               </p>
             </div>
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">

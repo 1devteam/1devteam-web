@@ -42,7 +42,11 @@ export function AjendaCommandCenter({
 
         <div className="grid min-h-[280px] grid-cols-[118px_1fr] sm:grid-cols-[148px_1fr]">
           <aside className="border-r border-[var(--border)] bg-[var(--navy-950)] px-2.5 py-3 text-white">
-            <p className="px-1.5 text-[11px] font-semibold tracking-wide">ajenda</p>
+            <img
+              src="/brand/ajenda-logo-light.svg"
+              alt=""
+              className="mb-1 h-6 w-auto max-w-[120px] px-0.5"
+            />
             <nav className="mt-3 space-y-0.5" aria-hidden>
               {nav.map((item) => (
                 <div
