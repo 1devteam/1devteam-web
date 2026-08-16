@@ -56,6 +56,7 @@ export function BrandPage() {
         title="Brand schema"
         description="Official 1devteam and Ajenda AI brand systems — marks, color, type, and usage."
         path="/brand"
+        robots="noindex, follow"
       />
       <PageHero
         eyebrow="Brand"

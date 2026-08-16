@@ -6,6 +6,7 @@ interface SeoProps {
   description?: string
   path?: string
   type?: 'website' | 'article'
+  robots?: string
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
 }
 
@@ -34,6 +35,7 @@ export function Seo({
   description = siteConfig.description,
   path = '/',
   type = 'website',
+  robots = 'index, follow',
   jsonLd,
 }: SeoProps) {
   const fullTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.title
@@ -43,6 +45,7 @@ export function Seo({
   useEffect(() => {
     document.title = fullTitle
     upsertMeta('name', 'description', description)
+    upsertMeta('name', 'robots', robots)
     upsertMeta('property', 'og:title', fullTitle)
     upsertMeta('property', 'og:description', description)
     upsertMeta('property', 'og:type', type)
@@ -68,7 +71,7 @@ export function Seo({
     } else if (script) {
       script.remove()
     }
-  }, [fullTitle, description, url, image, type, jsonLd])
+  }, [fullTitle, description, url, image, type, robots, jsonLd])
 
   return null
 }

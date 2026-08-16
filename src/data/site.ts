@@ -31,6 +31,7 @@ export function inboxForInterest(interest: string) {
 export const navLinks = [
   { label: 'Work', href: '/work' },
   { label: 'Services', href: '/services' },
+  { label: 'Enterprise', href: '/enterprise' },
   { label: 'Products', href: '/products' },
   { label: 'Method', href: '/method' },
   { label: 'Insights', href: '/insights' },
@@ -41,13 +42,13 @@ export const navLinks = [
 export const footerLinks = {
   company: [
     { label: 'About', href: '/about' },
-    { label: 'Brand', href: '/brand' },
     { label: 'Work', href: '/work' },
     { label: 'Insights', href: '/insights' },
     { label: 'Contact', href: '/contact' },
   ],
   offerings: [
     { label: 'Services', href: '/services' },
+    { label: 'Enterprise', href: '/enterprise' },
     { label: 'Products', href: '/products' },
     { label: 'Ajenda AI', href: '/products/ajenda' },
     { label: 'Method', href: '/method' },
@@ -56,6 +57,7 @@ export const footerLinks = {
     { label: 'Privacy', href: '/privacy' },
     { label: 'Terms', href: '/terms' },
     { label: 'Trust & Security', href: '/trust' },
+    { label: 'Brand', href: '/brand' },
   ],
 } as const
 
