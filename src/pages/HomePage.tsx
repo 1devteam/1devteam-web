@@ -4,6 +4,7 @@ import { ProofStrip } from '@/components/home/ProofStrip'
 import { WhatWeBuild } from '@/components/home/WhatWeBuild'
 import { AjendaBlock } from '@/components/home/AjendaBlock'
 import { WorkPreview } from '@/components/home/WorkPreview'
+import { ResearchPreview } from '@/components/home/ResearchPreview'
 import { MethodPreview } from '@/components/home/MethodPreview'
 import { InsightsPreview } from '@/components/home/InsightsPreview'
 import { ContactCta } from '@/components/home/ContactCta'
@@ -32,6 +33,7 @@ export function HomePage() {
       <WhatWeBuild />
       <AjendaBlock />
       <WorkPreview />
+      <ResearchPreview />
       <MethodPreview />
       <InsightsPreview />
       <ContactCta />

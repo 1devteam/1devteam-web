@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import { navLinks } from '@/data/site'
+import { navLinks, siteConfig } from '@/data/site'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +18,7 @@ export function Header() {
           onClick={() => setOpen(false)}
         >
           <img
-            src="/brand/1devteam-logo-dark.svg"
+            src={siteConfig.brand.companyOnLight}
             alt="1devteam"
             className="h-9 w-auto sm:h-10"
           />

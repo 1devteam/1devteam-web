@@ -9,13 +9,13 @@ export function AboutPage() {
     <>
       <Seo
         title="About"
-        description="1devteam is an AI product studio and systems builder. We ship governed AI systems, SaaS tools, and operations infrastructure."
+        description="1devteam is an AI product studio, systems builder, and active R&D program developing governed software and architecture-intelligence tooling."
         path="/about"
       />
       <PageHero
         eyebrow="About"
         title="Builders of governed systems"
-        description={`${siteConfig.name} is an AI product studio and systems builder — not a generic agency, not a pure consultancy, and not a single-product company. We design software that moves businesses from goals to execution.`}
+        description={`${siteConfig.name} is an AI product studio, systems builder, and active R&D organization — not a generic agency, not a pure consultancy, and not a single-product company. We design software that moves businesses from goals to execution.`}
       />
 
       <section className="section-pad">
@@ -27,6 +27,14 @@ export function AboutPage() {
               you can inspect. Ajenda AI is our flagship product; client work
               spans custom AI systems, SaaS products, and operations
               infrastructure.
+            </p>
+            <p>
+              1DevTeam's first formal R&D program studies architectural
+              reasoning scope, corrective PR cascades, graph-assisted
+              development, and related evidence. That research is intended to
+              inform Grafted Plus for existing systems and Grafted First for
+              project-origin architecture, while keeping product goals separate
+              from scientific conclusions.
             </p>
             <p>
               Technical buyers want inspectable claims, credible stacks, and
@@ -51,6 +59,12 @@ export function AboutPage() {
                   Work
                 </Link>{' '}
                 — proof, build journals, and systems patterns.
+              </li>
+              <li>
+                <Link to="/research" className="font-medium text-[var(--brand)] hover:underline">
+                  Research & Development
+                </Link>{' '}
+                — the first formal R&D program and its scientific boundaries.
               </li>
               <li>
                 <Link to="/products/ajenda" className="font-medium text-[var(--brand)] hover:underline">
