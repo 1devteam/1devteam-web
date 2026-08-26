@@ -130,7 +130,7 @@ export function Footer() {
           <p>
             © {year} {siteConfig.legalName}. All rights reserved.
           </p>
-          <p className="text-slate-500">
+          <p className="text-slate-400">
             Built as a proof-backed technical company site — not a brochure.
           </p>
         </div>
