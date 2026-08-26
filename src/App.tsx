@@ -12,6 +12,7 @@ import { MethodPage } from '@/pages/MethodPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PrivacyPage } from '@/pages/PrivacyPage'
 import { ProductsPage } from '@/pages/ProductsPage'
+import { ResearchPage } from '@/pages/ResearchPage'
 import { ServicesPage } from '@/pages/ServicesPage'
 import { TermsPage } from '@/pages/TermsPage'
 import { TrustPage } from '@/pages/TrustPage'
@@ -24,6 +25,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="research" element={<ResearchPage />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="enterprise" element={<EnterprisePage />} />
           <Route path="products" element={<ProductsPage />} />

@@ -4,6 +4,7 @@ import { Seo } from '@/components/shared/Seo'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { rdTools } from '@/data/research'
 import { ArrowRight } from 'lucide-react'
 
 export function ProductsPage() {
@@ -11,13 +12,13 @@ export function ProductsPage() {
     <>
       <Seo
         title="Products"
-        description="Ajenda AI and the product portfolio from 1devteam — SaaS tools built by an AI systems studio, not a single-product homepage."
+        description="Ajenda AI, Grafted Plus, and Grafted First — product and R&D systems from 1devteam."
         path="/products"
       />
       <PageHero
         eyebrow="Products"
         title="Software we build and operate"
-        description="Ajenda AI is the flagship. The company is larger than one product — a studio that designs, ships, and governs operational software."
+        description="Ajenda AI is the flagship. 1DevTeam also develops architecture-intelligence tooling through its first formal R&D program."
       />
 
       <section className="section-pad">
@@ -67,24 +68,49 @@ export function ProductsPage() {
             </div>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <Badge variant="outline" className="mb-2 w-fit">
-                Coming next
-              </Badge>
-              <CardTitle className="text-xl">Future systems</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="max-w-2xl text-[15px] leading-relaxed text-[var(--text-muted)]">
-                This page is the durable home for productized software from
-                1devteam. New tools will appear here with the same standard:
-                clear problem, inspectable design, and production intent.
-              </p>
-              <Button asChild variant="outline" className="mt-5">
-                <Link to="/contact">Suggest a product need</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="pt-6">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">
+              Architecture intelligence R&D
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+              Grafted Plus and Grafted First
+            </h2>
+            <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+              These tools are applied development outputs of 1DevTeam's first
+              formal R&D program. Their capabilities and comparative value are
+              being refined from evidence rather than assumed in advance.
+            </p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            {rdTools.map((tool) => (
+              <Card key={tool.name}>
+                <CardHeader>
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    <Badge variant="brand">{tool.scope}</Badge>
+                    <Badge variant="outline">{tool.status}</Badge>
+                  </div>
+                  <CardTitle className="text-2xl">{tool.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
+                    {tool.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
+            <p className="max-w-3xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+              The R&D program studies the software-development failures these
+              tools are intended to address and keeps scientific conclusions
+              separate from product positioning.
+            </p>
+            <Button asChild variant="outline" className="mt-5">
+              <Link to="/research">Read the R&D program</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </>

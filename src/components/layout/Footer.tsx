@@ -12,7 +12,7 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link to="/" className="mb-4 inline-flex" aria-label="1devteam home">
               <img
-                src="/brand/1devteam-logo-light.svg"
+                src={siteConfig.brand.companyOnDark}
                 alt="1devteam"
                 className="h-11 w-auto"
               />
@@ -21,6 +21,24 @@ export function Footer() {
               AI product studio and systems builder. Governed systems that move
               businesses from goals to execution.
             </p>
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              <a
+                href={siteConfig.social.github}
+                target="_blank"
+                rel="noreferrer"
+                className="text-slate-300 transition-colors hover:text-white"
+              >
+                GitHub
+              </a>
+              <a
+                href={siteConfig.social.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="text-slate-300 transition-colors hover:text-white"
+              >
+                LinkedIn
+              </a>
+            </div>
           </div>
 
           <div>
@@ -28,6 +46,14 @@ export function Footer() {
               Company
             </h2>
             <ul className="space-y-2">
+              <li>
+                <Link
+                  to="/research"
+                  className="text-sm text-slate-300 transition-colors hover:text-white"
+                >
+                  Research & Development
+                </Link>
+              </li>
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
                   <Link
