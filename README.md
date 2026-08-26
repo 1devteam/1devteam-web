@@ -62,7 +62,7 @@ For a company-logo change, update the company logo files in `public/brand/` or c
 
 The production site is deployed by **Cloudflare Pages Git integration** from `1devteam/1devteam-web`, branch `main`, using `npm run build` with `dist` as the output directory. Pull requests should be used for controlled changes and preview review before merge. A merge to `main` is the production release path unless the deployment architecture is intentionally changed.
 
-Historical Wrangler / Workers experiments in repository history are not the active production path and should not be treated as deployment authority.
+Historical Wrangler / Workers experiments in repository history are not the active production path and should not be treated as deployment authority. Manual production-deploy scripts are intentionally absent; reintroducing one requires a separate reviewed infrastructure change that also updates the deployment documentation.
 
 ## Design system
 
