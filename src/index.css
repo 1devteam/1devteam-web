@@ -5,14 +5,16 @@
   --color-surface: #eef3f8;
   --color-surface-strong: #e2eaf3;
   --color-text: #0a1120;
-  --color-text-muted: #667085;
+  --color-text-muted: #5b6472;
   --color-border: #d1d5db;
-  --color-brand: #0066ff;
-  --color-brand-hover: #0047b3;
+  --color-border-control: #818d9c;
+  --color-brand: #0047b3;
+  --color-brand-bright: #0066ff;
+  --color-brand-hover: #003b96;
   --color-brand-ink: #ffffff;
   --color-accent: #0047b3;
   --color-success: #107c5b;
-  --color-warning: #b7791f;
+  --color-warning: #9a620f;
   --color-danger: #b42318;
   --color-navy-950: #0a1120;
   --color-navy-900: #0a1120;
@@ -42,14 +44,18 @@
     --surface: #eef3f8;
     --surface-strong: #e2eaf3;
     --text: #0a1120;
-    --text-muted: #667085;
+    --text-muted: #5b6472;
     --border: #d1d5db;
-    --brand: #0066ff;
-    --brand-hover: #0047b3;
+    --border-control: #818d9c;
+    --brand: #0047b3;
+    --brand-bright: #0066ff;
+    --brand-text: #0047b3;
+    --brand-action: #0047b3;
+    --brand-hover: #003b96;
     --brand-ink: #ffffff;
     --accent: #0047b3;
     --success: #107c5b;
-    --warning: #b7791f;
+    --warning: #9a620f;
     --danger: #b42318;
     --navy-950: #0a1120;
     --navy-900: #0a1120;
@@ -81,7 +87,7 @@
     min-height: 100svh;
     font-family: var(--font-sans);
     font-size: 17px;
-    line-height: 1.6;
+    line-height: 1.65;
     color: var(--text);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
@@ -113,12 +119,12 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--brand);
-    outline-offset: 2px;
+    outline: 3px solid var(--brand-bright);
+    outline-offset: 3px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--brand) 20%, transparent);
+    background: color-mix(in srgb, var(--brand-bright) 22%, transparent);
     color: var(--text);
   }
 }
