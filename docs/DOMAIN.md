@@ -1,152 +1,93 @@
 # Domain: 1devteam.com
 
 **Registrar:** Northwest (unchanged — do not transfer)
-**DNS + CDN + SSL + site delivery:** Cloudflare
+**Authoritative DNS + CDN + SSL:** Cloudflare
 **App hosting:** Cloudflare Pages project `1devteam`
+**Production source:** `1devteam/1devteam-web`, branch `main`
 
-## Model
+## Current delivery model
 
 ```
 Northwest (registrar only)
-        │  nameservers only
+        │  nameservers
         ▼
 Cloudflare (authoritative DNS + proxy + SSL)
         │  custom domains
         ▼
-Cloudflare Pages (static site from this repo)
+Cloudflare Pages Git integration
+        │  source: 1devteam/1devteam-web @ main
+        │  build: npm run build
+        │  output: dist
+        ▼
+1devteam.com / www.1devteam.com
 ```
 
-You are **not** moving the domain registration. You only point Northwest at Cloudflare’s nameservers so Cloudflare can serve DNS and the website.
+The domain remains registered at Northwest. Cloudflare is authoritative for DNS and website delivery.
 
-## Current state (pre-cutover)
+## Production deployment authority
 
-Before cutover, apex and `www` resolved to Northwest-style hosting (WordPress / openresty). Cutover replaces that origin with Cloudflare Pages.
+Production deployment is controlled by the **Cloudflare Pages Git integration**. A reviewed merge to `main` is the normal production release path.
 
-## One-time setup
+Current settings:
 
-### 1. Add the zone in Cloudflare (dashboard)
+- Repository: `1devteam/1devteam-web`
+- Production branch: `main`
+- Build command: `npm run build`
+- Build output: `dist`
+- Pages project: `1devteam`
+- Pages URL: `https://1devteam-dgr.pages.dev`
+- Custom domains: `1devteam.com`, `www.1devteam.com`
 
-Wrangler OAuth in this environment can deploy Pages but **cannot create zones** (`zone.create` permission missing). Do this in the dashboard:
+Do **not** treat local Wrangler commands or historical Workers-oriented deployment instructions as production release authority. If the deployment architecture changes, make that a separate reviewed infrastructure change and update this document and the repository README together.
 
-1. Open [Add a site](https://dash.cloudflare.com/?to=/:account/add-site)
-2. Enter `1devteam.com`
-3. Choose a plan (Free is fine)
-4. Select **Full** DNS setup (recommended)
-5. Cloudflare shows **two nameservers**, e.g. `*.ns.cloudflare.com`
-   Copy both exactly.
+## DNS and custom-domain administration
 
-Optional: during scan, remove or ignore old WordPress A records — Pages will own the apex and `www` after custom domains are attached.
+DNS records are administered in Cloudflare for the `1devteam.com` zone. Domain registration remains at Northwest.
 
-### 2. At Northwest: change nameservers only
+For custom-domain changes, use the Cloudflare dashboard for the `1devteam` Pages project. Prefer Pages-managed custom-domain records instead of manually reproducing an assumed DNS target.
 
-In Northwest domain management for `1devteam.com`:
+If email is hosted by Northwest or another provider, preserve the required MX, SPF, DKIM, DMARC, and verification records when changing DNS. Website changes must not disturb mail routing.
 
-1. Find **Nameservers** / **DNS servers** (not “transfer domain”, not “web hosting”)
-2. Switch from Northwest defaults to **custom nameservers**
-3. Set the two Cloudflare nameservers from step 1
-4. Save
+## HTTPS and canonical-host policy
 
-Leave the domain registered at Northwest. Do not initiate a registrar transfer.
+- Cloudflare terminates HTTPS for the site.
+- Keep HTTPS enforcement enabled.
+- If a canonical-host redirect between apex and `www` is desired, configure it deliberately in Cloudflare and verify both hosts afterward.
+- SPA routing is provided by the repository's Cloudflare Pages routing/fallback configuration; do not replace that behavior as part of an unrelated domain change.
 
-Propagation: often minutes to a few hours; can take up to ~48h in edge cases.
+## Release verification
 
-### 3. Deploy this site to Pages
+After a production merge, verify both deployment provenance and live behavior:
 
-From the project root (already authenticated via `wrangler login` if needed):
+1. Confirm the successful Cloudflare Pages production deployment is sourced from the expected merged `main` commit.
+2. Confirm `https://1devteam.com` and `https://www.1devteam.com` serve valid HTTPS.
+3. Confirm the expected site content is live on the routes changed by the release.
+4. Confirm DNS/email behavior remains intact when the release included domain or DNS changes.
 
-```bash
-npm run build
-npm run deploy
-```
-
-Project name: `1devteam`
-Production branch: `main`
-Build output: `dist`
-
-Temporary URL after first deploy: `https://1devteam.pages.dev`
-
-### 4. Attach custom domains
-
-After the zone is **Active** in Cloudflare:
-
-**Dashboard path**
-
-1. Workers & Pages → `1devteam` → Custom domains
-2. Add `1devteam.com`
-3. Add `www.1devteam.com`
-4. Cloudflare creates DNS + issues SSL automatically
-
-**CLI (after zone is active)**
+Useful network checks when needed:
 
 ```bash
-npx wrangler pages domain add 1devteam.com --project-name 1devteam
-npx wrangler pages domain add www.1devteam.com --project-name 1devteam
-```
-
-### 5. DNS records (target end state)
-
-Managed in **Cloudflare DNS** for zone `1devteam.com` (not Northwest):
-
-| Type  | Name | Content                         | Proxy |
-|-------|------|----------------------------------|-------|
-| CNAME | `@`  | `1devteam.pages.dev`             | Proxied (orange cloud) |
-| CNAME | `www`| `1devteam.pages.dev`             | Proxied |
-
-Apex CNAME works on Cloudflare via CNAME flattening. Prefer letting Pages custom-domain UI create these records.
-
-Optional later:
-
-| Type | Name   | Purpose        |
-|------|--------|----------------|
-| TXT  | `@`    | SPF / domain verification |
-| MX   | `@`    | Email (if not using CF Email Routing) |
-| CNAME| `www`  | already covered |
-
-If you keep email at Northwest or another provider, **copy MX/TXT records into Cloudflare DNS before or immediately after nameserver cutover**, or mail will break.
-
-### 6. HTTPS and www policy
-
-- Cloudflare issues Universal SSL for the zone
-- Always Use HTTPS: On
-- Optional redirect rule: `www` → apex (or reverse) via Redirect Rules / Bulk Redirects
-
-SPA routing is covered by `public/_redirects` (`/* → /index.html 200`).
-
-## Verify cutover
-
-```bash
-# Nameservers should be Cloudflare
 nslookup -type=NS 1devteam.com 1.1.1.1
-
-# Site should be Cloudflare + new app (not WordPress)
 curl -sI https://1devteam.com | head -20
 ```
 
-Expect:
+## Ongoing operations
 
-- `server: cloudflare`
-- HTML from this React app (no `wp-json` links)
-- Valid HTTPS
-
-## Ongoing ops
-
-| Action | Where |
-|--------|--------|
+| Action | Authority |
+|--------|-----------|
 | Renew domain | Northwest |
-| Change DNS records | Cloudflare DNS |
-| Deploy site | `npm run deploy` or Git-connected Pages |
+| Change authoritative DNS records | Cloudflare DNS |
+| Release website | Reviewed merge to `main` → Cloudflare Pages Git integration |
+| Review branch deployment | Cloudflare Pages preview generated from the PR branch |
 | SSL / CDN / WAF | Cloudflare |
-| Registrar contact/WHOIS | Northwest |
+| Registrar contact / WHOIS | Northwest |
 
 ## Rollback
 
-If something fails after NS cutover:
+For an application regression, correct or revert the website change through the repository and let Cloudflare Pages deploy the corrected `main` state. Do not change nameservers to roll back an ordinary application release.
 
-1. In Northwest, restore previous Northwest nameservers
-2. Wait for DNS to re-point at old hosting
+For a DNS-specific incident, restore the last known-good Cloudflare DNS configuration. Registrar nameserver changes are a higher-impact recovery action and should be used only when the Cloudflare zone itself must be abandoned or replaced.
 
-Or keep Cloudflare NS and point apex A/CNAME back to the old host IP temporarily.
+## Historical cutover note
 
-## Email warning
-
-If `1devteam.com` mail uses Northwest DNS today, export **MX, SPF, DKIM, DMARC** records before nameserver change and recreate them in Cloudflare DNS.
+Earlier setup instructions in this repository described manual Wrangler deployment and the original Northwest-to-Cloudflare cutover. That setup work is historical. The active operating model is the Git-connected Cloudflare Pages path documented above.
