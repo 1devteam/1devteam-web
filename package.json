@@ -7,9 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy --assets=./dist",
-    "deploy:preview": "npm run build && wrangler versions upload --assets=./dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
