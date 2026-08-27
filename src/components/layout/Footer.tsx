@@ -11,8 +11,11 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <Link to="/" className="inline-flex items-center gap-3" aria-label="1DevTeam home">
-              <img src={siteConfig.brand.companyOnDark} alt="1DevTeam" className="h-11 w-auto" />
-              <span className="border-l border-white/20 pl-3 font-mono text-xs font-bold tracking-[0.22em]">P2YE</span>
+              <img src="/brand/1devteam-mark.svg" alt="" aria-hidden="true" className="h-11 w-11" />
+              <span className="flex flex-col leading-none">
+                <span className="font-brand text-base font-bold tracking-[0.16em]">1DEVTEAM</span>
+                <span className="mt-2 font-mono text-xs font-bold tracking-[0.2em] text-sky-300">P2YE</span>
+              </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">
               Software development and applied R&amp;D. Working alongside AI to solve difficult problems and improve the way software gets built.
@@ -23,14 +26,8 @@ export function Footer() {
             </div>
           </div>
 
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">Company</h2>
-            <ul className="space-y-2">{footerLinks.company.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}</ul>
-          </div>
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">Build</h2>
-            <ul className="space-y-2">{footerLinks.offerings.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}</ul>
-          </div>
+          <div><h2 className="mb-3 text-sm font-semibold">Company</h2><ul className="space-y-2">{footerLinks.company.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}</ul></div>
+          <div><h2 className="mb-3 text-sm font-semibold">Build</h2><ul className="space-y-2">{footerLinks.offerings.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}</ul></div>
           <div>
             <h2 className="mb-3 text-sm font-semibold">Trust &amp; legal</h2>
             <ul className="space-y-2">{footerLinks.legal.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}</ul>
