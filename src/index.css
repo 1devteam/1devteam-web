@@ -5,7 +5,8 @@
   --color-surface: #e8eef5;
   --color-surface-strong: #dce5ef;
   --color-text: #0a1120;
-  --color-text-muted: #3a4658;
+  --color-text-muted: #243044;
+  --color-text-subtle: #3a4658;
   --color-border: #c3cdd8;
   --color-border-control: #6f7c8c;
   --color-brand: #0047b3;
@@ -45,7 +46,8 @@
     --surface: #e8eef5;
     --surface-strong: #dce5ef;
     --text: #0a1120;
-    --text-muted: #3a4658;
+    --text-muted: #243044;
+    --text-subtle: #3a4658;
     --border: #c3cdd8;
     --border-control: #6f7c8c;
     --brand: #0047b3;
@@ -149,7 +151,7 @@
   }
 
   .reading-measure {
-    max-width: 68ch;
+    max-width: 64ch;
   }
 
   .text-balance {
