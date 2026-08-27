@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
-import { navLinks, siteConfig } from '@/data/site'
+import { navLinks } from '@/data/site'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-const primaryNavLinks = [
-  ...navLinks,
-  { label: 'R&D', href: '/research' },
-] as const
+const primaryNavLinks = [...navLinks, { label: 'R&D', href: '/research' }] as const
 
 export function Header() {
   const [open, setOpen] = useState(false)
@@ -17,8 +14,11 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_94%,transparent)] backdrop-blur-md">
       <div className="container-site flex min-h-16 items-center justify-between gap-4 py-2">
         <Link to="/" className="flex items-center gap-3" aria-label="1DevTeam home" onClick={() => setOpen(false)}>
-          <img src={siteConfig.brand.companyOnLight} alt="1DevTeam" className="h-9 w-auto sm:h-10" />
-          <span className="hidden border-l border-[var(--border)] pl-3 font-mono text-xs font-bold tracking-[0.22em] text-[var(--text)] sm:inline">P2YE</span>
+          <img src="/brand/1devteam-mark.svg" alt="" aria-hidden="true" className="h-9 w-9 shrink-0" />
+          <span className="flex items-baseline gap-2">
+            <span className="font-brand text-[15px] font-bold tracking-[0.16em] text-[var(--text)] sm:text-base">1DEVTEAM</span>
+            <span className="font-mono text-[11px] font-bold tracking-[0.18em] text-[var(--brand)] sm:text-xs">P2YE</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
@@ -29,9 +29,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <Button asChild size="sm"><Link to="/contact">Discuss a project</Link></Button>
-        </div>
+        <div className="hidden items-center gap-2 lg:flex"><Button asChild size="sm"><Link to="/contact">Discuss a project</Link></Button></div>
 
         <Button type="button" variant="outline" size="icon" className="lg:hidden" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? 'Close menu' : 'Open menu'} onClick={() => setOpen((v) => !v)}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -46,9 +44,7 @@ export function Header() {
                 {link.label}
               </NavLink>
             ))}
-            <div className="mt-3 border-t border-[var(--border)] pt-4">
-              <Button asChild className="w-full"><Link to="/contact" onClick={() => setOpen(false)}>Discuss a project</Link></Button>
-            </div>
+            <div className="mt-3 border-t border-[var(--border)] pt-4"><Button asChild className="w-full"><Link to="/contact" onClick={() => setOpen(false)}>Discuss a project</Link></Button></div>
           </nav>
         </div>
       )}
