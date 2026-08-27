@@ -15,10 +15,7 @@ export function Header() {
       <div className="container-site flex min-h-16 items-center justify-between gap-4 py-2">
         <Link to="/" className="flex items-center gap-3" aria-label="1DevTeam home" onClick={() => setOpen(false)}>
           <img src="/brand/1devteam-mark.svg" alt="" aria-hidden="true" className="h-9 w-9 shrink-0" />
-          <span className="flex items-baseline gap-2">
-            <span className="font-brand text-[15px] font-bold tracking-[0.16em] text-[var(--text)] sm:text-base">1DEVTEAM</span>
-            <span className="font-mono text-[11px] font-bold tracking-[0.18em] text-[var(--brand)] sm:text-xs">P2YE</span>
-          </span>
+          <span className="font-brand text-[15px] font-bold tracking-[0.16em] text-[var(--text)] sm:text-base">1DEVTEAM</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
