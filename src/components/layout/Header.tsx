@@ -5,6 +5,11 @@ import { navLinks, siteConfig } from '@/data/site'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
+const primaryNavLinks = [
+  { label: 'R&D', href: '/research' },
+  ...navLinks,
+] as const
+
 export function Header() {
   const [open, setOpen] = useState(false)
 
@@ -25,7 +30,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {navLinks.map((link) => (
+          {primaryNavLinks.map((link) => (
             <NavLink
               key={link.href}
               to={link.href}
@@ -70,7 +75,7 @@ export function Header() {
           className="border-t border-[var(--border)] bg-[var(--bg)] lg:hidden"
         >
           <nav className="container-site flex flex-col gap-1 py-4" aria-label="Mobile">
-            {navLinks.map((link) => (
+            {primaryNavLinks.map((link) => (
               <NavLink
                 key={link.href}
                 to={link.href}

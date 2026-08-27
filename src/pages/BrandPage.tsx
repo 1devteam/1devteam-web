@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { AjendaLockup } from '@/components/brand/AjendaLockup'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { siteConfig } from '@/data/site'
@@ -39,17 +39,6 @@ function Swatch({ name, hex }: { name: string; hex: string }) {
 }
 
 export function BrandPage() {
-  useEffect(() => {
-    const id = 'outfit-font'
-    if (document.getElementById(id)) return
-    const link = document.createElement('link')
-    link.id = id
-    link.rel = 'stylesheet'
-    link.href =
-      'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap'
-    document.head.appendChild(link)
-  }, [])
-
   return (
     <>
       <Seo
@@ -71,7 +60,7 @@ export function BrandPage() {
               Company · 1devteam
             </p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight">Studio system</h2>
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-muted)]">
               Vectorized from the 9 July 2026 company kit. Tagline stays{' '}
               <span className="font-medium text-[var(--text)]">
                 Building Intelligent Solutions
@@ -86,11 +75,11 @@ export function BrandPage() {
               </div>
               <div className="rounded-[var(--radius-md)] bg-[var(--navy-950)] p-6">
                 <img src="/brand/1devteam-logo-light.svg" alt="1devteam logo" className="h-12 w-auto" />
-                <p className="mt-4 text-sm text-slate-400">Horizontal lockup · dark field</p>
+                <p className="mt-4 text-sm text-slate-300">Horizontal lockup · dark field</p>
               </div>
               <div className="rounded-[var(--radius-md)] bg-[var(--navy-950)] p-6">
                 <img src="/brand/1devteam-profile.svg" alt="1devteam profile" className="h-28 w-28" />
-                <p className="mt-4 text-sm text-slate-400">Profile 1:1 · 400×400</p>
+                <p className="mt-4 text-sm text-slate-300">Profile 1:1 · 400×400</p>
               </div>
             </div>
 
@@ -106,7 +95,7 @@ export function BrandPage() {
               Product · Ajenda AI
             </p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight">Product system</h2>
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-muted)]">
               From the Ajenda brand board. Forward-moving <span className="font-medium text-[var(--text)]">a</span> mark
               (direction, alignment, clarity). Wordmark is lowercase{' '}
               <span className="font-medium text-[var(--text)]">ajenda-ai</span>. Typeface:{' '}
@@ -126,7 +115,7 @@ export function BrandPage() {
                 <p className="mt-4 text-sm text-[var(--text-muted)]">Icon / mark</p>
               </div>
               <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">
-                <img src="/brand/ajenda-logo-dark.svg" alt="Ajenda logo" className="h-12 w-auto" />
+                <AjendaLockup size="md" />
                 <p className="mt-4 text-sm text-[var(--text-muted)]">Logo · light field</p>
               </div>
               <div className="flex items-center justify-center rounded-[var(--radius-md)] bg-[#0B1220] p-6">
@@ -146,7 +135,7 @@ export function BrandPage() {
 
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
             <h2 className="text-xl font-semibold">Inboxes and domains</h2>
-            <ul className="mt-4 space-y-2 text-[15px] text-[var(--text-muted)]">
+            <ul className="mt-4 space-y-2 text-base text-[var(--text-muted)]">
               <li>
                 Studio:{' '}
                 <a className="text-[var(--brand)] hover:underline" href={`mailto:${siteConfig.email}`}>
