@@ -2,11 +2,11 @@
 
 @theme {
   --color-bg: #f8fafc;
-  --color-surface: #eef3f8;
-  --color-surface-strong: #e2eaf3;
+  --color-surface: #e8eef5;
+  --color-surface-strong: #dce5ef;
   --color-text: #0a1120;
   --color-text-muted: #3a4658;
-  --color-border: #d1d5db;
+  --color-border: #c3cdd8;
   --color-border-control: #818d9c;
   --color-brand: #0047b3;
   --color-brand-bright: #0066ff;
@@ -42,11 +42,11 @@
 @layer base {
   :root {
     --bg: #f8fafc;
-    --surface: #eef3f8;
-    --surface-strong: #e2eaf3;
+    --surface: #e8eef5;
+    --surface-strong: #dce5ef;
     --text: #0a1120;
     --text-muted: #3a4658;
-    --border: #d1d5db;
+    --border: #c3cdd8;
     --border-control: #818d9c;
     --brand: #0047b3;
     --brand-bright: #0066ff;
@@ -146,6 +146,10 @@
 
   .prose-measure {
     max-width: 65ch;
+  }
+
+  .reading-measure {
+    max-width: 68ch;
   }
 
   .text-balance {
