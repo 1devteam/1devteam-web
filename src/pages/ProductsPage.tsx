@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { AjendaLockup } from '@/components/brand/AjendaLockup'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Badge } from '@/components/ui/badge'
@@ -31,11 +32,7 @@ export function ProductsPage() {
                     <Badge variant="brand">Flagship</Badge>
                     <Badge variant="outline">Private development</Badge>
                   </div>
-                  <img
-                    src="/brand/ajenda-wordmark-dark.svg"
-                    alt="Ajenda AI"
-                    className="mb-3 h-9 w-auto"
-                  />
+                  <AjendaLockup className="mb-3" size="md" />
                   <CardTitle className="text-2xl md:text-3xl">Ajenda AI</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -75,7 +72,7 @@ export function ProductsPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Grafted Plus and Grafted First
             </h2>
-            <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+            <p className="mt-3 max-w-3xl text-base leading-relaxed text-[var(--text-muted)]">
               These tools are applied development outputs of 1DevTeam's first
               formal R&D program. Their capabilities and comparative value are
               being refined from evidence rather than assumed in advance.
@@ -93,7 +90,7 @@ export function ProductsPage() {
                   <CardTitle className="text-2xl">{tool.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
+                  <p className="text-base leading-relaxed text-[var(--text-muted)]">
                     {tool.description}
                   </p>
                 </CardContent>
@@ -102,7 +99,7 @@ export function ProductsPage() {
           </div>
 
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
-            <p className="max-w-3xl text-[15px] leading-relaxed text-[var(--text-muted)]">
+            <p className="max-w-3xl text-base leading-relaxed text-[var(--text-muted)]">
               The R&D program studies the software-development failures these
               tools are intended to address and keeps scientific conclusions
               separate from product positioning.
