@@ -1,114 +1,57 @@
 import { Link } from 'react-router-dom'
-import { methodSteps, services, siteConfig } from '@/data/site'
+import { methodSteps, services } from '@/data/site'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle2 } from 'lucide-react'
-
-const fit = [
-  'Operators who need a system in production, not a workshop deck',
-  'Technical leads who must defend AI decisions internally',
-  'Teams that require review gates, audit trails, and clear ownership',
-]
 
 export function EnterprisePage() {
   return (
     <>
-      <Seo
-        title="Enterprise"
-        description="Custom and enterprise systems from 1devteam — governed AI, SaaS products, and operations infrastructure built for production."
-        path="/enterprise"
-      />
+      <Seo title="Enterprise" description="System-aware software development for larger or higher-consequence architectures where local changes can cross multiple boundaries." path="/enterprise" />
       <PageHero
         eyebrow="Enterprise"
-        title="Systems built to run, not to demo"
-        description="1devteam designs and ships governed AI systems, productized software, and operations infrastructure for teams that need results they can inspect and own."
+        title="Complex systems need more than a feature-level view"
+        description="For larger or higher-consequence systems, development decisions can cross data, security, authority, state, integration, and operational boundaries at the same time. 1DevTeam approaches that work as a system rather than a collection of isolated tickets."
       >
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg">
-            <Link to="/contact">Discuss a project</Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link to="/work">See the work</Link>
-          </Button>
+          <Button asChild size="lg"><Link to="/contact">Discuss a system</Link></Button>
+          <Button asChild variant="outline" size="lg"><Link to="/work">See the work</Link></Button>
         </div>
       </PageHero>
 
       <section className="section-pad">
-        <div className="container-site grid gap-10 lg:grid-cols-2">
+        <div className="container-site grid gap-12 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              Who this is for
-            </h2>
-            <ul className="mt-6 space-y-3">
-              {fit.map((item) => (
-                <li key={item} className="flex gap-3 text-[15px] leading-relaxed">
-                  <CheckCircle2
-                    className="mt-0.5 h-5 w-5 shrink-0 text-[var(--success)]"
-                    aria-hidden
-                  />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 text-sm text-[var(--text-muted)]">
-              Studio inbox:{' '}
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="font-medium text-[var(--brand)] hover:underline"
-              >
-                {siteConfig.email}
-              </a>
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Strong fit</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              Work where understanding the existing system is part of solving the problem; where failure in one layer can propagate into others; or where the resulting software needs explicit ownership, control, and evidence.
+            </p>
+            <p className="mt-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              Potential work can include architecture reconstruction, cross-system integration, controlled AI capabilities, reliability and recovery work, system remediation, technical R&amp;D, and development tooling created around the specific problem.
             </p>
           </div>
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-              What we take on
-            </h2>
-            <div className="mt-6 grid gap-4">
-              {services.map((service) => (
-                <Card key={service.title}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm leading-relaxed text-[var(--text-muted)]">
-                      {service.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {services.map((service) => (
+              <div key={service.title} className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-5">
+                <h3 className="text-lg font-semibold">{service.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{service.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
         <div className="container-site">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            How engagement works
-          </h2>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Working sequence</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {methodSteps.map((step) => (
               <div key={step.step}>
-                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">
-                  {step.step}
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{step.step}</p>
                 <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
-                  {step.description}
-                </p>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{step.description}</p>
               </div>
             ))}
-          </div>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <Link to="/contact">Request a consultation</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/method">Full method</Link>
-            </Button>
           </div>
         </div>
       </section>
