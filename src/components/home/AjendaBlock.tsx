@@ -3,7 +3,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SectionHeading } from '@/components/shared/SectionHeading'
-import { siteConfig } from '@/data/site'
+import { AjendaLockup } from '@/components/brand/AjendaLockup'
 
 const differentiators = [
   'Goals become plans, tasks, and accountable progress',
@@ -18,11 +18,7 @@ export function AjendaBlock() {
       <div className="container-site">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <img
-              src={siteConfig.brand.productOnLight}
-              alt="Ajenda AI"
-              className="mb-5 h-10 w-auto"
-            />
+            <AjendaLockup className="mb-5" size="md" />
             <SectionHeading
               eyebrow="Flagship product"
               title="Ajenda AI"
