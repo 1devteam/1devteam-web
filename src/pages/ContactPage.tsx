@@ -88,7 +88,7 @@ export function ContactPage() {
                   Review and send it there; this website does not claim receipt
                   until your email provider sends it. The destination is{' '}
                   <a
-                    href={`mailto:${siteConfig.email}`}
+                    href={`mailto:${destination}`}
                     className="font-medium text-[var(--brand)] hover:underline"
                   >
                     {destination}
@@ -162,7 +162,7 @@ export function ContactPage() {
                     required
                     value={form.interest}
                     onChange={(e) => update('interest', e.target.value)}
-                    className="flex h-11 w-full rounded-[var(--radius-sm)] border border-[var(--border)] bg-white px-3.5 text-[15px] text-[var(--text)] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]"
+                    className="flex h-11 w-full rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3.5 text-[15px] text-[var(--text)] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-bright)]"
                   >
                     <option value="" disabled>
                       Select an option
