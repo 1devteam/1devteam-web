@@ -4,7 +4,8 @@ const colors = {
   surfaceStrong: '#dce5ef',
   white: '#ffffff',
   text: '#0a1120',
-  textMuted: '#3a4658',
+  textMuted: '#243044',
+  textSubtle: '#3a4658',
   brandText: '#0047b3',
   brandAction: '#0047b3',
   brandInk: '#ffffff',
@@ -41,10 +42,13 @@ function contrast(foreground, background) {
 }
 
 const checks = [
-  ['Muted text on page background', colors.textMuted, colors.bg, 7],
-  ['Muted text on surface', colors.textMuted, colors.surface, 7],
-  ['Muted text on stronger surface', colors.textMuted, colors.surfaceStrong, 7],
-  ['Muted text on white', colors.textMuted, colors.white, 7],
+  ['Secondary copy on page background', colors.textMuted, colors.bg, 10],
+  ['Secondary copy on surface', colors.textMuted, colors.surface, 10],
+  ['Secondary copy on stronger surface', colors.textMuted, colors.surfaceStrong, 10],
+  ['Secondary copy on white', colors.textMuted, colors.white, 10],
+  ['Subtle metadata on page background', colors.textSubtle, colors.bg, 7],
+  ['Subtle metadata on surface', colors.textSubtle, colors.surface, 7],
+  ['Subtle metadata on white', colors.textSubtle, colors.white, 7],
   ['Primary text on stronger surface', colors.text, colors.surfaceStrong, 7],
   ['Brand text on page background', colors.brandText, colors.bg, 7],
   ['Brand text on surface', colors.brandText, colors.surface, 7],
