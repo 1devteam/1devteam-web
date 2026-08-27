@@ -1,11 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="title">
-  <title id="title">1devteam LinkedIn profile picture 400x400</title>
+  <title id="title">1DevTeam profile mark</title>
   <rect width="400" height="400" rx="72" fill="#0A1120"/>
-  <g transform="translate(100 46) scale(.95)">
-    <path fill="#0066FF" d="M42 18h34L60 38H56v74H42V18z"/>
-    <path fill="#FFFFFF" d="M80 22h42c24 0 42 18 42 42s-18 42-42 42h-20l16-16h4c14 0 26-12 26-26s-12-26-26-26H80V22z"/>
-    <path fill="#FFFFFF" d="M86 98 116 68l14 12-36 36H70z"/>
+  <g transform="translate(38 74) scale(0.85)">
+    <path d="M151,36 L84,36 L84,223 L111,223 L111,76 L112,75 L120,75Z" fill="#0066FF" fill-rule="evenodd"/>
+    <path d="M160,44 L160,75 L245,75 L246,76 L253,76 L263,79 L276,87 L287,99 L292,108 L294,114 L295,126 L296,128 L295,129 L295,137 L292,147 L284,160 L276,168 L267,174 L257,178 L246,179 L245,180 L241,180 L240,179 L259,159 L235,138 L231,136 L167,200 L140,231 L188,231 L208,211 L256,211 L257,210 L262,210 L278,205 L288,200 L298,193 L309,182 L316,172 L323,157 L323,154 L326,146 L326,141 L327,140 L327,115 L326,114 L326,109 L325,108 L324,101 L316,83 L309,73 L298,62 L288,55 L273,48 L270,48 L262,45 L257,45 L256,44Z" fill="#FFFFFF" fill-rule="evenodd"/>
   </g>
-  <text x="200" y="268" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="4" fill="#FFFFFF">1DEVTEAM</text>
-  <text x="200" y="302" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif" font-size="11" font-weight="500" letter-spacing="2.4" fill="#0066FF">BUILDING INTELLIGENT SOLUTIONS</text>
 </svg>

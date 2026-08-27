@@ -1,13 +1,13 @@
 export const siteConfig = {
   name: '1devteam',
-  legalName: '1devteam',
+  legalName: '1DevTeam L.L.C.',
   tagline: 'We build AI systems that move businesses from goals to execution.',
   description:
     '1devteam is an AI product studio and systems builder. We design and ship governed AI systems, SaaS tools, and operational software — with Ajenda AI as our flagship product.',
   url: 'https://1devteam.com',
   title: '1devteam · Governed AI systems',
   email: 'hello@1devteam.com',
-  productEmail: 'ajenda@1devteam.com',
+  productEmail: 'ajenda-ai@1devteam.com',
   ogImage: '/og.png',
   brand: {
     companyOnLight: '/brand/1devteam-logo-dark.svg',

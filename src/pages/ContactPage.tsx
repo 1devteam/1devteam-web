@@ -88,7 +88,7 @@ export function ContactPage() {
                   Review and send it there; this website does not claim receipt
                   until your email provider sends it. The destination is{' '}
                   <a
-                    href={`mailto:${siteConfig.email}`}
+                    href={`mailto:${destination}`}
                     className="font-medium text-[var(--brand)] hover:underline"
                   >
                     {destination}
