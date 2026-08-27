@@ -45,7 +45,7 @@ export function ResearchPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               {researchProgram.shortTitle}
             </h2>
-            <p className="reading-measure mt-4 text-base leading-relaxed text-[var(--text-muted)]">
+            <p className="reading-measure mt-4 text-base font-medium leading-relaxed text-[var(--text)]">
               Formal title: {researchProgram.formalTitle}.
             </p>
             <div className="mt-6 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
@@ -62,7 +62,7 @@ export function ResearchPage() {
             <CardHeader>
               <CardTitle className="text-xl">Scientific boundary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-base leading-relaxed text-[var(--text-muted)]">
+            <CardContent className="space-y-4 text-base font-medium leading-relaxed text-[var(--text)]">
               <p>
                 This is active research, not a marketing proof exercise. Study
                 methods, causal adjudication, and outcome comparisons remain
@@ -88,7 +88,7 @@ export function ResearchPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Grafted Plus and Grafted First
             </h2>
-            <p className="reading-measure mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p className="reading-measure mt-3 text-[17px] font-medium leading-relaxed text-[var(--text)]">
               These tools are development outputs of the R&D program, not proof
               of its outcome. Research evidence informs what they should model,
               which workflows they should support, and which failure modes they
@@ -107,7 +107,7 @@ export function ResearchPage() {
                   <CardTitle className="text-2xl">{tool.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-5">
-                  <p className="text-base leading-relaxed text-[var(--text-muted)]">
+                  <p className="text-base font-medium leading-relaxed text-[var(--text)]">
                     {tool.description}
                   </p>
                   <div className="rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface-strong)] p-4">
@@ -123,8 +123,8 @@ export function ResearchPage() {
             ))}
           </div>
 
-          <div className="reading-measure mt-8 rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 text-base leading-relaxed text-[var(--text-muted)]">
-            <strong className="text-[var(--text)]">Working relationship:</strong>{' '}
+          <div className="reading-measure mt-8 rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 text-base font-medium leading-relaxed text-[var(--text)]">
+            <strong>Working relationship:</strong>{' '}
             Grafted First is intended to model what a system should become;
             Grafted Plus is intended to reconstruct and reason over what an
             existing system actually is. A future loop of intended architecture
@@ -144,7 +144,7 @@ export function ResearchPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               How we keep the study scientifically useful
             </h2>
-            <p className="reading-measure mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p className="reading-measure mt-3 text-[17px] font-medium leading-relaxed text-[var(--text)]">
               Serious contributors should be able to see not only what we are
               building, but also the constraints placed on the evidence that is
               allowed to support it.
@@ -158,7 +158,7 @@ export function ResearchPage() {
                   <CardTitle className="text-lg">{policy.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-base leading-relaxed text-[var(--text-muted)]">
+                  <p className="text-base font-medium leading-relaxed text-[var(--text)]">
                     {policy.description}
                   </p>
                 </CardContent>
@@ -178,7 +178,7 @@ export function ResearchPage() {
               <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
                 The graph did not always exist
               </h2>
-              <p className="reading-measure mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              <p className="reading-measure mt-3 text-[17px] font-medium leading-relaxed text-[var(--text)]">
                 The study preserves the intervention boundary instead of
                 describing earlier development as a weaker version of a graph
                 workflow.
@@ -195,7 +195,7 @@ export function ResearchPage() {
                       </span>
                       <h3 className="text-lg font-semibold">{epoch.name}</h3>
                     </div>
-                    <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
+                    <p className="mt-3 text-base font-medium leading-relaxed text-[var(--text)]">
                       {epoch.description}
                     </p>
                   </div>
@@ -210,7 +210,7 @@ export function ResearchPage() {
               <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
                 What we are measuring
               </h2>
-              <p className="reading-measure mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              <p className="reading-measure mt-3 text-[17px] font-medium leading-relaxed text-[var(--text)]">
                 The study is designed to distinguish local success from
                 system-level repair quality and later corrective propagation.
               </p>
@@ -218,7 +218,7 @@ export function ResearchPage() {
                 {researchMeasures.map((measure) => (
                   <li
                     key={measure}
-                    className="flex gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-white p-4 text-base leading-relaxed text-[var(--text-muted)]"
+                    className="flex gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-white p-4 text-base font-medium leading-relaxed text-[var(--text)]"
                   >
                     <span
                       aria-hidden="true"
@@ -242,7 +242,7 @@ export function ResearchPage() {
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Preliminary observations, not finished claims
             </h2>
-            <p className="reading-measure mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p className="reading-measure mt-3 text-[17px] font-medium leading-relaxed text-[var(--text)]">
               These notes are exposed because the distinction between an
               observation, an exploratory hypothesis, and an adjudicated finding
               matters. They may be revised, contradicted, or rejected as the
@@ -260,7 +260,7 @@ export function ResearchPage() {
                   <CardTitle className="text-xl">{note.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-base leading-relaxed text-[var(--text-muted)]">
+                  <p className="text-base font-medium leading-relaxed text-[var(--text)]">
                     {note.description}
                   </p>
                 </CardContent>
@@ -268,8 +268,8 @@ export function ResearchPage() {
             ))}
           </div>
 
-          <div className="reading-measure mt-8 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6 text-base leading-relaxed text-[var(--text-muted)]">
-            <strong className="text-[var(--text)]">Contributor signal:</strong>{' '}
+          <div className="reading-measure mt-8 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6 text-base font-medium leading-relaxed text-[var(--text)]">
+            <strong>Contributor signal:</strong>{' '}
             the investment here is in a research-and-development process that is
             expected to preserve uncertainty and competing explanations. Grafted
             Plus and Grafted First should become stronger when the evidence is
