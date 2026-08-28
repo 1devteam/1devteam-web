@@ -9,10 +9,26 @@ import { CheckCircle2 } from 'lucide-react'
 import { siteConfig } from '@/data/site'
 
 const features = [
-  { title: 'Structured missions', description: 'Turn an objective into explicit missions, plans, tasks, and durable execution state.' },
-  { title: 'Explicit authority', description: 'Separate understanding from permission so recognizing an intent does not silently grant external-action authority.' },
-  { title: 'Review and recovery', description: 'Model approvals, failure handling, recovery paths, and controlled continuation rather than treating errors as an afterthought.' },
-  { title: 'Inspectable execution', description: 'Make ownership, progress, state transitions, and execution evidence visible rather than burying work inside a chat transcript.' },
+  {
+    title: 'Structured missions',
+    description: 'Objectives are represented as durable mission state rather than temporary conversational context.',
+  },
+  {
+    title: 'Explicit authority',
+    description: 'Interpretation, planning, and execution authority are modeled separately so recognizing an instruction does not silently authorize an external action.',
+  },
+  {
+    title: 'Controlled execution',
+    description: 'Actions can be routed through capability boundaries, policy checks, approvals, and execution controls appropriate to the operation.',
+  },
+  {
+    title: 'Review & recovery',
+    description: 'The system models approval states, execution failures, recovery paths, and controlled continuation as part of normal operation.',
+  },
+  {
+    title: 'Traceable outcomes',
+    description: 'Mission state, approvals, actions, and resulting outcomes are recorded so system behavior can be inspected after execution.',
+  },
 ]
 
 export function AjendaPage() {
@@ -20,7 +36,7 @@ export function AjendaPage() {
     <>
       <Seo
         title="Ajenda AI"
-        description="Ajenda AI is 1DevTeam's flagship product: an actively developed system for turning goals into structured missions, plans, tasks, and controlled execution."
+        description="Ajenda AI converts objectives into structured missions, plans, tasks, approvals, and controlled execution."
         path="/products/ajenda"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -33,31 +49,38 @@ export function AjendaPage() {
         }}
       />
       <PageHero
-        eyebrow="Products · Ajenda AI"
-        title="From goals to execution — with explicit control"
-        description="Ajenda AI is a structured execution system built to turn an objective into governed work: missions, plans, tasks, ownership, progress, and controlled actions."
+        eyebrow="Ajenda AI"
+        title="Turn goals into governed execution."
+        description="Ajenda AI converts objectives into structured missions, plans, tasks, approvals, and controlled execution. The system is designed around the distinction between understanding a request and having authority to act on it."
       >
         <AjendaLockup className="mb-2" size="lg" />
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg"><Link to="/contact">Talk to us about Ajenda</Link></Button>
-          <Button asChild variant="outline" size="lg"><Link to="/method">How 1DevTeam builds</Link></Button>
+          <Button asChild size="lg"><Link to="/contact">Discuss Ajenda AI</Link></Button>
+          <Button asChild variant="outline" size="lg"><Link to="/method">Development method</Link></Button>
         </div>
       </PageHero>
 
       <section className="section-pad">
         <div className="container-site grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-          <AjendaCommandCenter caption="Local Ajenda command center, 31 July 2026 — a real development surface." />
+          <AjendaCommandCenter caption="Ajenda AI · development product surface. Local command-center interface captured during active development." />
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Current development emphasis</p>
-            <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight">Execution machinery, not conversation alone</h2>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Execution architecture</p>
+            <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight">Understanding and authority remain separate</h2>
             <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">
-              Ajenda is being developed around the machinery required to execute work reliably: authority, state, capability selection, review, recovery, auditability, and failure handling.
+              That distinction extends through mission interpretation, planning, capability selection, execution, review, recovery, and outcome recording.
             </p>
             <div className="mt-8 grid gap-5 sm:grid-cols-2">
               {features.map((feature) => (
                 <Card key={feature.title}>
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-lg"><CheckCircle2 className="h-5 w-5 text-[var(--success)]" aria-hidden />{feature.title}</CardTitle></CardHeader>
-                  <CardContent><p className="text-base leading-relaxed text-[var(--text-muted)]">{feature.description}</p></CardContent>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <CheckCircle2 className="h-5 w-5 text-[var(--success)]" aria-hidden />
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-base leading-relaxed text-[var(--text-muted)]">{feature.description}</p>
+                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -68,17 +91,19 @@ export function AjendaPage() {
       <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
         <div className="container-site grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Maturity boundary</h2>
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Current status</h2>
             <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">
-              Ajenda is in private development and is locally operational. This page does not represent it as a generally available hosted service or imply customer deployment that has not occurred.
+              Ajenda AI is under active private development and is locally operational. This site does not represent Ajenda as a generally available hosted service or claim customer deployment that has not occurred.
             </p>
           </div>
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 md:p-8">
             <h3 className="text-lg font-semibold">Part of 1DevTeam</h3>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
-              Ajenda is one product inside a broader software-development and applied-R&amp;D company. The company also works on custom systems, development tooling, architecture problems, and research emerging from real development work.
+              Ajenda is the current flagship product inside 1DevTeam&apos;s broader software-development and applied-R&amp;D work. Its development also provides the active software environment in which portions of the architecture tooling and current research program are being exercised.
             </p>
-            <p className="mt-4 text-sm text-[var(--text-subtle)]">Product inbox: <a href={`mailto:${siteConfig.productEmail}`} className="font-medium text-[var(--brand)] hover:underline">{siteConfig.productEmail}</a></p>
+            <p className="mt-4 text-sm text-[var(--text-subtle)]">
+              Product inbox: <a href={`mailto:${siteConfig.productEmail}`} className="font-medium text-[var(--brand)] hover:underline">{siteConfig.productEmail}</a>
+            </p>
           </div>
         </div>
       </section>
