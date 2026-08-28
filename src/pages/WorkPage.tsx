@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { workItems } from '@/data/site'
-import { InteractiveArchitectureGraph } from '@/components/architecture/InteractiveArchitectureGraph'
 import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
@@ -47,27 +46,33 @@ export function WorkPage() {
                       <AjendaCommandCenter caption="Ajenda AI · development product surface. Local command-center interface captured during active development." />
                     </div>
                   )}
+
+                  <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">{item.summary}</p>
+
                   {item.slug === 'snapshot' && (
-                    <figure className="mb-6 max-w-3xl overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-[#214b83]">
-                      <img src="/artifacts/snapshot-v10.svg" alt="Snapshot v10 execution in the Ajenda development shell" className="w-full" />
-                      <figcaption className="border-t border-white/10 bg-[#0a1120] px-5 py-4 text-sm leading-relaxed text-slate-200">
-                        <strong className="text-white">Snapshot v10.0 · execution artifact.</strong> Snapshot executed against the Ajenda repository. The captured run indexed 1,376 files and 2,451 routes, reported zero Python parse errors, recorded active Git state, and operated with project writes disabled.
-                      </figcaption>
-                    </figure>
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
+                      The canonical public Snapshot figure now pairs the real execution artifact with an inspectable public-safe excerpt from the v10 JSON output.
+                    </p>
                   )}
                   {item.slug === 'architectural-graph' && (
-                    <div className="mb-6">
-                      <InteractiveArchitectureGraph />
-                    </div>
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
+                      The interactive graph is maintained as a single canonical inspection surface on the homepage so explanatory pages can refer back to the same artifact rather than rendering divergent copies.
+                    </p>
                   )}
-                  <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">{item.summary}</p>
+
                   <div className="mt-5 flex flex-wrap gap-2">
                     {item.tags.map((tag) => (
                       <span key={tag} className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">{tag}</span>
                     ))}
                   </div>
-                  {item.slug === 'ajenda-ai' && <div className="mt-6"><Button asChild variant="outline"><Link to="/products/ajenda">View Ajenda AI</Link></Button></div>}
-                  {item.slug === 'pride-protocol' && <div className="mt-6"><Button asChild variant="outline"><Link to="/method">View methodology</Link></Button></div>}
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {item.slug === 'ajenda-ai' && <Button asChild variant="outline"><Link to="/products/ajenda">View Ajenda AI</Link></Button>}
+                    {item.slug === 'snapshot' && <Button asChild variant="outline"><a href="/#snapshot">Inspect Snapshot artifact</a></Button>}
+                    {item.slug === 'architectural-graph' && <Button asChild variant="outline"><a href="/#architecture-graph">Inspect the live graph</a></Button>}
+                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><a href="/#pride-protocol">View PRIDE artifact</a></Button>}
+                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><Link to="/method">View methodology</Link></Button>}
+                  </div>
                 </CardContent>
               </Card>
             </article>
