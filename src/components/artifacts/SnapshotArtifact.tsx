@@ -13,12 +13,11 @@ const publicSafeExcerpt = `{
     "py_errors": 0,
     "uncommitted_files": 0
   },
-  "indexed_context": {
-    "dependency_graph_entries": 964,
-    "config_files": 41,
-    "docs_summary_records": 110,
-    "ci_cd_records": 10
-  }
+  "dependency_graph": "[964 indexed entries omitted]",
+  "config_files": "[41 indexed files omitted]",
+  "docs_summary": "[110 records omitted]",
+  "ci_cd_info": "[10 records omitted]",
+  "files_static": "[1376 file records omitted]"
 }`
 
 export function SnapshotArtifact() {
@@ -41,7 +40,7 @@ export function SnapshotArtifact() {
           Inspect public-safe JSON excerpt <span aria-hidden className="inline-block transition-transform group-open:rotate-90">→</span>
         </summary>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--text-muted)]">
-          This excerpt uses the actual Snapshot v10 top-level structure and verified values from the captured run. Sensitive paths, environment values, configuration contents, and the full repository inventory are intentionally omitted.
+          This excerpt preserves actual Snapshot v10 field names and verified values from the captured run. Large or sensitive values are summarized rather than reproduced: local paths, environment values, configuration contents, and the full repository inventory remain omitted.
         </p>
         <pre className="mt-4 max-h-[30rem] overflow-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-[#0a1120] p-5 text-xs leading-relaxed text-slate-100">
           <code>{publicSafeExcerpt}</code>
