@@ -8,23 +8,23 @@ import { Shield, Eye, Scale, Server } from 'lucide-react'
 const pillars = [
   {
     icon: Shield,
-    title: 'Human oversight',
-    body: 'High-risk actions in the systems we build are designed with review gates and clear ownership — not unbounded autonomy.',
+    title: 'Authority boundaries',
+    body: 'Security-sensitive actions require explicit capability and authority boundaries appropriate to the system rather than implicit permission derived from interpretation alone.',
   },
   {
     icon: Eye,
     title: 'Inspectability',
-    body: 'We favor architectures, product notes, and operating models that buyers and operators can examine and challenge.',
+    body: 'System behavior, state transitions, approvals, controls, and relevant execution evidence should be inspectable where the architecture and risk model require it.',
   },
   {
     icon: Scale,
-    title: 'Accountability',
-    body: 'Governance is part of delivery: evaluation, failure handling, and decision rights are first-class design inputs.',
+    title: 'Failure handling',
+    body: 'Review paths, recovery behavior, failure states, and decision ownership are treated as architecture concerns rather than post-implementation additions.',
   },
   {
     icon: Server,
     title: 'Operational security',
-    body: 'Production systems use least-privilege access patterns, secure defaults, and documented operational practices appropriate to the engagement.',
+    body: 'Access control, secure defaults, least privilege, data boundaries, configuration, and operational practices are applied according to the implementation and deployment context.',
   },
 ]
 
@@ -33,13 +33,13 @@ export function TrustPage() {
     <>
       <Seo
         title="Trust & Security"
-        description="How 1devteam approaches AI governance, human oversight, inspectability, and security for production systems."
+        description="1DevTeam treats security, authority, data access, external actions, state transitions, failure handling, and auditability as architecture concerns."
         path="/trust"
       />
       <PageHero
-        eyebrow="Trust"
-        title="Trust is calibrated, not claimed"
-        description="Professional design is table stakes. Buyers need disclosure, current evidence, and systems that show where humans stay in control. This page is our lightweight trust layer."
+        eyebrow="Trust & Security"
+        title="Security and system trust require explicit boundaries."
+        description="1DevTeam treats security, authority, data access, external actions, state transitions, failure handling, and auditability as architecture concerns rather than presentation-layer claims."
       />
 
       <section className="section-pad">
@@ -55,9 +55,7 @@ export function TrustPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
-                  {pillar.body}
-                </p>
+                <p className="text-base leading-relaxed text-[var(--text-muted)]">{pillar.body}</p>
               </CardContent>
             </Card>
           ))}
@@ -66,22 +64,13 @@ export function TrustPage() {
 
       <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
         <div className="container-site max-w-3xl">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            What this page is — and is not
-          </h2>
+          <h2 className="text-2xl font-semibold tracking-tight">Evidence boundary</h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-            This is not a compliance certificate dump. It is an honest signal of
-            how we think about risk when AI systems act in real businesses. For
-            engagement-specific security questionnaires, data processing terms,
-            or architecture reviews, contact us.
+            Public documentation describes controls and development practices only to the extent supported by the current implementation and operating environment. Security-sensitive implementation details, credentials, private configuration, and confidential system information are not published as proof material.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
-              <Link to="/contact">Security / trust inquiry</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/method">Read our method</Link>
-            </Button>
+            <Button asChild><Link to="/contact">Security / trust inquiry</Link></Button>
+            <Button asChild variant="outline"><Link to="/method">Development method</Link></Button>
           </div>
         </div>
       </section>
