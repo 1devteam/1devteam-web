@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { InteractiveArchitectureGraph } from '@/components/architecture/InteractiveArchitectureGraph'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -112,20 +113,15 @@ export function HomePage() {
             </article>
           </div>
 
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            <figure className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[#173f79] shadow-sm">
+          <div className="mt-10 space-y-6">
+            <figure className="max-w-3xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[#173f79] shadow-sm">
               <img src="/artifacts/snapshot-v10.svg" alt="Snapshot v10 execution in the Ajenda development shell" className="block w-full" />
               <figcaption className="border-t border-white/10 bg-[#0a1120] px-5 py-4 text-sm leading-relaxed text-slate-200">
                 <strong className="text-white">Snapshot v10.0 · execution artifact.</strong> Snapshot executed against the Ajenda repository. The captured run indexed 1,376 files and 2,451 routes, reported zero Python parse errors, recorded the active Git state, and operated with project writes disabled.
               </figcaption>
             </figure>
 
-            <figure className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-white shadow-sm">
-              <img src="/artifacts/mission-composition-graph.svg" alt="Selected decision functions from Ajenda's canonical architecture graph" className="block w-full" />
-              <figcaption className="border-t border-[var(--border)] px-5 py-4 text-sm leading-relaxed text-[var(--text-muted)]">
-                <strong className="text-[var(--text)]">Ajenda Architectural Graph · architecture artifact.</strong> Deterministic rendering of selected nodes and <code>calls_function</code> relationships from the canonical Ajenda dependency graph. Schema 1.2 · 1,202 nodes · 3,600 edges. The displayed relationships are derived from the graph artifact produced by Ajenda&apos;s architecture CI workflow rather than reconstructed for presentation.
-              </figcaption>
-            </figure>
+            <InteractiveArchitectureGraph compact />
           </div>
 
           <Button asChild variant="outline" className="mt-8">
