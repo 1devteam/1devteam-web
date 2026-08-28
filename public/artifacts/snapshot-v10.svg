@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 547 253" role="img" aria-labelledby="title desc">
   <title id="title">Snapshot v10.0 execution in Ajenda development shell</title>
-  <desc id="desc">Faithful vector reconstruction of the terminal execution artifact captured on 27 August 2026.</desc>
+  <desc id="desc">Public redacted derivative of the Snapshot v10.0 terminal execution artifact captured on 27 August 2026. Local user and filesystem paths are omitted.</desc>
   <rect width="547" height="253" fill="#214b83"/>
   <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#ffffff">
     <text x="10" y="24">~/pr/ajenda-ai fix/mission-…tation-clean *1 ❯ snapshot</text>
     <text x="10" y="47">Py utils</text>
     <text x="10" y="72" fill="#9ef0b8">✅ Snapshot v10.0 written:</text>
-    <text x="10" y="96">/mnt/c/Users/inmoa/Downloads/snapshot_2026-08-27T16-47-33Z.json</text>
-    <text x="10" y="121">📌 Project root: /home/inmoa/projects/ajenda-ai</text>
+    <text x="10" y="96">[local path]/snapshot_2026-08-27T16-47-33Z.json</text>
+    <text x="10" y="121">📌 Project root: [local path]/ajenda-ai</text>
     <text x="10" y="146">📄 Files: 1376 | Routes: 2451 | Python errors: 0</text>
     <text x="10" y="171">🌿 Git branch: fix/mission-clause-segmentation-clean @ 16abe55</text>
     <text x="10" y="196">🚫 Project write behavior: disabled</text>
