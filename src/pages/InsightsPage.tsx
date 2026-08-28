@@ -27,13 +27,20 @@ export function InsightsPage() {
       />
 
       <section className="section-pad">
-        <div className="container-site">
-          <ul className="divide-y divide-[var(--border)] rounded-[var(--radius-md)] border border-[var(--border)] bg-white">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.28fr_0.72fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Reading index</p>
+            <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
+              Notes are organized as technical reading rather than case-study marketing. Each entry should make the distinction between implemented behavior, interpretation, and unresolved questions visible in the writing itself.
+            </p>
+          </div>
+
+          <ul className="max-w-4xl">
             {insights.map((post) => (
-              <li key={post.slug}>
+              <li key={post.slug} className="border-t border-[var(--border)]">
                 <Link
                   to={`/insights/${post.slug}`}
-                  className="block p-6 transition-colors hover:bg-[var(--surface)] md:p-8"
+                  className="block py-8"
                   data-analytics="insights-open"
                 >
                   <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -41,7 +48,8 @@ export function InsightsPage() {
                     <span className="text-xs text-[var(--text-subtle)]">{post.readTime} · {formatDate(post.date)}</span>
                   </div>
                   <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{post.title}</h2>
-                  <p className="mt-2 max-w-3xl text-base leading-relaxed text-[var(--text-muted)]">{post.excerpt}</p>
+                  <p className="mt-3 max-w-3xl text-base leading-relaxed text-[var(--text-muted)]">{post.excerpt}</p>
+                  <span className="mt-4 inline-block text-sm font-semibold text-[var(--brand)]">Read note →</span>
                 </Link>
               </li>
             ))}
