@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { workItems } from '@/data/site'
+import { InteractiveArchitectureGraph } from '@/components/architecture/InteractiveArchitectureGraph'
 import { AjendaCommandCenter } from '@/components/product/AjendaCommandCenter'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
@@ -55,12 +56,9 @@ export function WorkPage() {
                     </figure>
                   )}
                   {item.slug === 'architectural-graph' && (
-                    <figure className="mb-6 max-w-3xl overflow-hidden rounded-[var(--radius-md)] border border-[var(--border)] bg-white">
-                      <img src="/artifacts/mission-composition-graph.svg" alt="Selected decision functions from the Ajenda canonical graph" className="w-full" />
-                      <figcaption className="border-t border-[var(--border)] px-5 py-4 text-sm leading-relaxed text-[var(--text-muted)]">
-                        <strong className="text-[var(--text)]">Ajenda Architectural Graph · architecture artifact.</strong> Deterministic rendering from canonical CI graph data: schema 1.2 · 1,202 nodes · 3,600 edges.
-                      </figcaption>
-                    </figure>
+                    <div className="mb-6">
+                      <InteractiveArchitectureGraph />
+                    </div>
                   )}
                   <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">{item.summary}</p>
                   <div className="mt-5 flex flex-wrap gap-2">
