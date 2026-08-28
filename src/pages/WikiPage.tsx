@@ -98,7 +98,7 @@ export function WikiPage() {
       </section>
 
       <section className="section-pad">
-        <div className="container-site grid gap-10 lg:grid-cols-[0.28fr_0.72fr]">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.26fr_0.74fr]">
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Index</p>
             <nav className="mt-4 max-h-[68vh] space-y-1 overflow-auto pr-2" aria-label="Wiki entry index">
@@ -106,7 +106,7 @@ export function WikiPage() {
                 <a
                   key={entry.id}
                   href={`#${entry.id}`}
-                  className="block rounded-[var(--radius-sm)] px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
+                  className="block border-l border-transparent py-2 pl-3 text-sm text-[var(--text-muted)] hover:border-[var(--brand)] hover:text-[var(--text)]"
                 >
                   <span className="block font-medium text-[var(--text)]">{entry.title}</span>
                   <span className="mt-0.5 block text-xs text-[var(--text-subtle)]">{entry.category}</span>
@@ -115,60 +115,48 @@ export function WikiPage() {
             </nav>
           </aside>
 
-          <div>
+          <div className="max-w-4xl">
             {filtered.length === 0 ? (
-              <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-8">
+              <div className="border-l-4 border-[var(--border)] pl-6 py-2">
                 <h2 className="text-xl font-semibold">No matching wiki entry</h2>
                 <p className="mt-2 text-base leading-relaxed text-[var(--text-muted)]">
                   Change the search term or select a different category. The wiki only returns concepts currently defined in the reference set.
                 </p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div>
                 {filtered.map((entry) => (
                   <article
                     key={entry.id}
                     id={entry.id}
-                    className="scroll-mt-24 rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 shadow-sm md:p-8"
+                    className="scroll-mt-24 border-t border-[var(--border)] py-10"
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-3">
                       <div>
                         <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{entry.category}</p>
                         <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">{entry.title}</h2>
                       </div>
-                      {entry.status && (
-                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">
-                          {entry.status}
-                        </span>
-                      )}
+                      {entry.status && <span className="text-xs font-medium text-[var(--text-subtle)]">{entry.status}</span>}
                     </div>
 
-                    <p className="mt-4 text-lg font-medium leading-relaxed text-[var(--text)]">{entry.summary}</p>
+                    <p className="mt-5 text-lg font-medium leading-relaxed text-[var(--text)]">{entry.summary}</p>
                     <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">{entry.detail}</p>
 
-                    <div className="mt-6 border-t border-[var(--border)] pt-5">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-subtle)]">Related</p>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {entry.related.map((related) => {
-                          const relatedId = idByTitle.get(related)
-                          return relatedId ? (
-                            <a
-                              key={related}
-                              href={`#${relatedId}`}
-                              className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium text-[var(--text-muted)] hover:border-[var(--brand)] hover:text-[var(--text)]"
-                            >
-                              {related}
-                            </a>
-                          ) : (
-                            <span
-                              key={related}
-                              className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm font-medium text-[var(--text-muted)]"
-                            >
-                              {related}
-                            </span>
-                          )
-                        })}
-                      </div>
+                    <div className="mt-6 text-sm leading-relaxed text-[var(--text-subtle)]">
+                      <span className="font-semibold uppercase tracking-wide">Related: </span>
+                      {entry.related.map((related, index) => {
+                        const relatedId = idByTitle.get(related)
+                        return (
+                          <span key={related}>
+                            {index > 0 && <span aria-hidden> · </span>}
+                            {relatedId ? (
+                              <a href={`#${relatedId}`} className="font-medium text-[var(--brand)] hover:underline">{related}</a>
+                            ) : (
+                              <span>{related}</span>
+                            )}
+                          </span>
+                        )
+                      })}
                     </div>
                   </article>
                 ))}
