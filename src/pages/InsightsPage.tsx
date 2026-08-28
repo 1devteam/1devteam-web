@@ -17,13 +17,13 @@ export function InsightsPage() {
     <>
       <Seo
         title="Insights"
-        description="Product notes, governance thinking, and build journals from 1devteam — entity-rich content for humans and AI-mediated discovery."
+        description="Technical notes from 1DevTeam on software architecture, AI-assisted development, system control, development tooling, research methods, and product engineering."
         path="/insights"
       />
       <PageHero
-        eyebrow="Insights"
-        title="Notes from building real systems"
-        description="Source-worthy pages: dated updates, clear claims, and practical reasoning. Built for self-serve research, SEO, and citation-friendly structure."
+        eyebrow="Technical Notes"
+        title="Development, architecture, AI, and applied R&D"
+        description="Technical writing from 1DevTeam covers software architecture, AI-assisted development, system control, development tooling, research methods, and product engineering. The same distinction between evidence, interpretation, and unresolved questions used in the development work applies here."
       />
 
       <section className="section-pad">
@@ -38,16 +38,10 @@ export function InsightsPage() {
                 >
                   <div className="mb-3 flex flex-wrap items-center gap-2">
                     <Badge variant="outline">{post.category}</Badge>
-                    <span className="text-xs text-[var(--text-muted)]">
-                      {post.readTime} · {formatDate(post.date)}
-                    </span>
+                    <span className="text-xs text-[var(--text-subtle)]">{post.readTime} · {formatDate(post.date)}</span>
                   </div>
-                  <h2 className="text-xl font-semibold tracking-tight md:text-2xl">
-                    {post.title}
-                  </h2>
-                  <p className="mt-2 max-w-3xl text-[15px] leading-relaxed text-[var(--text-muted)]">
-                    {post.excerpt}
-                  </p>
+                  <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{post.title}</h2>
+                  <p className="mt-2 max-w-3xl text-base leading-relaxed text-[var(--text-muted)]">{post.excerpt}</p>
                 </Link>
               </li>
             ))}
