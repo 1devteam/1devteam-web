@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: '1DevTeam',
   legalName: '1DevTeam L.L.C.',
-  tagline: 'We build software — and better ways to build it.',
+  tagline: 'We build software — and better ways to build software.',
   description:
-    '1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult problems, build dependable systems and products, and improve the methods and tools used to develop them.',
+    '1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.',
   url: 'https://1devteam.com',
   title: '1DevTeam · Software development and applied R&D',
   email: 'hello@1devteam.com',
@@ -57,26 +57,41 @@ export const footerLinks = {
 } as const
 
 export const proofPoints = [
-  { title: 'Problem first', description: 'The problem determines the technology and form of the solution.' },
-  { title: 'Whole-system reasoning', description: 'Architecture, dependencies, state, authority, failure paths, and downstream effects matter.' },
-  { title: 'Evidence over assumption', description: 'Read, test, verify, and preserve uncertainty rather than manufacturing confidence.' },
-  { title: 'Build, inspect, improve', description: 'Useful discoveries become better software, methods, and development tools.' },
+  {
+    title: 'Problem first',
+    description: 'Implementation follows the structure of the actual problem rather than a predetermined technology category.',
+  },
+  {
+    title: 'Whole-system reasoning',
+    description: 'Architecture, dependencies, state, authority, data, runtime behavior, failure paths, and downstream effects are part of the change surface.',
+  },
+  {
+    title: 'Evidence before assumption',
+    description: 'Repository state, tests, runtime behavior, architecture, and explicit proof take precedence over plausible interpretation.',
+  },
+  {
+    title: 'Completion includes verification',
+    description: 'Implementation, testing, failure-path analysis, documentation, and review are parts of the same engineering task.',
+  },
 ] as const
 
 export const buildAreas = [
   {
-    title: 'Custom software & systems',
-    description: 'Architecture, implementation, integration, remediation, and expansion where the surrounding system matters as much as the local feature.',
+    title: 'Software & systems',
+    description:
+      'Architecture, implementation, integration, and remediation for software where the surrounding system matters as much as the individual feature.',
     href: '/services',
   },
   {
     title: 'Products',
-    description: 'Reusable software developed when a problem and its solution justify becoming a product. Ajenda AI is the current flagship.',
+    description:
+      'Software developed around problems with sufficient scope, repeatability, and technical value to justify becoming reusable systems.',
     href: '/products',
   },
   {
-    title: 'Applied R&D & development tooling',
-    description: 'When development exposes a deeper recurring problem, we investigate it and build methods or tools that can be reused in real work.',
+    title: 'Applied R&D',
+    description:
+      'Structured investigation into recurring software-development problems, including the methods and tooling required to reason about increasingly complex systems.',
     href: '/research',
   },
 ] as const
@@ -96,8 +111,9 @@ export const workItems: readonly WorkItem[] = [
   {
     slug: 'ajenda-ai',
     title: 'Ajenda AI',
-    type: 'Flagship product',
-    summary: 'An actively developed execution system for turning goals into structured missions, plans, tasks, and controlled work. The product architecture emphasizes durable state, explicit authority, recovery, review, and traceable execution.',
+    type: 'Product',
+    summary:
+      'Actively developed execution software for missions, planning, state, authority, review, recovery, and controlled actions.',
     tags: ['Product', 'Software', 'Governed execution'],
     status: 'Private development — locally operational',
     date: '2026-07-31',
@@ -107,23 +123,35 @@ export const workItems: readonly WorkItem[] = [
     slug: 'snapshot',
     title: 'Snapshot',
     type: 'Development tool',
-    summary: 'A project-context transfer system designed to move a language model from zero prior project knowledge toward comprehensive working context. Snapshot v10 remains usable in Ajenda development.',
-    tags: ['Human + AI', 'Context transfer', 'Developer tooling'],
+    summary:
+      'Project-context transfer tooling for packaging repository state and software context for AI-assisted development. Snapshot v10 remains usable in Ajenda development.',
+    tags: ['AI-assisted development', 'Context transfer', 'Developer tooling'],
     status: 'Used in practice',
   },
   {
     slug: 'architectural-graph',
     title: 'Ajenda Architectural Graph',
     type: 'Development / CI system',
-    summary: 'A persistent machine-readable architecture model used for dependencies, ownership, invariants, blast radius, proof selection, completeness auditing, and selective function-level diagnosis.',
+    summary:
+      'Machine-readable architecture used for dependency reasoning, decision ownership, change impact, proof selection, completeness auditing, and selected function-level analysis.',
     tags: ['Architecture', 'Graph', 'Proof'],
     status: 'Active development tooling',
+  },
+  {
+    slug: 'pride-protocol',
+    title: 'PRIDE Protocol',
+    type: 'Development methodology',
+    summary:
+      'Process discipline for maintaining sufficient context, correct implementation scope, testing, verification, documentation, and review during AI-assisted engineering.',
+    tags: ['Method', 'AI-assisted development', 'Verification'],
+    status: 'Used in practice',
   },
   {
     slug: 'omnipath-original-evolved',
     title: 'OmniPath Original — Evolved Lineage',
     type: 'Recovered research system',
-    summary: 'A recovered OmniPath lineage preserved as inspectable research. It is not represented as production-ready.',
+    summary:
+      'A recovered OmniPath lineage preserved as inspectable research. It is not represented as production-ready.',
     tags: ['Recovery', 'Orchestration', 'Research'],
     status: 'Private recovery baseline',
   },
@@ -131,46 +159,94 @@ export const workItems: readonly WorkItem[] = [
 
 export const services = [
   {
-    title: 'Custom software & systems development',
-    description: 'Architecture, implementation, integration, and expansion of software built around explicit requirements and real operating constraints.',
+    title: 'Custom software & systems',
+    description:
+      'Architecture and implementation of software systems from initial requirements through working application behavior, including APIs, persistence, interfaces, integrations, automation, access boundaries, system state, and operational behavior where required.',
     outcomes: ['System-aware implementation', 'Explicit ownership and boundaries', 'Verification against real behavior'],
   },
   {
     title: 'Product & SaaS development',
-    description: 'From an initial problem and system design through working product surfaces, backend architecture, persistence, integrations, and operational foundations.',
+    description:
+      'Design and implementation of software products requiring coordinated frontend, backend, persistence, authentication, integrations, state management, and product-level architecture.',
     outcomes: ['Working product architecture', 'Inspectable technical decisions', 'A maintainable path forward'],
   },
   {
     title: 'Existing-system analysis & remediation',
-    description: 'Work on systems where the visible defect may cross module, state, authority, data, or runtime boundaries and requires more than a local patch.',
+    description:
+      'Investigation and correction of defects whose actual cause crosses the apparent location of the failure, including dependency, state, contract, runtime, concurrency, data, authority, or invariant boundaries.',
     outcomes: ['Root-cause analysis', 'Architectural repair scope', 'Regression and downstream proof'],
   },
   {
-    title: 'AI-enabled systems & governance',
-    description: 'AI where it materially improves the system, with explicit boundaries, evaluation, human control, failure handling, and authority appropriate to the use case.',
+    title: 'AI-enabled systems',
+    description:
+      'Integration of AI where model reasoning materially improves the software system or development process, with explicit treatment of context, tool authority, evaluation, human control, persistence, failure handling, and auditability.',
     outcomes: ['Defined capability boundaries', 'Human control where required', 'Evidence-based evaluation'],
   },
 ] as const
 
 export const methodSteps = [
-  { step: '01', title: 'Understand the problem', description: 'Read the relevant system completely enough to identify what is actually failing, what owns the behavior, and what information is still missing.' },
-  { step: '02', title: 'Map the system', description: 'Identify dependencies, contracts, state, authority, boundaries, failure paths, and downstream effects before deciding where the work belongs.' },
-  { step: '03', title: 'Build systematically', description: 'Implement the complete solution at the correct ownership layer rather than accumulating local patches around the visible symptom.' },
-  { step: '04', title: 'Prove and learn', description: 'Test affected behavior, verify surrounding invariants and downstream effects, document what changed, and use the result to improve the next development cycle.' },
+  {
+    step: '01',
+    title: 'Understand the system',
+    description:
+      'Establish the relevant code, contracts, runtime behavior, state, dependencies, and unresolved information before selecting a solution.',
+  },
+  {
+    step: '02',
+    title: 'Map the change',
+    description:
+      'Determine ownership, architectural blast radius, affected invariants, failure paths, downstream consequences, and required proof.',
+  },
+  {
+    step: '03',
+    title: 'Implement at the correct layer',
+    description:
+      'Modify the component that owns the behavior rather than accumulating compensating logic around the visible symptom.',
+  },
+  {
+    step: '04',
+    title: 'Verify the system',
+    description:
+      'Test the direct change, affected boundaries, regression surface, edge cases, relevant invariants, and downstream behavior.',
+  },
 ] as const
 
 export const insights = [
-  { slug: 'from-goals-to-execution', title: 'From goals to execution: why chat is not a system', excerpt: 'Conversation can help reason about work. Durable execution requires state, ownership, authority, recovery, and proof.', date: '2026-06-12', category: 'Product', readTime: '6 min' },
-  { slug: 'calibrating-ai-trust', title: 'Calibrating AI trust instead of claiming it', excerpt: 'Controls, evidence, failure boundaries, and uncertainty matter more than confidence language.', date: '2026-05-28', category: 'Governance', readTime: '8 min' },
-  { slug: 'build-journals-over-case-study-theater', title: 'Technical evidence before polished stories', excerpt: 'Architecture notes, development artifacts, and milestone records can show what actually exists without pretending maturity that is not there.', date: '2026-05-04', category: 'Method', readTime: '5 min' },
+  {
+    slug: 'from-goals-to-execution',
+    title: 'From goals to execution',
+    excerpt:
+      'Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.',
+    date: '2026-06-12',
+    category: 'Product',
+    readTime: '6 min',
+  },
+  {
+    slug: 'calibrating-ai-trust',
+    title: 'Calibrating AI trust',
+    excerpt:
+      'Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.',
+    date: '2026-05-28',
+    category: 'Governance',
+    readTime: '8 min',
+  },
+  {
+    slug: 'build-journals-over-case-study-theater',
+    title: 'Architectural scope and corrective repair',
+    excerpt:
+      'How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.',
+    date: '2026-05-04',
+    category: 'Architecture',
+    readTime: '5 min',
+  },
 ] as const
 
 export const projectInterests = [
-  'Ajenda AI / product inquiry',
   'Custom software or system',
   'Product / SaaS development',
   'Existing-system analysis or remediation',
-  'AI-enabled system / governance',
-  'Research or development tooling',
-  'Something else',
+  'AI-enabled system',
+  'Applied R&D or development tooling',
+  'Ajenda AI',
+  'Other',
 ] as const
