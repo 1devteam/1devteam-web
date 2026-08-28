@@ -58,77 +58,85 @@ export function MethodPage() {
       </PageHero>
 
       <section className="section-pad">
-        <div className="container-site">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Development cycle</p>
-          <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {prideSteps.map((step) => (
-              <article key={step.step} className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 shadow-sm">
-                <p className="text-sm font-semibold text-[var(--brand)]">{step.step}</p>
-                <h2 className="mt-2 text-xl font-semibold tracking-tight">{step.title}</h2>
-                <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">{step.description}</p>
-              </article>
-            ))}
+        <div className="container-site grid gap-12 lg:grid-cols-[0.34fr_0.66fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Development cycle</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">A stable process for changing complex software</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              The seven stages are not presentation labels. They describe the sequence used to keep implementation attached to sufficient reading, architectural ownership, proof, and review.
+            </p>
           </div>
+
+          <ol className="max-w-4xl">
+            {prideSteps.map((step) => (
+              <li key={step.step} className="grid gap-3 border-t border-[var(--border)] py-6 md:grid-cols-[0.12fr_0.3fr_0.58fr]">
+                <span className="font-mono text-sm font-semibold text-[var(--brand)]">{step.step}</span>
+                <h3 className="text-xl font-semibold tracking-tight">{step.title}</h3>
+                <p className="text-base leading-relaxed text-[var(--text-muted)]">{step.description}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
-        <div className="container-site grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.34fr_0.66fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">PRIDE Protocol</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight">Proper actions as a development standard</h2>
             <p className="mt-4 font-mono text-sm font-semibold text-[var(--text)]">PRIDE = Proper Actions ÷ Total Actions</p>
             <p className="mt-2 text-sm font-medium text-[var(--text-subtle)]">Target: 95% or greater proper actions</p>
           </div>
-          <div className="space-y-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+
+          <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
             <p>
               PRIDE formalizes the development requirements above as a measurable discipline. The protocol was developed after repeated AI-assisted development sessions showed a recurring process failure: a model could generate a plausible implementation before reading enough of the system to establish whether that implementation belonged at the correct architectural layer.
             </p>
             <p>
-              PRIDE changes the optimization target from rapid apparent completion to correct engineering process.
+              The protocol changes the optimization target from rapid apparent completion to correct engineering process. Proper actions include complete reading, full error and trace inspection, searching all relevant instances, implementing complete solutions rather than patches, following established practices, investigating instead of assuming, and considering system-wide dependencies and downstream effects.
             </p>
-            <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-5 font-medium text-[var(--text)]">
-              Acknowledge the drop → identify the missed proper action → redo the work correctly → incorporate the result into the next cycle.
-            </div>
+            <p>
+              When the process falls below the standard, the recovery sequence is explicit: <strong className="text-[var(--text)]">Acknowledge → identify the missed proper action → redo the work correctly → incorporate the result into the next cycle.</strong>
+            </p>
+            <a href="/#pride-protocol" className="inline-block text-sm font-semibold text-[var(--brand)] hover:underline">View the preserved PRIDE working artifact →</a>
           </div>
         </div>
       </section>
 
       <section className="section-pad border-t border-[var(--border)]">
-        <div className="container-site grid gap-10 lg:grid-cols-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Snapshot</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Project-context transfer</h2>
-            <div className="mt-4 space-y-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              <p>
-                Large software repositories present a separate problem: transferring enough project state into a new model context to support accurate work without repeatedly reconstructing the repository from zero.
-              </p>
-              <p>
-                Snapshot addresses that problem by producing a structured representation of project state. Depending on the project, that representation can include Git state, file inventory, hashes, routes, imports and dependencies, tests, parse results, environment and configuration structure, and related repository context.
-              </p>
-              <p>
-                Snapshot does not replace repository inspection or architectural reasoning. It reduces the amount of project state that must be rediscovered before those activities can begin.
-              </p>
-            </div>
+        <div className="container-site max-w-5xl">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Context transfer</p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight">PRIDE improved the process. Snapshot addressed what the model knew.</h2>
+          <div className="mt-6 max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p>
+              Large software repositories present a separate problem from development discipline: transferring enough project state into a new model context to support accurate work without repeatedly reconstructing the repository from zero.
+            </p>
+            <p>
+              Snapshot addresses that problem by producing a structured representation of project state. Depending on the project, that representation can include Git state, file inventory, hashes, routes, imports and dependencies, tests, parse results, environment and configuration structure, documentation summaries, CI/CD information, and related repository context.
+            </p>
+            <p>
+              Snapshot does not replace repository inspection or architectural reasoning. It reduces the amount of project state that must be rediscovered before those activities can begin.
+            </p>
+            <a href="/#snapshot" className="inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect the Snapshot execution and public-safe JSON excerpt →</a>
           </div>
+        </div>
+      </section>
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Architectural Graph</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Persistent architecture and proof</h2>
-            <div className="mt-4 space-y-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              <p>
-                Snapshot improves project context. It does not, by itself, encode every architectural relationship required for change reasoning. The Ajenda Architectural Graph addresses that next layer.
-              </p>
-              <p>
-                The graph represents software entities and relationships such as modules, selected functions, file ownership, call relationships, tests, architecture roles, semantic boundaries, and selected invariants.
-              </p>
-              <p>
-                Its current development workflow supports dependency analysis, change-impact analysis, blast-radius identification, graph-selected proof, selective CI reasoning, completeness auditing, architecture decision composition, and selected function-level diagnosis.
-              </p>
-              <p>
-                The graph is an active Ajenda development and CI capability. It is not represented as customer-facing runtime functionality.
-              </p>
-            </div>
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
+        <div className="container-site max-w-5xl">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Persistent architecture</p>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight">Snapshot increased project context. The graph externalized architectural structure.</h2>
+          <div className="mt-6 max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p>
+              Project context and architectural meaning are not equivalent. A model can know that files, routes, tests, imports, and configuration exist while still having to reconstruct which component owns a decision, which invariant governs a change, what depends on that change, and what proof is required outside the immediate file.
+            </p>
+            <p>
+              The Ajenda Architectural Graph addresses that layer by representing software entities and relationships such as modules, selected functions, file ownership, call relationships, tests, architecture roles, semantic boundaries, and selected invariants in persistent machine-readable form.
+            </p>
+            <p>
+              Its current development workflow supports dependency analysis, change-impact analysis, blast-radius identification, graph-selected proof, selective CI reasoning, completeness auditing, architecture decision composition, and selected function-level diagnosis. The graph is an active Ajenda development and CI capability. It is not represented as customer-facing runtime functionality.
+            </p>
+            <a href="/#architecture-graph" className="inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect the canonical interactive Architectural Graph →</a>
           </div>
         </div>
       </section>
@@ -136,13 +144,13 @@ export function MethodPage() {
       <section className="border-t border-[var(--border)] bg-[var(--navy-950)] py-12 text-white">
         <div className="container-site">
           <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Relationship between the three systems</p>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="mt-5 grid gap-5 md:grid-cols-3">
             <p className="text-lg font-semibold leading-relaxed">PRIDE defines how the work should be performed.</p>
             <p className="text-lg font-semibold leading-relaxed">Snapshot increases the project context available to the model.</p>
             <p className="text-lg font-semibold leading-relaxed">The Architectural Graph externalizes system structure for architecture-aware reasoning and proof.</p>
           </div>
           <p className="mt-6 max-w-4xl text-base leading-relaxed text-slate-300">
-            Each addresses a different source of error in AI-assisted software development.
+            Each addresses a different source of error in AI-assisted software development. None substitutes for the others, and none is treated as a complete solution to software-development quality on its own.
           </p>
         </div>
       </section>
