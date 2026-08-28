@@ -9,11 +9,15 @@ import { CheckCircle2 } from 'lucide-react'
 export function ServicesPage() {
   return (
     <>
-      <Seo title="Services" description="Software and systems development from 1DevTeam: custom software, product development, existing-system remediation, and AI-enabled systems." path="/services" />
+      <Seo
+        title="Services"
+        description="Software and systems development from 1DevTeam across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software."
+        path="/services"
+      />
       <PageHero
-        eyebrow="Services"
+        eyebrow="Software Development"
         title="Software and systems development for difficult problems"
-        description="1DevTeam takes on scoped development work where the surrounding system matters: new products, existing architectures, integrations, automation, reliability problems, and AI-enabled workflows."
+        description="1DevTeam provides development work across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software. Work is scoped around the actual system boundary rather than forcing the problem into a predefined service category."
       >
         <Button asChild><Link to="/contact">Discuss a project</Link></Button>
       </PageHero>
@@ -22,7 +26,9 @@ export function ServicesPage() {
         <div className="container-site grid gap-6 md:grid-cols-2">
           {services.map((service) => (
             <Card key={service.title} className="h-full">
-              <CardHeader><CardTitle className="text-xl">{service.title}</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-xl">{service.title}</CardTitle>
+              </CardHeader>
               <CardContent>
                 <p className="text-base leading-relaxed text-[var(--text-muted)]">{service.description}</p>
                 <ul className="mt-5 space-y-2">
@@ -41,13 +47,13 @@ export function ServicesPage() {
 
       <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
         <div className="container-site max-w-3xl">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How work starts</h2>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How work begins</h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-            We establish what the system needs to do, what already exists, what constraints matter, and where the actual ownership boundary sits before choosing the implementation path.
+            A development engagement begins by establishing the current system state, required behavior, architectural constraints, available evidence, and ownership boundary of the requested change. Implementation begins after those conditions are sufficiently understood to define the correct scope of work.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild><Link to="/contact">Start a conversation</Link></Button>
-            <Button asChild variant="outline"><Link to="/method">See the method</Link></Button>
+            <Button asChild><Link to="/contact">Discuss a project</Link></Button>
+            <Button asChild variant="outline"><Link to="/method">Development method</Link></Button>
           </div>
         </div>
       </section>
