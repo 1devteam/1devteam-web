@@ -40,7 +40,11 @@ export function Footer() {
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => <li key={link.href}><Link to={link.href} className="text-sm text-slate-300 hover:text-white">{link.label}</Link></li>)}
             </ul>
-            <p className="mt-4 text-sm text-slate-400"><a href={`mailto:${siteConfig.email}`} className="hover:text-white">{siteConfig.email}</a></p>
+            <div className="mt-4 space-y-1 text-sm text-slate-400">
+              <p>{siteConfig.legalName}</p>
+              <p>General <a href={`mailto:${siteConfig.email}`} className="hover:text-white">{siteConfig.email}</a></p>
+              <p>Privacy <a href={`mailto:${siteConfig.privacyEmail}`} className="hover:text-white">{siteConfig.privacyEmail}</a></p>
+            </div>
           </div>
         </div>
 
