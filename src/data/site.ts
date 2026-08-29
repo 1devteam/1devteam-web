@@ -1,12 +1,13 @@
 export const siteConfig = {
-  name: '1devteam',
-  legalName: '1DevTeam L.L.C.',
-  tagline: 'We build AI systems that move businesses from goals to execution.',
+  name: '1DevTeam',
+  legalName: '1devteam L.L.C.',
+  tagline: 'We build software — and better ways to build software.',
   description:
-    '1devteam is an AI product studio and systems builder. We design and ship governed AI systems, SaaS tools, and operational software — with Ajenda AI as our flagship product.',
+    '1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.',
   url: 'https://1devteam.com',
-  title: '1devteam · Governed AI systems',
+  title: '1DevTeam · Software development and applied R&D',
   email: 'hello@1devteam.com',
+  privacyEmail: 'hello@1devteam.com',
   productEmail: 'ajenda-ai@1devteam.com',
   ogImage: '/og.png',
   brand: {
@@ -23,27 +24,24 @@ export const siteConfig = {
 } as const
 
 export function inboxForInterest(interest: string) {
-  return interest.startsWith('Ajenda')
-    ? siteConfig.productEmail
-    : siteConfig.email
+  return interest.startsWith('Ajenda') ? siteConfig.productEmail : siteConfig.email
 }
 
 export const navLinks = [
   { label: 'Work', href: '/work' },
-  { label: 'Services', href: '/services' },
-  { label: 'Enterprise', href: '/enterprise' },
+  { label: 'Wiki', href: '/wiki' },
   { label: 'Products', href: '/products' },
+  { label: 'Services', href: '/services' },
   { label: 'Method', href: '/method' },
-  { label: 'Insights', href: '/insights' },
   { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
 ] as const
 
 export const footerLinks = {
   company: [
     { label: 'About', href: '/about' },
     { label: 'Work', href: '/work' },
-    { label: 'Insights', href: '/insights' },
+    { label: 'Technical Wiki', href: '/wiki' },
+    { label: 'Research & Development', href: '/research' },
     { label: 'Contact', href: '/contact' },
   ],
   offerings: [
@@ -63,41 +61,41 @@ export const footerLinks = {
 
 export const proofPoints = [
   {
-    title: 'Governed AI execution',
-    description: 'Human oversight, audit trails, and control planes — not unbounded agents.',
+    title: 'Problem first',
+    description: 'Implementation follows the structure of the actual problem rather than a predetermined technology category.',
   },
   {
-    title: 'Production-minded engineering',
-    description: 'Real integrations, deployable systems, and measurable outcomes.',
+    title: 'Whole-system reasoning',
+    description: 'Architecture, dependencies, state, authority, data, runtime behavior, failure paths, and downstream effects are part of the change surface.',
   },
   {
-    title: 'Flagship product: Ajenda AI',
-    description: 'From goals to execution — structured work, not another chat surface.',
+    title: 'Evidence before assumption',
+    description: 'Repository state, tests, runtime behavior, architecture, and explicit proof take precedence over plausible interpretation.',
   },
   {
-    title: 'Fast delivery stack',
-    description: 'Modern cloud, tight loops, and systems you can inspect and evolve.',
+    title: 'Completion includes verification',
+    description: 'Implementation, testing, failure-path analysis, documentation, and review are parts of the same engineering task.',
   },
 ] as const
 
 export const buildAreas = [
   {
-    title: 'AI systems',
+    title: 'Software & systems',
     description:
-      'Agent workflows, retrieval, evaluation, and control layers designed for real operations — not demos.',
+      'Architecture, implementation, integration, and remediation for software where the surrounding system matters as much as the individual feature.',
     href: '/services',
   },
   {
-    title: 'SaaS products',
+    title: 'Products',
     description:
-      'Productized tools with clear UX, durable architecture, and a path from MVP to multi-tenant scale.',
+      'Software developed around problems with sufficient scope, repeatability, and technical value to justify becoming reusable systems.',
     href: '/products',
   },
   {
-    title: 'Operations infrastructure',
+    title: 'Applied R&D',
     description:
-      'Internal tools, automation, and business systems that connect strategy to day-to-day execution.',
-    href: '/services',
+      'Structured investigation into recurring software-development problems, including the methods and tooling required to reason about increasingly complex systems.',
+    href: '/research',
   },
 ] as const
 
@@ -116,148 +114,142 @@ export const workItems: readonly WorkItem[] = [
   {
     slug: 'ajenda-ai',
     title: 'Ajenda AI',
-    type: 'Flagship product',
+    type: 'Product',
     summary:
-      'A governed execution system that turns goals into structured plans, tasks, and accountable progress — not open-ended chat. The command center below is from the local build, not a concept mock.',
-    tags: ['Product', 'AI systems', 'Governance'],
+      'Actively developed execution software for missions, planning, state, authority, review, recovery, and controlled actions.',
+    tags: ['Product', 'Software', 'Governed execution'],
     status: 'Private development — locally operational',
     date: '2026-07-31',
     href: '/products/ajenda',
+  },
+  {
+    slug: 'snapshot',
+    title: 'Snapshot',
+    type: 'Development tool',
+    summary:
+      'Project-context transfer tooling for packaging repository state and software context for AI-assisted development. Snapshot v10 remains usable in Ajenda development.',
+    tags: ['AI-assisted development', 'Context transfer', 'Developer tooling'],
+    status: 'Used in practice',
+  },
+  {
+    slug: 'architectural-graph',
+    title: 'Ajenda Architectural Graph',
+    type: 'Development / CI system',
+    summary:
+      'Machine-readable architecture used for dependency reasoning, decision ownership, change impact, proof selection, completeness auditing, and selected function-level analysis.',
+    tags: ['Architecture', 'Graph', 'Proof'],
+    status: 'Active development tooling',
+  },
+  {
+    slug: 'pride-protocol',
+    title: 'PRIDE Protocol',
+    type: 'Development methodology',
+    summary:
+      'Process discipline for maintaining sufficient context, correct implementation scope, testing, verification, documentation, and review during AI-assisted engineering.',
+    tags: ['Method', 'AI-assisted development', 'Verification'],
+    status: 'Used in practice',
   },
   {
     slug: 'omnipath-original-evolved',
     title: 'OmniPath Original — Evolved Lineage',
     type: 'Recovered research system',
     summary:
-      'A recovered OmniPath lineage containing Trace Nine, a fork fleet, doctrine and memory cores, APIs, and multiple interfaces. Preserved as inspectable research; it is not represented as production-ready.',
+      'A recovered OmniPath lineage preserved as inspectable research. It is not represented as production-ready.',
     tags: ['Recovery', 'Orchestration', 'Research'],
     status: 'Private recovery baseline',
-  },
-  {
-    slug: 'omnipath-v2',
-    title: 'OmniPath v2',
-    type: 'Public governance layer',
-    summary:
-      'An inspectable governance-oriented OmniPath generation. Public source does not imply hosted-service availability or production support.',
-    tags: ['Governance', 'AI systems'],
-    status: 'Public repository',
-  },
-  {
-    slug: 'sweepstacx',
-    title: 'SweepstacX',
-    type: 'Public software project',
-    summary:
-      'An earlier software system retained publicly for inspection. Its current repository state should be evaluated before operational use.',
-    tags: ['Software', 'Archive', 'Engineering'],
-    status: 'Public — maturity under review',
   },
 ] as const
 
 export const services = [
   {
-    title: 'AI systems design & build',
+    title: 'Custom software & systems',
     description:
-      'End-to-end design of governed AI systems: problem framing, architecture, implementation, evaluation, and rollout.',
-    outcomes: [
-      'Clear system boundaries and ownership',
-      'Human oversight where risk demands it',
-      'Production-ready integrations',
-    ],
+      'Architecture and implementation of software systems from initial requirements through working application behavior, including APIs, persistence, interfaces, integrations, automation, access boundaries, system state, and operational behavior where required.',
+    outcomes: ['System-aware implementation', 'Explicit ownership and boundaries', 'Verification against real behavior'],
   },
   {
-    title: 'SaaS product development',
+    title: 'Product & SaaS development',
     description:
-      'From concept to shippable product: UX, backend, billing-ready foundations, and iteration loops grounded in user evidence.',
-    outcomes: [
-      'MVP with a real path to scale',
-      'Inspectable technical decisions',
-      'Product surface your team can own',
-    ],
+      'Design and implementation of software products requiring coordinated frontend, backend, persistence, authentication, integrations, state management, and product-level architecture.',
+    outcomes: ['Working product architecture', 'Inspectable technical decisions', 'A maintainable path forward'],
   },
   {
-    title: 'Operations & automation systems',
+    title: 'Existing-system analysis & remediation',
     description:
-      'Business process systems that reduce manual drag without hiding risk — dashboards, workflows, and internal tools that fit how teams actually work.',
-    outcomes: [
-      'Fewer handoff failures',
-      'Visible process health',
-      'Automation with accountability',
-    ],
+      'Investigation and correction of defects whose actual cause crosses the apparent location of the failure, including dependency, state, contract, runtime, concurrency, data, authority, or invariant boundaries.',
+    outcomes: ['Root-cause analysis', 'Architectural repair scope', 'Regression and downstream proof'],
   },
   {
-    title: 'AI governance & readiness',
+    title: 'AI-enabled systems',
     description:
-      'Controls, policies, evaluation, and operating models so AI can be used seriously — not as a black box experiment.',
-    outcomes: [
-      'Trust and risk calibration',
-      'Documented control plane',
-      'Team readiness for production AI',
-    ],
+      'Integration of AI where model reasoning materially improves the software system or development process, with explicit treatment of context, tool authority, evaluation, human control, persistence, failure handling, and auditability.',
+    outcomes: ['Defined capability boundaries', 'Human control where required', 'Evidence-based evaluation'],
   },
 ] as const
 
 export const methodSteps = [
   {
     step: '01',
-    title: 'Frame the outcome',
+    title: 'Understand the system',
     description:
-      'We start with business goals, constraints, and decision rights — not model shopping. Success is defined before architecture is chosen.',
+      'Establish the relevant code, contracts, runtime behavior, state, dependencies, and unresolved information before selecting a solution.',
   },
   {
     step: '02',
-    title: 'Design the system',
+    title: 'Map the change',
     description:
-      'Data, workflows, interfaces, and control surfaces. We map where AI helps, where humans stay in the loop, and what must be auditable.',
+      'Determine ownership, architectural blast radius, affected invariants, failure paths, downstream consequences, and required proof.',
   },
   {
     step: '03',
-    title: 'Build with evidence',
+    title: 'Implement at the correct layer',
     description:
-      'Short delivery loops with inspectable progress: prototypes, evaluation sets, integration checkpoints, and production readiness criteria.',
+      'Modify the component that owns the behavior rather than accumulating compensating logic around the visible symptom.',
   },
   {
     step: '04',
-    title: 'Govern and operate',
+    title: 'Verify the system',
     description:
-      'Ship with monitoring, review paths, failure handling, and ownership. Systems that work on day one and remain trustworthy on day one hundred.',
+      'Test the direct change, affected boundaries, regression surface, edge cases, relevant invariants, and downstream behavior.',
   },
 ] as const
 
 export const insights = [
   {
     slug: 'from-goals-to-execution',
-    title: 'From goals to execution: why chat is not a system',
+    title: 'From goals to execution',
     excerpt:
-      'Most AI tools stop at conversation. Real business value starts when plans, ownership, and feedback loops become durable.',
+      'Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.',
     date: '2026-06-12',
     category: 'Product',
     readTime: '6 min',
   },
   {
     slug: 'calibrating-ai-trust',
-    title: 'Calibrating AI trust instead of claiming it',
+    title: 'Calibrating AI trust',
     excerpt:
-      'Buyers do not need more “trust us” language. They need controls, evidence, and the ability to see where the system can fail.',
+      'Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.',
     date: '2026-05-28',
     category: 'Governance',
     readTime: '8 min',
   },
   {
     slug: 'build-journals-over-case-study-theater',
-    title: 'Build journals beat case-study theater',
+    title: 'Architectural scope and corrective repair',
     excerpt:
-      'When polished customer stories are not ready, architecture notes and milestone updates still create inspectable proof.',
+      'How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.',
     date: '2026-05-04',
-    category: 'Method',
+    category: 'Architecture',
     readTime: '5 min',
   },
 ] as const
 
 export const projectInterests = [
-  'Ajenda AI / product inquiry',
-  'Custom AI system',
-  'SaaS product build',
-  'Operations automation',
-  'Governance / readiness',
-  'Something else',
+  'Custom software or system',
+  'Product / SaaS development',
+  'Existing-system analysis or remediation',
+  'AI-enabled system',
+  'Applied R&D or development tooling',
+  'Ajenda AI',
+  'Other',
 ] as const

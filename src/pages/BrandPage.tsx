@@ -27,10 +27,7 @@ function Swatch({ name, hex }: { name: string; hex: string }) {
     <div>
       <div
         className="h-16 rounded-[var(--radius-sm)] border"
-        style={{
-          background: hex,
-          borderColor: border ? 'var(--border)' : hex,
-        }}
+        style={{ background: hex, borderColor: border ? 'var(--border)' : hex }}
       />
       <p className="mt-2 text-sm font-medium">{name}</p>
       <p className="font-mono text-xs text-[var(--text-muted)]">{hex}</p>
@@ -43,70 +40,52 @@ export function BrandPage() {
     <>
       <Seo
         title="Brand schema"
-        description="Official 1devteam and Ajenda AI brand systems — marks, color, type, and usage."
+        description="Approved 1DevTeam and Ajenda AI brand assets, naming conventions, colors, and usage guidance."
         path="/brand"
         robots="noindex, follow"
       />
       <PageHero
         eyebrow="Brand"
-        title="Two systems, one company"
-        description="1devteam is the studio. Ajenda AI is the product. They share a family but they are not the same identity."
+        title="1DevTeam brand assets"
+        description="This page provides approved 1DevTeam and Ajenda brand assets, naming conventions, and usage guidance. Brand assets should be reproduced from approved source material without modifying proportions, typography, marks, or intended color relationships."
       />
 
       <section className="section-pad">
         <div className="container-site space-y-16">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">
-              Company · 1devteam
-            </p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Studio system</h2>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Company · 1DevTeam</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Company identity</h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-muted)]">
-              Vectorized from the 9 July 2026 company kit. Tagline stays{' '}
-              <span className="font-medium text-[var(--text)]">
-                Building Intelligent Solutions
-              </span>
-              . Line mark on banners is <span className="font-medium text-[var(--text)]">P2iE</span>.
+              <strong className="text-[var(--text)]">Company name:</strong> 1DevTeam<br />
+              <strong className="text-[var(--text)]">Legal entity:</strong> {siteConfig.legalName}<br />
+              <strong className="text-[var(--text)]">Brand-board line:</strong> Building Intelligent Solutions
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">
-                <img src="/brand/1devteam-mark-dark.svg" alt="1D mark" className="h-16 w-auto" />
-                <p className="mt-4 text-sm text-[var(--text-muted)]">1D mark · light field</p>
+                <img src="/brand/1devteam-mark-dark.svg" alt="1DevTeam mark" className="h-16 w-auto" />
+                <p className="mt-4 text-sm text-[var(--text-muted)]">Company mark · light field</p>
               </div>
               <div className="rounded-[var(--radius-md)] bg-[var(--navy-950)] p-6">
-                <img src="/brand/1devteam-logo-light.svg" alt="1devteam logo" className="h-12 w-auto" />
+                <img src="/brand/1devteam-logo-light.svg" alt="1DevTeam logo" className="h-12 w-auto" />
                 <p className="mt-4 text-sm text-slate-300">Horizontal lockup · dark field</p>
               </div>
               <div className="rounded-[var(--radius-md)] bg-[var(--navy-950)] p-6">
-                <img src="/brand/1devteam-profile.svg" alt="1devteam profile" className="h-28 w-28" />
-                <p className="mt-4 text-sm text-slate-300">Profile 1:1 · 400×400</p>
+                <img src="/brand/1devteam-profile.svg" alt="1DevTeam profile mark" className="h-28 w-28" />
+                <p className="mt-4 text-sm text-slate-300">Profile asset · 1:1</p>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-              {companyColors.map((c) => (
-                <Swatch key={c.hex} {...c} />
-              ))}
+              {companyColors.map((c) => <Swatch key={c.hex} {...c} />)}
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#2563FF]">
-              Product · Ajenda AI
-            </p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Product system</h2>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#2563FF]">Product · Ajenda AI</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Product identity</h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-muted)]">
-              From the Ajenda brand board. Forward-moving <span className="font-medium text-[var(--text)]">a</span> mark
-              (direction, alignment, clarity). Wordmark is lowercase{' '}
-              <span className="font-medium text-[var(--text)]">ajenda-ai</span>. Typeface:{' '}
-              <span className="font-medium text-[var(--text)]">Outfit</span> for brand, Inter for UI.
-            </p>
-            <p
-              className="mt-4 max-w-xl text-lg font-medium"
-              style={{ fontFamily: 'Outfit, Inter, sans-serif' }}
-            >
-              The intelligent mission operating system that turns business intent into governed
-              action.
+              <strong className="text-[var(--text)]">Product:</strong> Ajenda AI. The Ajenda product identity uses its own approved mark, lowercase wordmark, product palette, and brand typography. It remains visually related to 1DevTeam without being treated as the company identity.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -127,36 +106,20 @@ export function BrandPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-              {ajendaColors.map((c) => (
-                <Swatch key={c.hex} {...c} />
-              ))}
+              {ajendaColors.map((c) => <Swatch key={c.hex} {...c} />)}
             </div>
           </div>
 
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
             <h2 className="text-xl font-semibold">Inboxes and domains</h2>
             <ul className="mt-4 space-y-2 text-base text-[var(--text-muted)]">
-              <li>
-                Studio:{' '}
-                <a className="text-[var(--brand)] hover:underline" href={`mailto:${siteConfig.email}`}>
-                  {siteConfig.email}
-                </a>
-              </li>
-              <li>
-                Ajenda:{' '}
-                <a
-                  className="text-[var(--brand)] hover:underline"
-                  href={`mailto:${siteConfig.productEmail}`}
-                >
-                  {siteConfig.productEmail}
-                </a>
-              </li>
+              <li>Company: <a className="text-[var(--brand)] hover:underline" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a></li>
+              <li>Ajenda: <a className="text-[var(--brand)] hover:underline" href={`mailto:${siteConfig.productEmail}`}>{siteConfig.productEmail}</a></li>
               <li>Company site: 1devteam.com</li>
               <li>Product site: ajenda-ai.com</li>
             </ul>
             <p className="mt-4 text-sm text-[var(--text-muted)]">
-              Do not put Ajenda crimson on 1devteam chrome. Do not put the 1D mark on Ajenda
-              product UI.
+              Company and product assets retain their respective marks and color systems. Do not substitute one identity for the other.
             </p>
           </div>
         </div>

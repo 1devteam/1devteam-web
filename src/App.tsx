@@ -16,6 +16,7 @@ import { ResearchPage } from '@/pages/ResearchPage'
 import { ServicesPage } from '@/pages/ServicesPage'
 import { TermsPage } from '@/pages/TermsPage'
 import { TrustPage } from '@/pages/TrustPage'
+import { WikiPage } from '@/pages/WikiPage'
 import { WorkPage } from '@/pages/WorkPage'
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="wiki" element={<WikiPage />} />
           <Route path="research" element={<ResearchPage />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="enterprise" element={<EnterprisePage />} />

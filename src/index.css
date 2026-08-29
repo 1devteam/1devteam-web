@@ -5,8 +5,8 @@
   --color-surface: #e8eef5;
   --color-surface-strong: #dce5ef;
   --color-text: #0a1120;
-  --color-text-muted: #243044;
-  --color-text-subtle: #3a4658;
+  --color-text-muted: #2b313b;
+  --color-text-subtle: #586273;
   --color-border: #c3cdd8;
   --color-border-control: #6f7c8c;
   --color-brand: #0047b3;
@@ -20,11 +20,9 @@
   --color-navy-950: #0a1120;
   --color-navy-900: #0a1120;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-brand: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono',
-    Menlo, monospace;
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -46,8 +44,8 @@
     --surface: #e8eef5;
     --surface-strong: #dce5ef;
     --text: #0a1120;
-    --text-muted: #243044;
-    --text-subtle: #3a4658;
+    --text-muted: #2b313b;
+    --text-subtle: #586273;
     --border: #c3cdd8;
     --border-control: #6f7c8c;
     --brand: #0047b3;
@@ -67,18 +65,11 @@
     --radius-lg: 18px;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -98,28 +89,17 @@
     text-rendering: optimizeLegibility;
   }
 
-  #root {
-    min-height: 100svh;
-  }
+  #root { min-height: 100svh; }
 
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
     color: var(--text);
     line-height: 1.2;
     letter-spacing: -0.02em;
     font-weight: 600;
   }
 
-  p {
-    margin: 0;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
 
   :focus-visible {
     outline: 3px solid var(--brand-bright);
@@ -140,31 +120,10 @@
     padding-inline: 1.25rem;
   }
 
-  @media (min-width: 768px) {
-    .container-site {
-      padding-inline: 1.5rem;
-    }
-  }
-
-  .prose-measure {
-    max-width: 65ch;
-  }
-
-  .reading-measure {
-    max-width: 64ch;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .section-pad {
-    padding-block: 4rem;
-  }
-
-  @media (min-width: 768px) {
-    .section-pad {
-      padding-block: 5.5rem;
-    }
-  }
+  @media (min-width: 768px) { .container-site { padding-inline: 1.5rem; } }
+  .prose-measure { max-width: 65ch; }
+  .reading-measure { max-width: 64ch; }
+  .text-balance { text-wrap: balance; }
+  .section-pad { padding-block: 4rem; }
+  @media (min-width: 768px) { .section-pad { padding-block: 5.5rem; } }
 }

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="1010" viewBox="0 0 680 1010" role="img" aria-labelledby="title desc">
+  <title id="title">PRIDE Protocol working formulation</title>
+  <desc id="desc">Vector transcription of the supplied PRIDE Protocol working artifact, preserving the original wording.</desc>
+  <rect width="680" height="1010" fill="#282828"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#ffffff">
+    <text x="20" y="30">PRIDE PROTOCOL</text>
+    <text x="20" y="72">PRIDE DEFINITION: total number of proper actions preformed in a process</text>
+    <text x="20" y="114">Pride = proper actions / total actions. Target: 95%+</text>
+    <text x="20" y="156">## PROPER ACTIONS</text>
+
+    <g font-size="16">
+      <g transform="translate(22 170)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="184">Read entire files before modifying</text>
+      <g transform="translate(22 192)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="206">Understand full error traces</text>
+      <g transform="translate(22 214)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="228">Search for ALL instances before fixing</text>
+      <g transform="translate(22 236)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="250">Write complete solutions, not patches</text>
+      <g transform="translate(22 258)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="272">Follow best practices always</text>
+      <g transform="translate(22 280)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="294">Ask instead of assume</text>
+      <g transform="translate(22 302)"><rect width="16" height="16" rx="1.5" fill="#46c987"/><path d="M3 8.5 6.3 12 13 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <text x="46" y="316">Think system-wide impact</text>
+    </g>
+
+    <text x="20" y="338">## IMPROPER ACTIONS</text>
+    <g font-size="16" stroke="#ff4f82" stroke-width="3" stroke-linecap="round">
+      <g transform="translate(24 348)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 370)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 392)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 414)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 436)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 458)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 480)"><path d="M0 0 13 13M13 0 0 13"/></g>
+      <g transform="translate(24 502)"><path d="M0 0 13 13M13 0 0 13"/></g>
+    </g>
+    <g font-size="16">
+      <text x="46" y="362">Skim files/errors</text>
+      <text x="46" y="384">Assume available information</text>
+      <text x="46" y="406">Fix one error without checking for others</text>
+      <text x="46" y="428">Push untested code</text>
+      <text x="46" y="450">Multiple patches vs complete fix</text>
+      <text x="46" y="472">Cut corners</text>
+      <text x="46" y="494">Guess instead of read</text>
+      <text x="46" y="516">Jump to solutions without understanding</text>
+    </g>
+
+    <text x="20" y="540">## WORKFLOW</text>
+    <g font-size="16">
+      <text x="20" y="562">1. Read completely</text>
+      <text x="20" y="584">2. Understand fully</text>
+      <text x="20" y="606">3. Plan properly</text>
+      <text x="20" y="628">4. Execute systematically</text>
+      <text x="20" y="650">5. Test thoroughly</text>
+      <text x="20" y="672">6. Document clearly</text>
+      <text x="20" y="694">7. Review honestly</text>
+    </g>
+
+    <text x="20" y="718">## STANDARDS</text>
+    <g font-size="16">
+      <text x="20" y="740">- Production-grade code only</text>
+      <text x="20" y="762">- Type hints, docstrings, tests</text>
+      <text x="20" y="784">- Security-first, performance-aware</text>
+      <text x="20" y="806">- Own quality - every line represents you and Obex</text>
+    </g>
+
+    <text x="20" y="830">## ACCOUNTABILITY</text>
+    <g font-size="16">
+      <text x="20" y="852">Before any action:</text>
+      <text x="20" y="874">- Read all relevant files completely?</text>
+      <text x="20" y="896">- Fully understand problem/context?</text>
+      <text x="20" y="918">- Planned complete solution?</text>
+      <text x="20" y="940">- Following best practices?</text>
+      <text x="20" y="962">- Works at scale?</text>
+      <text x="20" y="984">- Considered edge cases?</text>
+    </g>
+    <text x="20" y="1004" font-size="15">When pride drops: Acknowledge → Explain proper action → Redo properly → Learn</text>
+  </g>
+</svg>

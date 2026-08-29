@@ -8,11 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function formatDate(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(`${iso}T00:00:00Z`))
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${iso}T00:00:00Z`))
 }
 
 export function WorkPage() {
@@ -20,17 +16,15 @@ export function WorkPage() {
     <>
       <Seo
         title="Work"
-        description="Build journals, product notes, and systems evidence from 1devteam — inspectable proof of how we design and ship."
+        description="Software, tooling, architecture artifacts, and development evidence from 1DevTeam, presented according to the state supported by current evidence."
         path="/work"
       />
       <PageHero
-        eyebrow="Work"
-        title="Evidence of systems that ship"
-        description="We do not wait for polished case studies to show our work. Build journals, architecture notes, and product milestones create information scent technical buyers actually trust."
+        eyebrow="Technical Evidence"
+        title="Work, systems, and development artifacts"
+        description="This section presents software, tooling, architecture artifacts, and development evidence according to their current state. The objective is to make the underlying work inspectable without converting development artifacts into unsupported maturity claims."
       >
-        <Button asChild>
-          <Link to="/contact">Discuss a project</Link>
-        </Button>
+        <Button asChild><Link to="/contact">Discuss a project</Link></Button>
       </PageHero>
 
       <section className="section-pad">
@@ -42,43 +36,43 @@ export function WorkPage() {
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <Badge variant="outline">{item.type}</Badge>
                     <Badge variant="brand">{item.status}</Badge>
-                    {item.date && (
-                      <time
-                        dateTime={item.date}
-                        className="text-xs font-medium text-[var(--text-muted)]"
-                      >
-                        {formatDate(item.date)}
-                      </time>
-                    )}
+                    {item.date && <time dateTime={item.date} className="text-xs font-medium text-[var(--text-subtle)]">{formatDate(item.date)}</time>}
                   </div>
                   <CardTitle className="text-2xl">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {item.slug === 'ajenda-ai' && (
                     <div className="mb-6 max-w-3xl">
-                      <AjendaCommandCenter caption="Local Ajenda command center captured 31 July 2026." />
+                      <AjendaCommandCenter caption="Ajenda AI · development product surface. Local command-center interface captured during active development." />
                     </div>
                   )}
-                  <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">
-                    {item.summary}
-                  </p>
+
+                  <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">{item.summary}</p>
+
+                  {item.slug === 'snapshot' && (
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
+                      The canonical public Snapshot figure now pairs the real execution artifact with an inspectable public-safe excerpt from the v10 JSON output.
+                    </p>
+                  )}
+                  {item.slug === 'architectural-graph' && (
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
+                      The interactive graph is maintained as a single canonical inspection surface on the homepage so explanatory pages can refer back to the same artifact rather than rendering divergent copies.
+                    </p>
+                  )}
+
                   <div className="mt-5 flex flex-wrap gap-2">
                     {item.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]"
-                      >
-                        {tag}
-                      </span>
+                      <span key={tag} className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">{tag}</span>
                     ))}
                   </div>
-                  {item.slug === 'ajenda-ai' && (
-                    <div className="mt-6">
-                      <Button asChild variant="outline">
-                        <Link to="/products/ajenda">View Ajenda AI</Link>
-                      </Button>
-                    </div>
-                  )}
+
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {item.slug === 'ajenda-ai' && <Button asChild variant="outline"><Link to="/products/ajenda">View Ajenda AI</Link></Button>}
+                    {item.slug === 'snapshot' && <Button asChild variant="outline"><a href="/#snapshot">Inspect Snapshot artifact</a></Button>}
+                    {item.slug === 'architectural-graph' && <Button asChild variant="outline"><a href="/#architecture-graph">Inspect the live graph</a></Button>}
+                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><a href="/#pride-protocol">View PRIDE artifact</a></Button>}
+                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><Link to="/method">View methodology</Link></Button>}
+                  </div>
                 </CardContent>
               </Card>
             </article>

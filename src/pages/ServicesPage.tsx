@@ -3,76 +3,61 @@ import { services } from '@/data/site'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle2 } from 'lucide-react'
 
 export function ServicesPage() {
   return (
     <>
       <Seo
         title="Services"
-        description="Custom AI systems, SaaS product development, operations infrastructure, and AI governance — built for production and accountability."
+        description="Software and systems development from 1DevTeam across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software."
         path="/services"
       />
       <PageHero
-        eyebrow="Services"
-        title="Custom systems for operators who need results"
-        description="Services at 1devteam are not staff augmentation theater. We design and build governed systems with clear boundaries, delivery discipline, and ownership models your team can run."
+        eyebrow="Software Development"
+        title="Software and systems development for difficult problems"
+        description="1DevTeam provides development work across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software. Work is scoped around the actual system boundary rather than forcing the problem into a predefined service category."
       >
-        <Button asChild>
-          <Link to="/contact">Discuss a project</Link>
-        </Button>
+        <Button asChild><Link to="/contact">Discuss a project</Link></Button>
       </PageHero>
 
       <section className="section-pad">
-        <div className="container-site grid gap-6 md:grid-cols-2">
-          {services.map((service) => (
-            <Card key={service.title} className="h-full">
-              <CardHeader>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-[15px] leading-relaxed text-[var(--text-muted)]">
-                  {service.description}
-                </p>
-                <ul className="mt-5 space-y-2">
-                  {service.outcomes.map((outcome) => (
-                    <li
-                      key={outcome}
-                      className="flex gap-2 text-sm leading-relaxed text-[var(--text)]"
-                    >
-                      <CheckCircle2
-                        className="mt-0.5 h-4 w-4 shrink-0 text-[var(--success)]"
-                        aria-hidden
-                      />
-                      {outcome}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="container-site grid gap-12 lg:grid-cols-[0.32fr_0.68fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Capabilities</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">The service category follows the system, not the other way around</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              The same engagement can involve product behavior, persistence, authority, integrations, runtime state, recovery, and architecture at once. Service labels are therefore entry points rather than artificial boundaries around the work.
+            </p>
+          </div>
+
+          <div className="max-w-5xl">
+            {services.map((service) => (
+              <article key={service.title} className="border-t border-[var(--border)] py-7">
+                <div className="grid gap-4 md:grid-cols-[0.34fr_0.66fr]">
+                  <h3 className="text-xl font-semibold tracking-tight">{service.title}</h3>
+                  <div>
+                    <p className="text-base leading-relaxed text-[var(--text-muted)]">{service.description}</p>
+                    <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-[var(--text-subtle)]">Typical outcomes</p>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">{service.outcomes.join(' · ')}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
-        <div className="container-site max-w-3xl">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Dual-path engagement
-          </h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-            Research on your own through Work, Products, Method, and Insights —
-            or start a conversation when you are ready. Custom and enterprise
-            work is scoped through discussion; productized paths stay
-            self-serve where possible.
-          </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
-              <Link to="/contact">Request a consultation</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/method">How we work</Link>
-            </Button>
+        <div className="container-site grid gap-10 lg:grid-cols-[0.32fr_0.68fr]">
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How work begins</h2>
+          <div className="max-w-4xl">
+            <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
+              A development engagement begins by establishing the current system state, required behavior, architectural constraints, available evidence, and ownership boundary of the requested change. Implementation begins after those conditions are sufficiently understood to define the correct scope of work.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Button asChild><Link to="/contact">Discuss a project</Link></Button>
+              <Button asChild variant="outline"><Link to="/method">Development method</Link></Button>
+            </div>
           </div>
         </div>
       </section>

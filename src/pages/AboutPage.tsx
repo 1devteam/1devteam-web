@@ -4,95 +4,113 @@ import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
 import { siteConfig } from '@/data/site'
 
+const principles = [
+  ['Problem first. Technology second.', 'Implementation follows the structure of the actual problem rather than a predetermined technology category.'],
+  ['Whole-system reasoning.', 'A local fix is incomplete when it violates a contract, invariant, dependency, authority boundary, or downstream behavior elsewhere in the system.'],
+  ['Evidence before assumption.', 'Repository state, tests, runtime behavior, architecture, and explicit proof take precedence over plausible interpretation.'],
+  ['Completion includes verification.', 'Implementation, testing, failure-path analysis, documentation, and review are parts of the same engineering task.'],
+] as const
+
 export function AboutPage() {
   return (
     <>
       <Seo
         title="About"
-        description="1devteam is an AI product studio, systems builder, and active R&D program developing governed software and architecture-intelligence tooling."
+        description="1DevTeam develops software, products, architecture tooling, and development systems while working alongside AI throughout the engineering process."
         path="/about"
       />
       <PageHero
-        eyebrow="About"
-        title="Builders of governed systems"
-        description={`${siteConfig.name} is an AI product studio, systems builder, and active R&D organization — not a generic agency, not a pure consultancy, and not a single-product company. We design software that moves businesses from goals to execution.`}
+        eyebrow="About 1DevTeam"
+        title="Software development and applied R&D"
+        description="1DevTeam develops software, products, architecture tooling, and development systems while working alongside AI throughout the engineering process."
       />
 
       <section className="section-pad">
-        <div className="container-site grid gap-12 lg:grid-cols-2">
-          <div className="space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.36fr_0.64fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Company model</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">A development company built around difficult problems</h2>
+          </div>
+          <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
             <p>
-              <strong className="font-semibold text-[var(--text)]">1DevTeam L.L.C.</strong>{' '}
-              is the legal entity behind the 1DevTeam brand, its R&D program,
-              product development, and company operations.
+              {siteConfig.legalName} is the company behind 1DevTeam&apos;s software development, products, development tooling, and applied research. AI is neither the boundary of the company nor a background utility concealed behind conventional development language. It is an active part of the development system, and its contribution is represented accordingly.
             </p>
             <p>
-              The market is full of AI language. We compete on systems: clear
-              categories, production engineering, human oversight, and evidence
-              you can inspect. Ajenda AI is our flagship product; client work
-              spans custom AI systems, SaaS products, and operations
-              infrastructure.
+              The work remains problem-driven. The appropriate solution may be a new software system, a product, an architectural repair, an integration, a development tool, or a research question. The implementation form follows the problem rather than forcing the problem into a preferred technology category.
             </p>
             <p>
-              1DevTeam's first formal R&D program studies architectural
-              reasoning scope, corrective PR cascades, graph-assisted
-              development, and related evidence. That research is intended to
-              inform Grafted Plus for existing systems and Grafted First for
-              project-origin architecture, while keeping product goals separate
-              from scientific conclusions.
+              1DevTeam approaches software as a system of interacting contracts, dependencies, state, authority, data, runtime behavior, and failure paths. Implementation is evaluated against the architecture surrounding a requested change rather than only against the behavior immediately visible at the point of modification.
             </p>
             <p>
-              Technical buyers want inspectable claims, credible stacks, and
-              serious risk handling. Operators want to know whether talking to
-              us is worth the time. Both audiences get the same standard:
-              specific messaging, visible proof, and dual-path conversion —
-              learn on your own or contact us now.
-            </p>
-            <p>
-              We publish method, work notes, and product thinking in public.
-              That is intentional. Trust is calibrated with evidence, not claimed
-              with mood.
+              AI extends the amount of software that can be inspected, analyzed, generated, tested, and reasoned about. It also introduces engineering constraints including context limits, incomplete reconstruction, premature solution selection, local reasoning, and confidence that may exceed available evidence. Those constraints are treated as engineering problems rather than reasons to conceal the AI relationship.
             </p>
           </div>
-          <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8">
-            <h2 className="text-xl font-semibold tracking-tight">
-              How to evaluate us
-            </h2>
-            <ul className="mt-5 space-y-3 text-[15px] leading-relaxed text-[var(--text-muted)]">
-              <li>
-                <Link to="/work" className="font-medium text-[var(--brand)] hover:underline">
-                  Work
-                </Link>{' '}
-                — proof, build journals, and systems patterns.
-              </li>
-              <li>
-                <Link to="/research" className="font-medium text-[var(--brand)] hover:underline">
-                  Research & Development
-                </Link>{' '}
-                — the first formal R&D program and its scientific boundaries.
-              </li>
-              <li>
-                <Link to="/products/ajenda" className="font-medium text-[var(--brand)] hover:underline">
-                  Ajenda AI
-                </Link>{' '}
-                — flagship product depth.
-              </li>
-              <li>
-                <Link to="/method" className="font-medium text-[var(--brand)] hover:underline">
-                  Method
-                </Link>{' '}
-                — how we design and govern AI systems.
-              </li>
-              <li>
-                <Link to="/trust" className="font-medium text-[var(--brand)] hover:underline">
-                  Trust & Security
-                </Link>{' '}
-                — lightweight trust layer.
-              </li>
-            </ul>
-            <Button asChild className="mt-8">
-              <Link to="/contact">Get in touch</Link>
-            </Button>
+        </div>
+      </section>
+
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.36fr_0.64fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Operating principles</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Standards that remain stable across the work</h2>
+          </div>
+          <dl className="max-w-4xl">
+            {principles.map(([title, description]) => (
+              <div key={title} className="grid gap-2 border-t border-[var(--border)] py-6 md:grid-cols-[0.36fr_0.64fr]">
+                <dt className="font-semibold text-[var(--text)]">{title}</dt>
+                <dd className="text-[17px] leading-relaxed text-[var(--text-muted)]">{description}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section className="section-pad border-t border-[var(--border)]">
+        <div className="container-site">
+          <div className="max-w-4xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Development history</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">How the development systems emerged</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              Repeated use of AI on increasingly large software systems exposed different classes of failure. The resulting tools were not designed as retrospective branding concepts; each was built in response to a concrete development constraint and then revised through use.
+            </p>
+          </div>
+
+          <div className="mt-12 max-w-5xl space-y-12">
+            <article className="border-t border-[var(--border)] pt-7">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Process → PRIDE Protocol</p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Plausible output could arrive before sufficient understanding</h3>
+              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+                The first failure mode involved process. A model could produce technically plausible answers before enough of the surrounding system had been read to establish whether the proposed change belonged at the correct architectural layer. PRIDE Protocol converted the required development discipline into an explicit operating standard: read completely enough, investigate uncertainty, reason system-wide, implement the complete solution, test the real behavior, document the result, and review the work against the actual problem.
+              </p>
+              <a href="/#pride-protocol" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">View the PRIDE working artifact →</a>
+            </article>
+
+            <article className="border-t border-[var(--border)] pt-7">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Context → Snapshot</p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Process discipline did not solve context transfer</h3>
+              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+                Large repositories still had to be reconstructed at the beginning of new model contexts. Snapshot was developed to package project structure and state into a reusable context-transfer artifact, including repository inventory, routes, dependency relationships, tests, parse results, configuration structure, Git state, and related project information. That reduced repeated rediscovery without claiming to replace repository inspection or architectural reasoning.
+              </p>
+              <a href="/#snapshot" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect Snapshot execution and output →</a>
+            </article>
+
+            <article className="border-t border-[var(--border)] pt-7">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Architecture → Ajenda Architectural Graph</p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Project information and architectural meaning are not the same thing</h3>
+              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
+                Repository reading and Snapshot could expose extensive project information while still requiring the architecture itself to be reconstructed during change analysis. The Ajenda Architectural Graph externalized that next layer into a persistent machine-readable model of structure, ownership, dependencies, selected invariants, proof relationships, and increasingly fine-grained decision behavior.
+              </p>
+              <a href="/#architecture-graph" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect the live Architectural Graph →</a>
+            </article>
+          </div>
+
+          <p className="mt-12 max-w-4xl text-[17px] leading-relaxed text-[var(--text-muted)]">
+            The recurring pattern is consistent: observe a limitation → investigate the mechanism → build a correction → use it in real work → refine it from evidence → reuse or productize it only when the evidence supports doing so. That pattern now extends into 1DevTeam&apos;s first formal R&amp;D program, where questions raised during Ajenda development are studied systematically rather than converted directly into product claims.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button asChild><Link to="/method">Development method</Link></Button>
+            <Button asChild variant="outline"><Link to="/research">Formal R&amp;D program</Link></Button>
           </div>
         </div>
       </section>
