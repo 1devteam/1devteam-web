@@ -57,7 +57,7 @@ export function BrandPage() {
             <h2 className="mt-2 text-3xl font-semibold tracking-tight">Company identity</h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--text-muted)]">
               <strong className="text-[var(--text)]">Company name:</strong> 1DevTeam<br />
-              <strong className="text-[var(--text)]">Legal entity:</strong> 1DevTeam L.L.C.<br />
+              <strong className="text-[var(--text)]">Legal entity:</strong> {siteConfig.legalName}<br />
               <strong className="text-[var(--text)]">Brand-board line:</strong> Building Intelligent Solutions
             </p>
 
