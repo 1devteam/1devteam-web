@@ -1,12 +1,13 @@
 export const siteConfig = {
   name: '1DevTeam',
-  legalName: '1DevTeam L.L.C.',
+  legalName: '1devteam L.L.C.',
   tagline: 'We build software — and better ways to build software.',
   description:
     '1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.',
   url: 'https://1devteam.com',
   title: '1DevTeam · Software development and applied R&D',
   email: 'hello@1devteam.com',
+  privacyEmail: 'hello@1devteam.com',
   productEmail: 'ajenda-ai@1devteam.com',
   ogImage: '/og.png',
   brand: {
