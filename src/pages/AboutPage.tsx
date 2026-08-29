@@ -22,8 +22,8 @@ export function AboutPage() {
         <div className="container-site grid gap-12 lg:grid-cols-2">
           <div className="space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
             <p>
-              <strong className="font-semibold text-[var(--text)]">1DevTeam L.L.C.</strong>{' '}
-              is the legal entity behind the 1DevTeam brand, its R&D program,
+              <strong className="font-semibold text-[var(--text)]">{siteConfig.legalName}</strong>{' '}
+              is the legal entity behind the 1devteam brand, its R&D program,
               product development, and company operations.
             </p>
             <p>
