@@ -102,6 +102,7 @@ export function Footer() {
               ))}
             </ul>
             <div className="mt-4 space-y-1 text-sm text-slate-400">
+              <p>{siteConfig.legalName}</p>
               <p>
                 Studio{' '}
                 <a
@@ -118,6 +119,15 @@ export function Footer() {
                   className="transition-colors hover:text-white"
                 >
                   {siteConfig.productEmail}
+                </a>
+              </p>
+              <p>
+                Privacy{' '}
+                <a
+                  href={`mailto:${siteConfig.privacyEmail}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {siteConfig.privacyEmail}
                 </a>
               </p>
             </div>
