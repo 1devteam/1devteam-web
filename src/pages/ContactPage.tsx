@@ -208,6 +208,39 @@ export function ContactPage() {
           </div>
 
           <aside className="space-y-6">
+            <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">
+              <h2 className="text-lg font-semibold">Company and legal contact</h2>
+              <dl className="mt-3 space-y-2 text-[15px] leading-relaxed text-[var(--text-muted)]">
+                <div>
+                  <dt className="font-medium text-[var(--text)]">Legal entity</dt>
+                  <dd>{siteConfig.legalName}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-[var(--text)]">Company website</dt>
+                  <dd>
+                    <a href={siteConfig.url} className="text-[var(--brand)] hover:underline">
+                      {siteConfig.url}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-[var(--text)]">General and legal inquiries</dt>
+                  <dd>
+                    <a href={`mailto:${siteConfig.email}`} className="text-[var(--brand)] hover:underline">
+                      {siteConfig.email}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-[var(--text)]">Privacy and LinkedIn data requests</dt>
+                  <dd>
+                    <a href={`mailto:${siteConfig.privacyEmail}`} className="text-[var(--brand)] hover:underline">
+                      {siteConfig.privacyEmail}
+                    </a>
+                  </dd>
+                </div>
+              </dl>
+            </div>
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
               <h2 className="text-lg font-semibold">Prefer email?</h2>
               <p className="mt-2 text-[15px] leading-relaxed text-[var(--text-muted)]">
