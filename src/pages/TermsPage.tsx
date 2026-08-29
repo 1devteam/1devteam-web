@@ -18,12 +18,35 @@ export function TermsPage() {
       <section className="section-pad">
         <div className="container-site prose-measure space-y-6 text-[16px] leading-relaxed text-[var(--text-muted)]">
           <p>
-            <strong className="text-[var(--text)]">Last updated:</strong> July 14,
+            <strong className="text-[var(--text)]">Last updated:</strong> August 29,
             2026
           </p>
           <p>
-            By using {siteConfig.name}’s website, you agree to these terms. If
-            you do not agree, do not use the site.
+            These terms govern use of the website operated by{' '}
+            {siteConfig.legalName}. By using the site, you agree to these terms.
+            If you do not agree, do not use the site.
+          </p>
+          <h2 className="text-xl font-semibold text-[var(--text)]">
+            Ownership and intellectual property
+          </h2>
+          <p>
+            Unless otherwise identified, {siteConfig.legalName} owns the website,
+            its original text, visual design, software, and 1devteam brand assets.
+            Product names, trademarks, platform data, and third-party materials
+            remain the property of their respective owners. Access to this site
+            does not transfer any ownership or grant a license beyond the limited
+            right to view and use the site for lawful purposes.
+          </p>
+          <h2 className="text-xl font-semibold text-[var(--text)]">
+            LinkedIn services
+          </h2>
+          <p>
+            LinkedIn is an independent third-party service. Any 1devteam
+            integration with LinkedIn is also subject to LinkedIn's terms and the
+            permissions granted by an authorized administrator. LinkedIn data and
+            customer-directed content are handled as described in our Privacy
+            Policy. We do not claim ownership of LinkedIn member or organization
+            data.
           </p>
           <h2 className="text-xl font-semibold text-[var(--text)]">
             Site content
