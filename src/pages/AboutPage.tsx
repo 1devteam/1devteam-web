@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
+import { siteConfig } from '@/data/site'
 
 const principles = [
   ['Problem first. Technology second.', 'Implementation follows the structure of the actual problem rather than a predetermined technology category.'],
@@ -32,7 +33,7 @@ export function AboutPage() {
           </div>
           <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
             <p>
-              1DevTeam L.L.C. is the company behind 1DevTeam&apos;s software development, products, development tooling, and applied research. AI is neither the boundary of the company nor a background utility concealed behind conventional development language. It is an active part of the development system, and its contribution is represented accordingly.
+              {siteConfig.legalName} is the company behind 1DevTeam&apos;s software development, products, development tooling, and applied research. AI is neither the boundary of the company nor a background utility concealed behind conventional development language. It is an active part of the development system, and its contribution is represented accordingly.
             </p>
             <p>
               The work remains problem-driven. The appropriate solution may be a new software system, a product, an architectural repair, an integration, a development tool, or a research question. The implementation form follows the problem rather than forcing the problem into a preferred technology category.
