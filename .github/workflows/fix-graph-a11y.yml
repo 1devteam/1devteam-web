@@ -1,0 +1,40 @@
+name: Fix graph accessibility semantics
+
+on:
+  push:
+    branches:
+      - content/ownership-and-redundancy
+    paths:
+      - .github/workflows/fix-graph-a11y.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: content/ownership-and-redundancy
+      - name: Repair interactive SVG semantics
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/components/architecture/InteractiveArchitectureGraph.tsx')
+          text = path.read_text()
+          old = '          role="img"\n          aria-label={rootId ?'
+          new = '          role="group"\n          aria-label={rootId ?'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one interactive graph role marker, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+      - name: Remove one-shot workflow and commit
+        run: |
+          rm .github/workflows/fix-graph-a11y.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/architecture/InteractiveArchitectureGraph.tsx .github/workflows/fix-graph-a11y.yml
+          git commit -m "Expose interactive graph nodes to assistive technology"
+          git push origin HEAD:content/ownership-and-redundancy
