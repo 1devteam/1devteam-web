@@ -9,29 +9,15 @@ import { CheckCircle2 } from 'lucide-react'
 import { siteConfig } from '@/data/site'
 
 const features = [
-  {
-    title: 'Structured missions',
-    description: 'Objectives are represented as durable mission state rather than temporary conversational context.',
-  },
-  {
-    title: 'Explicit authority',
-    description: 'Interpretation, planning, and execution authority are modeled separately so recognizing an instruction does not silently authorize an external action.',
-  },
-  {
-    title: 'Controlled execution',
-    description: 'Actions can be routed through capability boundaries, policy checks, approvals, and execution controls appropriate to the operation.',
-  },
-  {
-    title: 'Review & recovery',
-    description: 'The system models approval states, execution failures, recovery paths, and controlled continuation as part of normal operation.',
-  },
-  {
-    title: 'Traceable outcomes',
-    description: 'Mission state, approvals, actions, and resulting outcomes are recorded so system behavior can be inspected after execution.',
-  },
+  { title: 'Structured missions', description: 'Objectives are represented as durable mission state rather than temporary conversational context.' },
+  { title: 'Explicit authority', description: 'Interpretation, planning, and execution authority are modeled separately so recognizing an instruction does not silently authorize an external action.' },
+  { title: 'Controlled execution', description: 'Actions can be routed through capability boundaries, policy checks, approvals, and execution controls appropriate to the operation.' },
+  { title: 'Review & recovery', description: 'The system models approval states, execution failures, recovery paths, and controlled continuation as part of normal operation.' },
+  { title: 'Traceable outcomes', description: 'Mission state, approvals, actions, and resulting outcomes are recorded so system behavior can be inspected after execution.' },
 ]
 
 export function AjendaPage() {
+  const productImage = `${siteConfig.url}/artifacts/ajenda-ai-actual-screenshot.webp`
   return (
     <>
       <Seo
@@ -45,6 +31,7 @@ export function AjendaPage() {
           applicationCategory: 'BusinessApplication',
           operatingSystem: 'Web',
           description: 'Structured execution software for missions, plans, tasks, authority, review, recovery, and traceable work.',
+          image: productImage,
           provider: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
         }}
       />
@@ -62,13 +49,11 @@ export function AjendaPage() {
 
       <section className="section-pad">
         <div className="container-site grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-          <AjendaCommandCenter caption="Ajenda AI · development product surface. Local command-center interface captured during active development." />
+          <AjendaCommandCenter />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Execution architecture</p>
             <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight">Understanding and authority remain separate</h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">
-              That distinction extends through mission interpretation, planning, capability selection, execution, review, recovery, and outcome recording.
-            </p>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">That distinction extends through mission interpretation, planning, capability selection, execution, review, recovery, and outcome recording.</p>
             <div className="mt-8 grid gap-5 sm:grid-cols-2">
               {features.map((feature) => (
                 <Card key={feature.title}>
@@ -78,9 +63,7 @@ export function AjendaPage() {
                       {feature.title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-base leading-relaxed text-[var(--text-muted)]">{feature.description}</p>
-                  </CardContent>
+                  <CardContent><p className="text-base leading-relaxed text-[var(--text-muted)]">{feature.description}</p></CardContent>
                 </Card>
               ))}
             </div>
@@ -92,18 +75,12 @@ export function AjendaPage() {
         <div className="container-site grid gap-10 lg:grid-cols-2">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Current status</h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">
-              Ajenda AI is under active private development and is locally operational. This site does not represent Ajenda as a generally available hosted service or claim customer deployment that has not occurred.
-            </p>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">Ajenda AI is under active private development and is locally operational. This site does not represent Ajenda as a generally available hosted service or claim customer deployment that has not occurred.</p>
           </div>
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 md:p-8">
             <h3 className="text-lg font-semibold">Part of 1DevTeam</h3>
-            <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
-              Ajenda is the current flagship product inside 1DevTeam&apos;s broader software-development and applied-R&amp;D work. Its development also provides the active software environment in which portions of the architecture tooling and current research program are being exercised.
-            </p>
-            <p className="mt-4 text-sm text-[var(--text-subtle)]">
-              Product inbox: <a href={`mailto:${siteConfig.productEmail}`} className="font-medium text-[var(--brand)] hover:underline">{siteConfig.productEmail}</a>
-            </p>
+            <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">Ajenda is the current flagship product inside 1DevTeam&apos;s broader software-development and applied-R&amp;D work. Its development also provides the active software environment in which portions of the architecture tooling and current research program are being exercised.</p>
+            <p className="mt-4 text-sm text-[var(--text-subtle)]">Product inbox: <a href={`mailto:${siteConfig.productEmail}`} className="font-medium text-[var(--brand)] hover:underline">{siteConfig.productEmail}</a></p>
           </div>
         </div>
       </section>

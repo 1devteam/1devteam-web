@@ -69,7 +69,8 @@
     "robots": "index, follow",
     "type": "website",
     "lastmod": "2026-08-29",
-    "sitemap": true
+    "sitemap": true,
+    "image": "/artifacts/ajenda-ai-actual-screenshot.webp"
   },
   {
     "path": "/method",
@@ -108,7 +109,7 @@
     "sitemap": true
   },
   {
-    "path": "/insights/build-journals-over-case-study-theater",
+    "path": "/insights/architectural-scope-and-corrective-repair",
     "title": "Architectural scope and corrective repair · 1DevTeam",
     "description": "How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.",
     "robots": "index, follow",

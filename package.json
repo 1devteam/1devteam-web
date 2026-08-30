@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build --ssr src/prerender-entry.tsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/check-bundle.mjs",
     "lint": "oxlint",
     "audit:contrast": "node scripts/check-contrast.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "audit:seo": "node scripts/check-routes.mjs && node scripts/generate-sitemap.mjs --check",
+    "audit:bundle": "node scripts/check-bundle.mjs",
+    "audit:browser": "node scripts/check-browser.mjs",
+    "audit:prod-deps": "npm audit --omit=dev --audit-level=high",
     "preview": "vite preview"
   },
   "dependencies": {

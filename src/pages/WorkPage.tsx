@@ -42,28 +42,20 @@ export function WorkPage() {
                 </CardHeader>
                 <CardContent>
                   {item.slug === 'ajenda-ai' && (
-                    <div className="mb-6 max-w-3xl">
-                      <AjendaCommandCenter caption="Ajenda AI · development product surface captured during active local development." />
-                    </div>
+                    <div className="mb-6 max-w-3xl"><AjendaCommandCenter /></div>
                   )}
 
                   <p className="max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">{item.summary}</p>
 
                   {item.slug === 'snapshot' && (
-                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
-                      Public evidence includes the recorded Snapshot v10 execution against Ajenda and a reviewed, public-safe excerpt from the structured output.
-                    </p>
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">Public evidence includes the recorded Snapshot v10 execution against Ajenda and a reviewed, public-safe excerpt from the structured output.</p>
                   )}
                   {item.slug === 'architectural-graph' && (
-                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
-                      Public evidence includes a reviewed interactive projection derived from Ajenda&apos;s canonical development graph artifact.
-                    </p>
+                    <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">Public evidence includes a reviewed interactive projection derived from Ajenda&apos;s canonical development graph artifact.</p>
                   )}
 
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {item.tags.map((tag) => (
-                      <span key={tag} className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">{tag}</span>
-                    ))}
+                    {item.tags.map((tag) => <span key={tag} className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]">{tag}</span>)}
                   </div>
 
                   <div className="mt-6 flex flex-wrap gap-3">
