@@ -18,6 +18,7 @@ import { ServicesPage } from '@/pages/ServicesPage'
 import { TermsPage } from '@/pages/TermsPage'
 import { TrustPage } from '@/pages/TrustPage'
 import { WikiPage } from '@/pages/WikiPage'
+import { WikiEntryPage } from '@/pages/WikiEntryPage'
 import { WorkPage } from '@/pages/WorkPage'
 
 export function render(pathname: string) {
@@ -28,6 +29,7 @@ export function render(pathname: string) {
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
           <Route path="wiki" element={<WikiPage />} />
+          <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="enterprise" element={<EnterprisePage />} />
