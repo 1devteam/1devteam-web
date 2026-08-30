@@ -1,0 +1,26 @@
+name: Audit all dependencies
+
+on:
+  push:
+    branches:
+      - content/ownership-and-redundancy
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/audit-dev-deps.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Report full dependency audit
+        run: npm audit --json || true
