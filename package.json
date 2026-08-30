@@ -13,6 +13,7 @@
     "audit:bundle": "node scripts/check-bundle.mjs",
     "audit:browser": "node scripts/check-browser.mjs",
     "audit:prod-deps": "npm audit --omit=dev --audit-level=high",
+    "audit:deps": "npm audit --audit-level=moderate",
     "preview": "vite preview"
   },
   "dependencies": {
