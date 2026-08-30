@@ -19,6 +19,10 @@ function escapeHtml(value) {
     .replaceAll('"', '&quot;')
 }
 
+function safeJson(value) {
+  return JSON.stringify(value).replaceAll('<', '\\u003c')
+}
+
 function replaceMeta(html, attr, key, value) {
   const pattern = new RegExp(`<meta\\s+${attr}="${key}"[^>]*>`, 'i')
   return html.replace(pattern, (tag) => {
@@ -30,6 +34,60 @@ function replaceMeta(html, attr, key, value) {
 
 function routeUrl(routePath) {
   return routePath === '/' ? `${siteOrigin}/` : `${siteOrigin}${routePath}`
+}
+
+function pageSchema(route, url, image) {
+  const organization = { '@type': 'Organization', name: '1DevTeam', url: siteOrigin }
+
+  if (route.path === '/products/ajenda') {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Ajenda AI',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url,
+      description: route.description,
+      image,
+      provider: organization,
+    }
+  }
+
+  if (route.path.startsWith('/wiki/')) {
+    const name = route.title.replace(/ · 1DevTeam$| — 1DevTeam$/, '')
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: name,
+      description: route.description,
+      url,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      image,
+      datePublished: route.published ?? route.lastmod,
+      dateModified: route.lastmod,
+      author: organization,
+      publisher: organization,
+      about: { '@type': 'DefinedTerm', name, description: route.description },
+    }
+  }
+
+  if (route.path.startsWith('/insights/')) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: route.title.replace(/ · 1DevTeam$/, ''),
+      description: route.description,
+      url,
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      image,
+      datePublished: route.published ?? route.lastmod,
+      dateModified: route.lastmod,
+      author: organization,
+      publisher: organization,
+    }
+  }
+
+  return null
 }
 
 function withHead(html, route) {
@@ -47,7 +105,11 @@ function withHead(html, route) {
   output = replaceMeta(output, 'name', 'twitter:description', route.description)
   output = replaceMeta(output, 'name', 'twitter:image', image)
   output = output.replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
-  return output.replace('</head>', `    <link rel="canonical" href="${escapeHtml(url)}" />\n  </head>`)
+  output = output.replace(/<script\s+id="json-ld-primary"[\s\S]*?<\/script>\s*/gi, '')
+
+  const schema = pageSchema(route, url, image)
+  const schemaTag = schema ? `\n    <script id="json-ld-primary" type="application/ld+json">${safeJson(schema)}</script>` : ''
+  return output.replace('</head>', `    <link rel="canonical" href="${escapeHtml(url)}" />${schemaTag}\n  </head>`)
 }
 
 function outputPath(routePath) {
@@ -75,4 +137,4 @@ const notFound = {
 }
 await writeRoute(notFound, '/__prerender-not-found__')
 await rm(path.join(root, 'dist-ssr'), { recursive: true, force: true })
-console.log(`PASS prerendered ${manifest.length} public routes plus the 404 surface`)
+console.log(`PASS prerendered ${manifest.length} public routes plus the 404 surface with route-specific metadata and structured data`)
