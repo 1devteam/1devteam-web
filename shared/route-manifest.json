@@ -5,7 +5,7 @@
     "description": "1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -14,7 +14,7 @@
     "description": "Software, tooling, architecture artifacts, and development evidence from 1DevTeam, presented according to the state supported by current evidence.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -23,7 +23,79 @@
     "description": "Reference documentation for 1DevTeam software, development systems, architecture, terminology, and applied R&D.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/pride-protocol",
+    "title": "PRIDE Protocol for AI-Assisted Software Development · 1DevTeam",
+    "description": "Technical reference for PRIDE Protocol, a development-process discipline for sufficient context, complete implementation, verification, documentation, and review.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/snapshot",
+    "title": "Snapshot — AI Project Context Transfer · 1DevTeam",
+    "description": "Technical reference for Snapshot, a structured project-context transfer system used during AI-assisted software development.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/architectural-graph",
+    "title": "Architectural Graph for Software Reasoning · 1DevTeam",
+    "description": "Technical reference for the Ajenda Architectural Graph and its use in dependency reasoning, decision ownership, change impact, proof selection, and completeness auditing.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/architectural-blast-radius",
+    "title": "Architectural Blast Radius in Software Changes · 1DevTeam",
+    "description": "Technical reference defining architectural blast radius as the system surfaces materially affected by a software change beyond the files directly modified.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/reasoning-scope",
+    "title": "Reasoning Scope in AI-Assisted Development · 1DevTeam",
+    "description": "Technical reference for reasoning scope: the portion of a software system included in the analysis used to understand and plan a change.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/pr-cascade",
+    "title": "Corrective PR Cascades in Software Development · 1DevTeam",
+    "description": "Technical research reference for corrective PR cascades and the evidence required to distinguish correction, completion, introduced defects, and exposed latent defects.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/decision-ownership",
+    "title": "Decision Ownership in Software Architecture · 1DevTeam",
+    "description": "Technical reference for identifying the function, component, contract, or invariant that actually owns a software decision rather than merely observing its result.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki/proof-selection",
+    "title": "Graph-Aware Proof Selection for Software Changes · 1DevTeam",
+    "description": "Technical reference for selecting tests, invariant checks, semantic checks, and other evidence required by the architecture affected by a software change.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -41,7 +113,7 @@
     "description": "Software and systems development from 1DevTeam across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -50,7 +122,7 @@
     "description": "System-level software development for complex architectures where changes can cross state, security, authority, data, integration, runtime, and operational boundaries.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -59,7 +131,7 @@
     "description": "Software developed by 1DevTeam from recurring system problems, including Ajenda AI, Grafted Plus, and Grafted First.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -68,7 +140,7 @@
     "description": "Ajenda AI converts objectives into structured missions, plans, tasks, approvals, and controlled execution.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true,
     "image": "/artifacts/ajenda-ai-actual-screenshot.webp"
   },
@@ -78,7 +150,7 @@
     "description": "1DevTeam's development method for AI-assisted software engineering: establish sufficient context, identify architectural ownership, implement at the correct layer, and verify the affected system.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -96,7 +168,7 @@
     "description": "Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.",
     "robots": "index, follow",
     "type": "article",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -105,7 +177,7 @@
     "description": "Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.",
     "robots": "index, follow",
     "type": "article",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -114,7 +186,7 @@
     "description": "How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.",
     "robots": "index, follow",
     "type": "article",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -123,7 +195,7 @@
     "description": "1DevTeam develops software, products, architecture tooling, and development systems while working alongside AI throughout the engineering process.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
@@ -141,7 +213,7 @@
     "description": "Discuss software systems, product development, remediation, AI-enabled systems, applied R&D, development tooling, or Ajenda AI with 1DevTeam.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-08-30",
     "sitemap": true
   },
   {
