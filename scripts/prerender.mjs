@@ -80,7 +80,7 @@ function pageSchema(route, url, image) {
       url,
       mainEntityOfPage: { '@type': 'WebPage', '@id': url },
       image,
-      datePublished: route.published ?? route.lastmod,
+      ...(route.published ? { datePublished: route.published } : {}),
       dateModified: route.lastmod,
       author: organization,
       publisher: organization,
