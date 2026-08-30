@@ -1,0 +1,173 @@
+[
+  {
+    "path": "/",
+    "title": "1DevTeam · Software development and applied R&D",
+    "description": "1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/work",
+    "title": "Software Development Evidence & Technical Artifacts · 1DevTeam",
+    "description": "Software, tooling, architecture artifacts, and development evidence from 1DevTeam, presented according to the state supported by current evidence.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki",
+    "title": "Technical Wiki for AI-Assisted Software Development · 1DevTeam",
+    "description": "Reference documentation for 1DevTeam software, development systems, architecture, terminology, and applied R&D.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/research",
+    "title": "Architectural Reasoning & PR Cascade Research · 1DevTeam",
+    "description": "1DevTeam R&D Program #1 studies architectural reasoning scope and corrective PR cascades in AI-assisted software development.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/services",
+    "title": "Software Development & System Remediation · 1DevTeam",
+    "description": "Software and systems development from 1DevTeam across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/enterprise",
+    "title": "Complex Systems & Software Architecture · 1DevTeam",
+    "description": "System-level software development for complex architectures where changes can cross state, security, authority, data, integration, runtime, and operational boundaries.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/products",
+    "title": "Software Products & Applied R&D Systems · 1DevTeam",
+    "description": "Software developed by 1DevTeam from recurring system problems, including Ajenda AI, Grafted Plus, and Grafted First.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/products/ajenda",
+    "title": "Ajenda AI — Structured AI Execution Software · 1DevTeam",
+    "description": "Ajenda AI converts objectives into structured missions, plans, tasks, approvals, and controlled execution.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/method",
+    "title": "AI-Assisted Software Development Method · 1DevTeam",
+    "description": "1DevTeam's development method for AI-assisted software engineering: establish sufficient context, identify architectural ownership, implement at the correct layer, and verify the affected system.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/insights",
+    "title": "Software Architecture & AI Development Insights · 1DevTeam",
+    "description": "Technical notes from 1DevTeam on software architecture, AI-assisted development, system control, development tooling, research methods, and product engineering.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/insights/from-goals-to-execution",
+    "title": "From goals to execution · 1DevTeam",
+    "description": "Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/insights/calibrating-ai-trust",
+    "title": "Calibrating AI trust · 1DevTeam",
+    "description": "Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/insights/build-journals-over-case-study-theater",
+    "title": "Architectural scope and corrective repair · 1DevTeam",
+    "description": "How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.",
+    "robots": "index, follow",
+    "type": "article",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/about",
+    "title": "About 1DevTeam — Software Development & Applied R&D",
+    "description": "1DevTeam develops software, products, architecture tooling, and development systems while working alongside AI throughout the engineering process.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/brand",
+    "title": "Brand Assets · 1DevTeam",
+    "description": "Approved 1DevTeam and Ajenda AI brand assets, naming conventions, colors, and usage guidance.",
+    "robots": "noindex, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": false
+  },
+  {
+    "path": "/contact",
+    "title": "Contact 1DevTeam — Software Development & R&D",
+    "description": "Discuss software systems, product development, remediation, AI-enabled systems, applied R&D, development tooling, or Ajenda AI with 1DevTeam.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/privacy",
+    "title": "Privacy Policy · 1DevTeam",
+    "description": "Privacy policy for 1devteam L.L.C., including website information and data received through LinkedIn integrations.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/terms",
+    "title": "Terms of Use · 1DevTeam",
+    "description": "Terms of use for the 1devteam website.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  },
+  {
+    "path": "/trust",
+    "title": "Trust & Security · 1DevTeam",
+    "description": "1DevTeam treats security, authority, data access, external actions, state transitions, failure handling, and auditability as architecture concerns.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-08-29",
+    "sitemap": true
+  }
+]
