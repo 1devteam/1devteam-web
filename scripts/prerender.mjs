@@ -109,7 +109,8 @@ function withHead(html, route) {
 
   const schema = pageSchema(route, url, image)
   const schemaTag = schema ? `\n    <script id="json-ld-primary" type="application/ld+json">${safeJson(schema)}</script>` : ''
-  return output.replace('</head>', `    <link rel="canonical" href="${escapeHtml(url)}" />${schemaTag}\n  </head>`)
+  const canonicalTag = route.path === '/404' ? '' : `    <link rel="canonical" href="${escapeHtml(url)}" />`
+  return output.replace('</head>', `${canonicalTag}${schemaTag}\n  </head>`)
 }
 
 function outputPath(routePath) {
