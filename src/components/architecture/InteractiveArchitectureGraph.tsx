@@ -43,6 +43,15 @@ const typeStyles: Record<string, { fill: string; stroke: string; dot: string }> 
 
 type DirectionFilter = 'both' | 'incoming' | 'outgoing'
 
+type Layout = {
+  positions: Map<string, { x: number; y: number }>
+  height: number
+  incomingCount: number
+  outgoingCount: number
+  rootY: number
+  outgoingY: number
+}
+
 const NODE_WIDTH = 224
 const NODE_HEIGHT = 64
 const CANVAS_WIDTH = 1080
@@ -62,8 +71,7 @@ function sortNodeIds(ids: string[]) {
     const a = nodeById.get(left)
     const b = nodeById.get(right)
     const byType = (typeOrder[a?.type ?? ''] ?? 9) - (typeOrder[b?.type ?? ''] ?? 9)
-    if (byType) return byType
-    return (a?.name ?? left).localeCompare(b?.name ?? right)
+    return byType || (a?.name ?? left).localeCompare(b?.name ?? right)
   })
 }
 
@@ -77,18 +85,17 @@ function layoutRow(ids: string[], startY: number) {
   return positions
 }
 
-function buildFocusLayout(rootId: string, edges: GraphEdge[]) {
+function buildFocusLayout(rootId: string, edges: GraphEdge[]): Layout {
   const incoming = sortNodeIds(Array.from(new Set(edges.filter((edge) => edge.to === rootId).map((edge) => edge.from))))
   const outgoing = sortNodeIds(Array.from(new Set(edges.filter((edge) => edge.from === rootId).map((edge) => edge.to))))
-
   const incomingRows = Math.ceil(incoming.length / FOCUS_COLUMNS.length)
+  const outgoingRows = Math.ceil(outgoing.length / FOCUS_COLUMNS.length)
   const incomingY = 92
   const rootY = incoming.length ? incomingY + incomingRows * 102 + 88 : 132
   const outgoingY = rootY + 178
-  const outgoingRows = Math.ceil(outgoing.length / FOCUS_COLUMNS.length)
   const height = Math.max(540, outgoingY + Math.max(1, outgoingRows) * 102 + 92)
-
   const positions = new Map<string, { x: number; y: number }>()
+
   layoutRow(incoming, incomingY).forEach((position, id) => positions.set(id, position))
   positions.set(rootId, { x: CANVAS_WIDTH / 2, y: rootY })
   layoutRow(outgoing, outgoingY).forEach((position, id) => positions.set(id, position))
@@ -96,14 +103,7 @@ function buildFocusLayout(rootId: string, edges: GraphEdge[]) {
   return { positions, height, incomingCount: incoming.length, outgoingCount: outgoing.length, rootY, outgoingY }
 }
 
-function GraphNodeShape({
-  node,
-  position,
-  active,
-  root,
-  dimmed,
-  onInspect,
-}: {
+function GraphNodeShape({ node, position, active, root, dimmed, onInspect }: {
   node: GraphNode
   position: { x: number; y: number }
   active: boolean
@@ -153,36 +153,17 @@ function GraphNodeShape({
         strokeWidth={root || active ? 2.3 : 1.45}
       />
       <circle cx={position.x - NODE_WIDTH / 2 + 15} cy={position.y - 13} r="4" fill={style.dot} />
-      <text
-        x={position.x}
-        y={position.y - 6}
-        textAnchor="middle"
-        fontFamily="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-        fontSize="12"
-        fontWeight="700"
-        fill="#0a1120"
-      >
+      <text x={position.x} y={position.y - 6} textAnchor="middle" fontFamily="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fontSize="12" fontWeight="700" fill="#0a1120">
         {shortLabel(node.name)}
       </text>
-      <text
-        x={position.x}
-        y={position.y + 17}
-        textAnchor="middle"
-        fontFamily="Inter, system-ui, sans-serif"
-        fontSize="10.5"
-        fill="#4a5667"
-      >
+      <text x={position.x} y={position.y + 17} textAnchor="middle" fontFamily="Inter, system-ui, sans-serif" fontSize="10.5" fill="#4a5667">
         {shortLabel(node.decisionRole ?? typeLabels[node.type] ?? node.type, 33)}
       </text>
     </g>
   )
 }
 
-function GraphEdgeShape({
-  edge,
-  positions,
-  dimmed,
-}: {
+function GraphEdgeShape({ edge, positions, dimmed }: {
   edge: GraphEdge
   positions: Map<string, { x: number; y: number }>
   dimmed: boolean
@@ -192,20 +173,16 @@ function GraphEdgeShape({
   if (!from || !to) return null
 
   const downward = to.y >= from.y
-  const x1 = from.x
   const y1 = from.y + (downward ? NODE_HEIGHT / 2 : -NODE_HEIGHT / 2)
-  const x2 = to.x
   const y2 = to.y + (downward ? -NODE_HEIGHT / 2 : NODE_HEIGHT / 2)
-  const style = edgeStyles[edge.type]
-  const verticalGap = Math.abs(y2 - y1)
-  const bend = Math.max(34, verticalGap * 0.42)
+  const bend = Math.max(34, Math.abs(y2 - y1) * 0.42)
   const control1Y = downward ? y1 + bend : y1 - bend
   const control2Y = downward ? y2 - bend : y2 + bend
-  const path = `M ${x1} ${y1} C ${x1} ${control1Y}, ${x2} ${control2Y}, ${x2} ${y2}`
+  const style = edgeStyles[edge.type]
 
   return (
     <path
-      d={path}
+      d={`M ${from.x} ${y1} C ${from.x} ${control1Y}, ${to.x} ${control2Y}, ${to.x} ${y2}`}
       fill="none"
       stroke={style.stroke}
       strokeWidth="1.8"
@@ -233,12 +210,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
     const normalized = query.trim().toLowerCase()
     if (!normalized) return []
     return graphNodes
-      .filter((node) =>
-        [node.name, node.type, node.decisionRole ?? '', node.module ?? '', node.source ?? '']
-          .join(' ')
-          .toLowerCase()
-          .includes(normalized),
-      )
+      .filter((node) => [node.name, node.type, node.decisionRole ?? '', node.module ?? '', node.source ?? ''].join(' ').toLowerCase().includes(normalized))
       .slice(0, 8)
   }, [query])
 
@@ -252,7 +224,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
     })
   }, [rootId, filters, direction])
 
-  const layout = useMemo(() => {
+  const layout = useMemo<Layout>(() => {
     if (!rootId) {
       return {
         positions: new Map(Object.entries(overviewPositions)),
@@ -279,16 +251,15 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
   const inspectedIsComplete = overviewIdSet.has(inspectedNode.id)
   const rootIsComplete = rootId ? overviewIdSet.has(rootId) : false
 
-  const relationshipCounts = useMemo(() => {
-    const incoming = inspectedEdges.filter((edge) => edge.to === inspectedNode.id).length
-    const outgoing = inspectedEdges.filter((edge) => edge.from === inspectedNode.id).length
-    const byType = {
+  const relationshipCounts = useMemo(() => ({
+    incoming: inspectedEdges.filter((edge) => edge.to === inspectedNode.id).length,
+    outgoing: inspectedEdges.filter((edge) => edge.from === inspectedNode.id).length,
+    byType: {
       calls_function: inspectedEdges.filter((edge) => edge.type === 'calls_function').length,
       tests_function: inspectedEdges.filter((edge) => edge.type === 'tests_function').length,
       defined_in: inspectedEdges.filter((edge) => edge.type === 'defined_in').length,
-    }
-    return { incoming, outgoing, byType }
-  }, [inspectedEdges, inspectedNode.id])
+    },
+  }), [inspectedEdges, inspectedNode.id])
 
   const hoveredConnected = useMemo(() => {
     if (!hoveredId) return null
@@ -300,17 +271,17 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
     return connected
   }, [hoveredId, activeEdges])
 
-  function inspectNode(id: string) {
-    setInspectedId(id)
-    if (!rootId && overviewIdSet.has(id)) focusNode(id)
-  }
-
   function focusNode(id: string) {
     if (!nodeById.has(id)) return
     setRootId(id)
     setInspectedId(id)
     setHoveredId(null)
     setQuery('')
+  }
+
+  function inspectNode(id: string) {
+    setInspectedId(id)
+    if (!rootId && overviewIdSet.has(id)) focusNode(id)
   }
 
   function returnToOverview() {
@@ -327,7 +298,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
           <div className="max-w-xl">
             <p className="text-sm font-semibold text-[var(--text)]">Ajenda · architecture relationship explorer</p>
             <p className="mt-1 text-xs leading-relaxed text-[var(--text-subtle)]">
-              Canonical graph schema {graphMeta.schemaVersion}. Search the reviewed public projection, focus a node, filter relationship types, and inspect incoming or outgoing architecture edges.
+              Canonical graph schema {graphMeta.schemaVersion}. Search the reviewed public projection, focus a node, filter edge types, and inspect incoming or outgoing architecture relationships.
             </p>
           </div>
 
@@ -347,18 +318,12 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
               }}
               placeholder="Function, decision role, module, test…"
               autoComplete="off"
-              aria-controls="architecture-graph-search-results"
               className="mt-1 h-11 w-full rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3 text-sm text-[var(--text)] outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)]"
             />
             {query.trim() && (
-              <div id="architecture-graph-search-results" className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-white p-1.5 shadow-lg">
+              <div className="absolute z-20 mt-2 max-h-72 w-full overflow-auto rounded-[var(--radius-sm)] border border-[var(--border)] bg-white p-1.5 shadow-lg">
                 {searchMatches.length ? searchMatches.map((node) => (
-                  <button
-                    key={node.id}
-                    type="button"
-                    onClick={() => focusNode(node.id)}
-                    className="block w-full rounded px-3 py-2.5 text-left hover:bg-[var(--surface)] focus-visible:outline-2 focus-visible:outline-[var(--brand)]"
-                  >
+                  <button key={node.id} type="button" onClick={() => focusNode(node.id)} className="block w-full rounded px-3 py-2.5 text-left hover:bg-[var(--surface)] focus-visible:outline-2 focus-visible:outline-[var(--brand)]">
                     <span className="block font-mono text-xs font-semibold text-[var(--text)]">{node.name}</span>
                     <span className="mt-1 block truncate text-xs text-[var(--text-subtle)]">{node.decisionRole ?? typeLabels[node.type] ?? node.type}{node.module ? ` · ${node.module}` : ''}</span>
                   </button>
@@ -398,58 +363,36 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <label className="text-xs font-semibold text-[var(--text-muted)]">
               Focus node
-              <select
-                value={rootId ?? ''}
-                onChange={(event) => event.target.value ? focusNode(event.target.value) : returnToOverview()}
-                className="mt-1 block h-10 min-w-64 rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3 text-sm font-medium text-[var(--text)]"
-              >
+              <select value={rootId ?? ''} onChange={(event) => event.target.value ? focusNode(event.target.value) : returnToOverview()} className="mt-1 block h-10 min-w-64 rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3 text-sm font-medium text-[var(--text)]">
                 <option value="">Overview</option>
                 {graphNodes.map((node) => <option key={node.id} value={node.id}>{node.name} · {typeLabels[node.type] ?? node.type}</option>)}
               </select>
             </label>
-            {rootId && (
-              <button type="button" onClick={returnToOverview} className="h-10 rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-4 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface)]">
-                Overview
-              </button>
-            )}
+            {rootId && <button type="button" onClick={returnToOverview} className="h-10 rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-4 text-sm font-semibold text-[var(--text)] hover:bg-[var(--surface)]">Overview</button>}
           </div>
         </div>
 
         {rootId && (
           <div className="mt-4 grid gap-4 border-t border-[var(--border)] pt-4 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <div className="flex flex-wrap items-center gap-2" aria-label="Relationship filters">
-                {(Object.keys(filters) as GraphEdge['type'][]).map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    aria-pressed={filters[type]}
-                    onClick={() => setFilters((current) => ({ ...current, [type]: !current[type] }))}
-                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                      filters[type]
-                        ? 'border-[var(--brand)] bg-[color-mix(in_srgb,var(--brand)_8%,white)] text-[var(--brand)]'
-                        : 'border-[var(--border)] bg-white text-[var(--text-muted)] hover:bg-[var(--surface)]'
-                    }`}
-                  >
-                    <span className="inline-block h-px w-5" style={{ backgroundColor: edgeStyles[type].stroke }} aria-hidden />
-                    {edgeLabels[type]}
-                  </button>
-                ))}
-                <span className="ml-1 text-xs text-[var(--text-subtle)]">{activeEdges.length} visible relationship{activeEdges.length === 1 ? '' : 's'}</span>
-              </div>
+            <div className="flex flex-wrap items-center gap-2" aria-label="Relationship filters">
+              {(Object.keys(filters) as GraphEdge['type'][]).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  aria-pressed={filters[type]}
+                  onClick={() => setFilters((current) => ({ ...current, [type]: !current[type] }))}
+                  className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${filters[type] ? 'border-[var(--brand)] bg-[color-mix(in_srgb,var(--brand)_8%,white)] text-[var(--brand)]' : 'border-[var(--border)] bg-white text-[var(--text-muted)] hover:bg-[var(--surface)]'}`}
+                >
+                  <span className="inline-block h-px w-5" style={{ backgroundColor: edgeStyles[type].stroke }} aria-hidden />
+                  {edgeLabels[type]}
+                </button>
+              ))}
+              <span className="ml-1 text-xs text-[var(--text-subtle)]">{activeEdges.length} visible relationship{activeEdges.length === 1 ? '' : 's'}</span>
             </div>
 
             <div className="flex rounded-[var(--radius-sm)] border border-[var(--border)] bg-white p-1" aria-label="Relationship direction">
               {(['both', 'incoming', 'outgoing'] as DirectionFilter[]).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={direction === item}
-                  onClick={() => setDirection(item)}
-                  className={`rounded px-3 py-1.5 text-xs font-semibold capitalize ${direction === item ? 'bg-[var(--text)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]'}`}
-                >
-                  {item}
-                </button>
+                <button key={item} type="button" aria-pressed={direction === item} onClick={() => setDirection(item)} className={`rounded px-3 py-1.5 text-xs font-semibold capitalize ${direction === item ? 'bg-[var(--text)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--surface)]'}`}>{item}</button>
               ))}
             </div>
           </div>
@@ -460,7 +403,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
         <div className={`border-b px-5 py-3 text-xs leading-relaxed md:px-6 ${rootIsComplete ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-amber-200 bg-amber-50 text-amber-950'}`}>
           <strong>{rootIsComplete ? 'Complete direct slice.' : 'Partial loaded slice.'}</strong>{' '}
           {rootIsComplete
-            ? 'All direct relationships recorded for this selected decision function in canonical graph schema 1.2 are included in the public projection.'
+            ? 'All direct relationships recorded for this reviewed decision function in canonical graph schema 1.2 are included in the public projection.'
             : 'This neighboring node is included because it connects to a reviewed decision function. Only relationships present in the loaded public projection are shown; the interface does not imply complete graph coverage for this node.'}
         </div>
       )}
@@ -495,10 +438,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
           )}
 
           <g>
-            {activeEdges.map((edge) => {
-              const dimmed = Boolean(hoveredId && edge.from !== hoveredId && edge.to !== hoveredId)
-              return <GraphEdgeShape key={edgeKey(edge)} edge={edge} positions={layout.positions} dimmed={dimmed} />
-            })}
+            {activeEdges.map((edge) => <GraphEdgeShape key={edgeKey(edge)} edge={edge} positions={layout.positions} dimmed={Boolean(hoveredId && edge.from !== hoveredId && edge.to !== hoveredId)} />)}
           </g>
 
           <g>
@@ -506,10 +446,9 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
               const node = nodeById.get(id)
               const position = layout.positions.get(id)
               if (!node || !position) return null
-              const dimmed = Boolean(hoveredConnected && !hoveredConnected.has(id))
               return (
                 <g key={id} onMouseEnter={() => setHoveredId(id)}>
-                  <GraphNodeShape node={node} position={position} active={inspectedNode.id === id} root={rootId === id} dimmed={dimmed} onInspect={inspectNode} />
+                  <GraphNodeShape node={node} position={position} active={inspectedNode.id === id} root={rootId === id} dimmed={Boolean(hoveredConnected && !hoveredConnected.has(id))} onInspect={inspectNode} />
                 </g>
               )
             })}
@@ -524,11 +463,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Selected node</p>
               <h3 className="mt-1 break-all font-mono text-base font-semibold text-[var(--text)]">{inspectedNode.name}</h3>
             </div>
-            {inspectedNode.id !== rootId && (
-              <button type="button" onClick={() => focusNode(inspectedNode.id)} className="rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text)] hover:bg-[var(--surface)]">
-                Focus node
-              </button>
-            )}
+            {inspectedNode.id !== rootId && <button type="button" onClick={() => focusNode(inspectedNode.id)} className="rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3 py-2 text-xs font-semibold text-[var(--text)] hover:bg-[var(--surface)]">Focus node</button>}
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-2">
@@ -550,9 +485,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
           </dl>
 
           <div className="mt-5 flex flex-wrap gap-2 text-xs">
-            {(Object.keys(relationshipCounts.byType) as GraphEdge['type'][]).map((type) => (
-              <span key={type} className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[var(--text-muted)]">{edgeLabels[type]} · {relationshipCounts.byType[type]}</span>
-            ))}
+            {(Object.keys(relationshipCounts.byType) as GraphEdge['type'][]).map((type) => <span key={type} className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[var(--text-muted)]">{edgeLabels[type]} · {relationshipCounts.byType[type]}</span>)}
           </div>
 
           <p className="mt-5 text-xs leading-relaxed text-[var(--text-subtle)]">
@@ -581,9 +514,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
                 return (
                   <li key={edgeKey(edge)} className="grid gap-2 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 sm:grid-cols-[auto_1fr_auto] sm:items-center">
                     <span className="font-mono text-xs font-semibold" style={{ color: edgeStyles[edge.type].stroke }}>{outgoing ? '→' : '←'} {edge.type}</span>
-                    <button type="button" onClick={() => setInspectedId(otherId)} className="min-w-0 truncate text-left font-mono text-xs font-medium text-[var(--text)] underline-offset-2 hover:underline">
-                      {other?.name ?? otherId}
-                    </button>
+                    <button type="button" onClick={() => setInspectedId(otherId)} className="min-w-0 truncate text-left font-mono text-xs font-medium text-[var(--text)] underline-offset-2 hover:underline">{other?.name ?? otherId}</button>
                     {other && <button type="button" onClick={() => focusNode(otherId)} className="justify-self-start rounded border border-[var(--border-control)] bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[var(--text)] hover:bg-[var(--surface-strong)] sm:justify-self-auto">Focus</button>}
                   </li>
                 )
