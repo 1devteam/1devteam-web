@@ -19,6 +19,7 @@ const ServicesPage = lazy(() => import('@/pages/ServicesPage').then((module) => 
 const TermsPage = lazy(() => import('@/pages/TermsPage').then((module) => ({ default: module.TermsPage })))
 const TrustPage = lazy(() => import('@/pages/TrustPage').then((module) => ({ default: module.TrustPage })))
 const WikiPage = lazy(() => import('@/pages/WikiPage').then((module) => ({ default: module.WikiPage })))
+const WikiEntryPage = lazy(() => import('@/pages/WikiEntryPage').then((module) => ({ default: module.WikiEntryPage })))
 const WorkPage = lazy(() => import('@/pages/WorkPage').then((module) => ({ default: module.WorkPage })))
 
 function RouteLoading() {
@@ -37,6 +38,7 @@ export function AppRoutes() {
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
           <Route path="wiki" element={<WikiPage />} />
+          <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="enterprise" element={<EnterprisePage />} />
