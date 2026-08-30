@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { wikiCategories, wikiEntries, type WikiCategory } from '@/data/wiki'
+import { featuredWikiIds } from '@/data/wikiFeatured'
 
 const allCategories = ['All', ...wikiCategories] as const
 
@@ -202,6 +204,12 @@ export function WikiPage() {
                               <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.title}</h3>
                               <p className="mt-4 text-lg font-medium leading-relaxed text-[var(--text)]">{entry.summary}</p>
                               <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">{entry.detail}</p>
+
+                              {featuredWikiIds.has(entry.id) && (
+                                <Link to={`/wiki/${entry.id}`} className="mt-5 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">
+                                  Read expanded reference →
+                                </Link>
+                              )}
 
                               {references && (
                                 <div className="mt-5 space-y-1.5 text-sm">
