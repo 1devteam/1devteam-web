@@ -22,7 +22,7 @@ export function WorkPage() {
       <PageHero
         eyebrow="Technical Evidence"
         title="Work, systems, and development artifacts"
-        description="This section presents software, tooling, architecture artifacts, and development evidence according to their current state. The objective is to make the underlying work inspectable without converting development artifacts into unsupported maturity claims."
+        description="Software, tooling, architecture artifacts, and development evidence are presented according to the state supported by current evidence. Maturity labels describe what exists now rather than what a product or system is intended to become."
       >
         <Button asChild><Link to="/contact">Discuss a project</Link></Button>
       </PageHero>
@@ -43,7 +43,7 @@ export function WorkPage() {
                 <CardContent>
                   {item.slug === 'ajenda-ai' && (
                     <div className="mb-6 max-w-3xl">
-                      <AjendaCommandCenter caption="Ajenda AI · development product surface. Local command-center interface captured during active development." />
+                      <AjendaCommandCenter caption="Ajenda AI · development product surface captured during active local development." />
                     </div>
                   )}
 
@@ -51,12 +51,12 @@ export function WorkPage() {
 
                   {item.slug === 'snapshot' && (
                     <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
-                      The canonical public Snapshot figure now pairs the real execution artifact with an inspectable public-safe excerpt from the v10 JSON output.
+                      Public evidence includes the recorded Snapshot v10 execution against Ajenda and a reviewed, public-safe excerpt from the structured output.
                     </p>
                   )}
                   {item.slug === 'architectural-graph' && (
                     <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-subtle)]">
-                      The interactive graph is maintained as a single canonical inspection surface on the homepage so explanatory pages can refer back to the same artifact rather than rendering divergent copies.
+                      Public evidence includes a reviewed interactive projection derived from Ajenda&apos;s canonical development graph artifact.
                     </p>
                   )}
 
@@ -68,10 +68,10 @@ export function WorkPage() {
 
                   <div className="mt-6 flex flex-wrap gap-3">
                     {item.slug === 'ajenda-ai' && <Button asChild variant="outline"><Link to="/products/ajenda">View Ajenda AI</Link></Button>}
-                    {item.slug === 'snapshot' && <Button asChild variant="outline"><a href="/#snapshot">Inspect Snapshot artifact</a></Button>}
-                    {item.slug === 'architectural-graph' && <Button asChild variant="outline"><a href="/#architecture-graph">Inspect the live graph</a></Button>}
+                    {item.slug === 'snapshot' && <Button asChild variant="outline"><a href="/#snapshot">Inspect Snapshot evidence</a></Button>}
+                    {item.slug === 'architectural-graph' && <Button asChild variant="outline"><a href="/#architecture-graph">Inspect graph evidence</a></Button>}
                     {item.slug === 'pride-protocol' && <Button asChild variant="outline"><a href="/#pride-protocol">View PRIDE artifact</a></Button>}
-                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><Link to="/method">View methodology</Link></Button>}
+                    {item.slug === 'pride-protocol' && <Button asChild variant="outline"><Link to="/method">Read the method</Link></Button>}
                   </div>
                 </CardContent>
               </Card>

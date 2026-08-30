@@ -46,7 +46,7 @@ export const footerLinks = {
   ],
   offerings: [
     { label: 'Services', href: '/services' },
-    { label: 'Enterprise', href: '/enterprise' },
+    { label: 'Complex Systems', href: '/enterprise' },
     { label: 'Products', href: '/products' },
     { label: 'Ajenda AI', href: '/products/ajenda' },
     { label: 'Method', href: '/method' },
@@ -84,18 +84,21 @@ export const buildAreas = [
     description:
       'Architecture, implementation, integration, and remediation for software where the surrounding system matters as much as the individual feature.',
     href: '/services',
+    cta: 'Software development services',
   },
   {
     title: 'Products',
     description:
       'Software developed around problems with sufficient scope, repeatability, and technical value to justify becoming reusable systems.',
     href: '/products',
+    cta: 'View software products',
   },
   {
     title: 'Applied R&D',
     description:
       'Structured investigation into recurring software-development problems, including the methods and tooling required to reason about increasingly complex systems.',
     href: '/research',
+    cta: 'Read the R&D program',
   },
 ] as const
 

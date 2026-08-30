@@ -11,6 +11,33 @@ const principles = [
   ['Completion includes verification.', 'Implementation, testing, failure-path analysis, documentation, and review are parts of the same engineering task.'],
 ] as const
 
+const developmentHistory = [
+  {
+    label: 'Process',
+    title: 'PRIDE Protocol',
+    problem: 'AI-assisted implementation could become plausible before enough of the surrounding system had been understood.',
+    response: 'The development process was made explicit and measurable around proper actions, verification, and complete-system reasoning.',
+    href: '/method',
+    cta: 'Read the development method',
+  },
+  {
+    label: 'Context',
+    title: 'Snapshot',
+    problem: 'Large repositories still had to be reconstructed when a new model context began.',
+    response: 'Snapshot was built to transfer structured repository and project state without claiming to replace direct inspection or architectural reasoning.',
+    href: '/wiki#snapshot',
+    cta: 'Read the Snapshot reference',
+  },
+  {
+    label: 'Architecture',
+    title: 'Ajenda Architectural Graph',
+    problem: 'Project information alone did not preserve decision ownership, invariants, dependencies, blast radius, or proof relationships.',
+    response: 'The graph externalized that structure into a persistent machine-readable development and CI artifact.',
+    href: '/#architecture-graph',
+    cta: 'Inspect the Architectural Graph',
+  },
+] as const
+
 export function AboutPage() {
   return (
     <>
@@ -29,20 +56,20 @@ export function AboutPage() {
         <div className="container-site grid gap-12 lg:grid-cols-[0.36fr_0.64fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Company model</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">A development company built around difficult problems</h2>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">A development company organized around difficult problems</h2>
           </div>
           <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
             <p>
-              {siteConfig.legalName} is the company behind 1DevTeam&apos;s software development, products, development tooling, and applied research. AI is neither the boundary of the company nor a background utility concealed behind conventional development language. It is an active part of the development system, and its contribution is represented accordingly.
+              {siteConfig.legalName} is the company behind 1DevTeam&apos;s software development, products, development tooling, and applied research. AI is an active part of the development system and is represented openly as part of how the work is performed.
             </p>
             <p>
-              The work remains problem-driven. The appropriate solution may be a new software system, a product, an architectural repair, an integration, a development tool, or a research question. The implementation form follows the problem rather than forcing the problem into a preferred technology category.
+              The company is not bounded by a single technology category. A problem may require a new software system, product development, architecture remediation, integration work, development tooling, or a formal research question. The implementation form follows the problem.
             </p>
             <p>
-              1DevTeam approaches software as a system of interacting contracts, dependencies, state, authority, data, runtime behavior, and failure paths. Implementation is evaluated against the architecture surrounding a requested change rather than only against the behavior immediately visible at the point of modification.
+              Software is treated as a system of interacting contracts, dependencies, state, authority, data, runtime behavior, and failure paths. A change is complete only when the surrounding architecture and required proof support that conclusion.
             </p>
             <p>
-              AI extends the amount of software that can be inspected, analyzed, generated, tested, and reasoned about. It also introduces engineering constraints including context limits, incomplete reconstruction, premature solution selection, local reasoning, and confidence that may exceed available evidence. Those constraints are treated as engineering problems rather than reasons to conceal the AI relationship.
+              Working alongside AI expands the amount of software that can be inspected, generated, tested, and reasoned about, while also introducing engineering constraints such as context limits, incomplete reconstruction, premature solution selection, and confidence that can exceed available evidence. Those constraints are treated as engineering problems in their own right.
             </p>
           </div>
         </div>
@@ -69,48 +96,40 @@ export function AboutPage() {
         <div className="container-site">
           <div className="max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Development history</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">How the development systems emerged</h2>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">A recurring engineering pattern</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              Repeated use of AI on increasingly large software systems exposed different classes of failure. The resulting tools were not designed as retrospective branding concepts; each was built in response to a concrete development constraint and then revised through use.
+              Several current 1DevTeam systems originated from constraints discovered during real software development. Their histories are related, but their responsibilities are different: process discipline, context transfer, and persistent architecture.
             </p>
           </div>
 
-          <div className="mt-12 max-w-5xl space-y-12">
-            <article className="border-t border-[var(--border)] pt-7">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Process → PRIDE Protocol</p>
-              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Plausible output could arrive before sufficient understanding</h3>
-              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-                The first failure mode involved process. A model could produce technically plausible answers before enough of the surrounding system had been read to establish whether the proposed change belonged at the correct architectural layer. PRIDE Protocol converted the required development discipline into an explicit operating standard: read completely enough, investigate uncertainty, reason system-wide, implement the complete solution, test the real behavior, document the result, and review the work against the actual problem.
-              </p>
-              <a href="/#pride-protocol" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">View the PRIDE working artifact →</a>
-            </article>
-
-            <article className="border-t border-[var(--border)] pt-7">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Context → Snapshot</p>
-              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Process discipline did not solve context transfer</h3>
-              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-                Large repositories still had to be reconstructed at the beginning of new model contexts. Snapshot was developed to package project structure and state into a reusable context-transfer artifact, including repository inventory, routes, dependency relationships, tests, parse results, configuration structure, Git state, and related project information. That reduced repeated rediscovery without claiming to replace repository inspection or architectural reasoning.
-              </p>
-              <a href="/#snapshot" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect Snapshot execution and output →</a>
-            </article>
-
-            <article className="border-t border-[var(--border)] pt-7">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Architecture → Ajenda Architectural Graph</p>
-              <h3 className="mt-2 text-2xl font-semibold tracking-tight">Project information and architectural meaning are not the same thing</h3>
-              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-                Repository reading and Snapshot could expose extensive project information while still requiring the architecture itself to be reconstructed during change analysis. The Ajenda Architectural Graph externalized that next layer into a persistent machine-readable model of structure, ownership, dependencies, selected invariants, proof relationships, and increasingly fine-grained decision behavior.
-              </p>
-              <a href="/#architecture-graph" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect the live Architectural Graph →</a>
-            </article>
+          <div className="mt-12 max-w-5xl">
+            {developmentHistory.map((item) => (
+              <article key={item.title} className="grid gap-5 border-t border-[var(--border)] py-8 md:grid-cols-[0.24fr_0.76fr]">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{item.label}</p>
+                  <h3 className="mt-2 text-xl font-semibold tracking-tight">{item.title}</h3>
+                </div>
+                <div>
+                  <p className="text-base leading-relaxed text-[var(--text)]"><strong>Observed constraint:</strong> {item.problem}</p>
+                  <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]"><strong className="text-[var(--text)]">Engineering response:</strong> {item.response}</p>
+                  {item.href.startsWith('/#') ? (
+                    <a href={item.href} className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">{item.cta} →</a>
+                  ) : (
+                    <Link to={item.href} className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">{item.cta} →</Link>
+                  )}
+                </div>
+              </article>
+            ))}
           </div>
 
-          <p className="mt-12 max-w-4xl text-[17px] leading-relaxed text-[var(--text-muted)]">
-            The recurring pattern is consistent: observe a limitation → investigate the mechanism → build a correction → use it in real work → refine it from evidence → reuse or productize it only when the evidence supports doing so. That pattern now extends into 1DevTeam&apos;s first formal R&amp;D program, where questions raised during Ajenda development are studied systematically rather than converted directly into product claims.
+          <p className="mt-10 max-w-4xl text-[17px] leading-relaxed text-[var(--text-muted)]">
+            The recurring pattern is: observe a limitation → investigate the mechanism → build a correction → use it in real work → refine it from evidence → reuse or productize it only when the evidence supports doing so. The formal R&amp;D program applies the same discipline to questions that require empirical study rather than product interpretation.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild><Link to="/method">Development method</Link></Button>
             <Button asChild variant="outline"><Link to="/research">Formal R&amp;D program</Link></Button>
+            <Button asChild variant="outline"><Link to="/wiki">Technical Wiki</Link></Button>
           </div>
         </div>
       </section>

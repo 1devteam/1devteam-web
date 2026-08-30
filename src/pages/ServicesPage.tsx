@@ -15,7 +15,7 @@ export function ServicesPage() {
       <PageHero
         eyebrow="Software Development"
         title="Software and systems development for difficult problems"
-        description="1DevTeam provides development work across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software. Work is scoped around the actual system boundary rather than forcing the problem into a predefined service category."
+        description="1DevTeam provides development work across new systems, existing architectures, product development, remediation, integrations, and AI-enabled software. The service category follows the system being changed rather than forcing the problem into a fixed delivery template."
       >
         <Button asChild><Link to="/contact">Discuss a project</Link></Button>
       </PageHero>
@@ -23,10 +23,10 @@ export function ServicesPage() {
       <section className="section-pad">
         <div className="container-site grid gap-12 lg:grid-cols-[0.32fr_0.68fr]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Capabilities</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight">The service category follows the system, not the other way around</h2>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Capability areas</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight">Different entry points, one system boundary</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              The same engagement can involve product behavior, persistence, authority, integrations, runtime state, recovery, and architecture at once. Service labels are therefore entry points rather than artificial boundaries around the work.
+              A product feature, integration, defect, or AI capability can cross persistence, authority, runtime state, security, recovery, and architecture at the same time. Scope is therefore established from the actual change surface before implementation begins.
             </p>
           </div>
 
@@ -47,12 +47,27 @@ export function ServicesPage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--border)] bg-[var(--surface)] section-pad">
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
+        <div className="container-site grid gap-10 lg:grid-cols-[0.32fr_0.68fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Complex systems</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">When the real problem is larger than the visible feature</h2>
+          </div>
+          <div className="max-w-4xl">
+            <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
+              Existing systems sometimes require architecture reconstruction before a repair can be scoped correctly. That work is treated separately from the service overview because it depends on ownership, state, data boundaries, concurrency, integrations, recovery behavior, and downstream proof across the affected system.
+            </p>
+            <Button asChild variant="outline" className="mt-6"><Link to="/enterprise">Complex systems &amp; architecture remediation</Link></Button>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-[var(--border)] section-pad">
         <div className="container-site grid gap-10 lg:grid-cols-[0.32fr_0.68fr]">
           <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How work begins</h2>
           <div className="max-w-4xl">
             <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
-              A development engagement begins by establishing the current system state, required behavior, architectural constraints, available evidence, and ownership boundary of the requested change. Implementation begins after those conditions are sufficiently understood to define the correct scope of work.
+              A development engagement begins by establishing current system state, required behavior, architectural constraints, available evidence, unresolved information, and the ownership boundary of the requested change. Implementation begins after those conditions are sufficiently understood to define the correct scope of work.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button asChild><Link to="/contact">Discuss a project</Link></Button>
