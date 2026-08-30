@@ -32,6 +32,7 @@
     "description": "Technical reference for PRIDE Protocol, a development-process discipline for sufficient context, complete implementation, verification, documentation, and review.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -41,6 +42,7 @@
     "description": "Technical reference for Snapshot, a structured project-context transfer system used during AI-assisted software development.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -50,6 +52,7 @@
     "description": "Technical reference for the Ajenda Architectural Graph and its use in dependency reasoning, decision ownership, change impact, proof selection, and completeness auditing.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -59,6 +62,7 @@
     "description": "Technical reference defining architectural blast radius as the system surfaces materially affected by a software change beyond the files directly modified.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -68,6 +72,7 @@
     "description": "Technical reference for reasoning scope: the portion of a software system included in the analysis used to understand and plan a change.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -77,6 +82,7 @@
     "description": "Technical research reference for corrective PR cascades and the evidence required to distinguish correction, completion, introduced defects, and exposed latent defects.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -86,6 +92,7 @@
     "description": "Technical reference for identifying the function, component, contract, or invariant that actually owns a software decision rather than merely observing its result.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -95,6 +102,7 @@
     "description": "Technical reference for selecting tests, invariant checks, semantic checks, and other evidence required by the architecture affected by a software change.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-08-30",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -168,6 +176,7 @@
     "description": "Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-06-12",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -177,6 +186,7 @@
     "description": "Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-05-28",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
@@ -186,6 +196,7 @@
     "description": "How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.",
     "robots": "index, follow",
     "type": "article",
+    "published": "2026-05-04",
     "lastmod": "2026-08-30",
     "sitemap": true
   },
