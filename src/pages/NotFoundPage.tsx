@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button'
 export function NotFoundPage() {
   return (
     <>
-      <Seo title="Page not found" description="The page you requested does not exist." path="/404" />
+      <Seo
+        title="Page not found"
+        description="The page you requested does not exist."
+        path="/404"
+        robots="noindex, nofollow"
+        canonical={false}
+      />
       <section className="section-pad">
         <div className="container-site max-w-xl text-center">
           <p className="text-sm font-semibold text-[var(--brand)]">404</p>
