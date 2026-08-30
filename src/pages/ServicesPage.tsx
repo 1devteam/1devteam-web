@@ -57,7 +57,7 @@ export function ServicesPage() {
             <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
               Existing systems sometimes require architecture reconstruction before a repair can be scoped correctly. That work is treated separately from the service overview because it depends on ownership, state, data boundaries, concurrency, integrations, recovery behavior, and downstream proof across the affected system.
             </p>
-            <Button asChild variant="outline" className="mt-6"><Link to="/enterprise">Complex systems &amp; architecture remediation</Link></Button>
+            <Button asChild variant="outline" className="mt-6 max-w-full whitespace-normal text-center leading-snug"><Link to="/enterprise">Complex systems &amp; architecture remediation</Link></Button>
           </div>
         </div>
       </section>
