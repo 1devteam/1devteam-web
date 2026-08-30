@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "audit:contrast": "node scripts/check-contrast.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "audit:seo": "node scripts/check-routes.mjs && node scripts/generate-sitemap.mjs --check",
     "preview": "vite preview"
   },
   "dependencies": {
