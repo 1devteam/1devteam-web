@@ -310,7 +310,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
         <svg
           viewBox={`0 0 1000 ${layout.height}`}
           className="block min-w-[760px] w-full"
-          role="img"
+          role="group"
           aria-label={rootId ? `Direct canonical relationships for ${nodeById.get(rootId)?.name}` : 'Selected mission-composition functions from the Ajenda canonical architecture graph'}
           onMouseLeave={() => setHoveredId(null)}
         >
