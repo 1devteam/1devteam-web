@@ -39,5 +39,8 @@ jobs:
       - name: Audit contrast
         run: npm run audit:contrast
 
+      - name: Audit routes and SEO metadata
+        run: npm run audit:seo
+
       - name: Build
         run: npm run build
