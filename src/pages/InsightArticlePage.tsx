@@ -39,7 +39,7 @@ export function InsightArticlePage() {
           mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
           image: articleImage,
           datePublished: post.date,
-          dateModified: post.date,
+          dateModified: post.updatedAt,
           author: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
           publisher: { '@type': 'Organization', name: siteConfig.name, url: siteConfig.url },
         }}
@@ -58,7 +58,7 @@ export function InsightArticlePage() {
               {' · '}
               <time dateTime={post.date}>{formatDate(post.date)}</time>
               {' · '}
-              Last revised {formatDate(post.date)}
+              Last revised <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
             </p>
           </div>
         </header>
