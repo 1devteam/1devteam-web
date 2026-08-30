@@ -6,6 +6,7 @@ import { chromium } from 'playwright'
 const manifest = JSON.parse(await readFile('shared/route-manifest.json', 'utf8'))
 const knownPaths = new Set(manifest.map((route) => route.path))
 const origin = 'http://127.0.0.1:4173'
+const canonicalOrigin = 'https://1devteam.com'
 const server = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--port', '4173'], {
   stdio: ['ignore', 'pipe', 'pipe'],
 })
@@ -101,8 +102,9 @@ try {
         if (result.unknownLinks.length) failures.push(`${viewport.name} ${route.path}: unknown internal route link(s): ${result.unknownLinks.join(', ')}`)
         if (result.brokenFragments.length) failures.push(`${viewport.name} ${route.path}: broken same-page fragment(s): ${result.brokenFragments.join(', ')}`)
         if (result.duplicateIds.length) failures.push(`${viewport.name} ${route.path}: duplicate id(s): ${result.duplicateIds.join(', ')}`)
-        if (route.robots.startsWith('index') && result.canonical !== `${origin}${route.path === '/' ? '/' : route.path}`) {
-          failures.push(`${viewport.name} ${route.path}: canonical is ${result.canonical ?? 'missing'}`)
+        const expectedCanonical = `${canonicalOrigin}${route.path === '/' ? '/' : route.path}`
+        if (route.robots.startsWith('index') && result.canonical !== expectedCanonical) {
+          failures.push(`${viewport.name} ${route.path}: canonical is ${result.canonical ?? 'missing'}, expected ${expectedCanonical}`)
         }
         if (result.robots !== route.robots) failures.push(`${viewport.name} ${route.path}: robots metadata is ${result.robots ?? 'missing'}`)
         if (runtimeErrors.length) failures.push(`${viewport.name} ${route.path}: runtime console/page errors: ${runtimeErrors.join(' | ')}`)
