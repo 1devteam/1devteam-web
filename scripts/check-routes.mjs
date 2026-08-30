@@ -7,6 +7,7 @@ const manifest = JSON.parse(await readFile(path.join(root, 'shared', 'route-mani
 const appSource = await readFile(path.join(root, 'src', 'App.tsx'), 'utf8')
 const prerenderSource = await readFile(path.join(root, 'src', 'prerender-entry.tsx'), 'utf8')
 const siteSource = await readFile(path.join(root, 'src', 'data', 'site.ts'), 'utf8')
+const featuredWikiSource = await readFile(path.join(root, 'src', 'data', 'wikiFeatured.ts'), 'utf8')
 
 const failures = []
 const paths = manifest.map((route) => route.path)
@@ -74,10 +75,25 @@ if (!insightsBlock) {
   }
 }
 
+const featuredBlock = featuredWikiSource.match(/export const featuredWikiEntries:[\s\S]*?= \[(.*?)\]\s+as const/s)?.[1]
+if (!featuredBlock) {
+  failures.push('could not locate featuredWikiEntries in src/data/wikiFeatured.ts')
+} else {
+  const featuredIds = [...featuredBlock.matchAll(/\n\s+id:\s*'([^']+)'/g)].map((match) => match[1])
+  const expectedWikiPaths = new Set(featuredIds.map((id) => `/wiki/${id}`))
+  const manifestWikiDetailPaths = new Set(paths.filter((routePath) => routePath.startsWith('/wiki/')))
+  for (const expectedPath of expectedWikiPaths) {
+    if (!manifestWikiDetailPaths.has(expectedPath)) failures.push(`Featured wiki entry ${expectedPath} is missing from the route manifest`)
+  }
+  for (const manifestPath of manifestWikiDetailPaths) {
+    if (!expectedWikiPaths.has(manifestPath)) failures.push(`Manifest wiki reference ${manifestPath} has no matching featured entry`)
+  }
+}
+
 if (failures.length) {
   console.error('SEO route audit failed:')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log(`PASS route manifest covers ${manifest.length} public routes, prerender coverage, route images, and all current insight slugs`)
+console.log(`PASS route manifest covers ${manifest.length} public routes, prerender coverage, route images, insights, and featured wiki references`)
