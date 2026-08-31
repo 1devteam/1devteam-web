@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { wikiCategories, wikiEntries, type WikiCategory } from '@/data/wiki'
+import { featuredWikiIds } from '@/data/wikiFeatured'
 
 const allCategories = ['All', ...wikiCategories] as const
 
@@ -10,13 +12,13 @@ type CategoryFilter = 'All' | WikiCategory
 
 const chapterIntroductions: Record<WikiCategory, string> = {
   Systems:
-    'The systems chapter describes the software, development mechanisms, and R&D outputs that exist because different parts of the development problem require different forms of structure. Read these entries together: PRIDE addresses process discipline, Snapshot addresses project-context transfer, and the Architectural Graph externalizes architecture for reasoning and proof.',
+    'Development systems and software that address distinct parts of the work: process discipline, project-context transfer, persistent architecture, product execution, and applied R&D outputs.',
   Architecture:
-    'The architecture chapter defines the relationships used to reason beyond the file being edited. These terms describe ownership, dependencies, invariants, blast radius, graph relationships, and the proof surface required when a local change can affect a larger system.',
+    'Terms for reasoning beyond the file being edited, including ownership, dependencies, invariants, blast radius, graph relationships, and the proof surface surrounding a change.',
   Research:
-    'The research chapter defines the units used in 1DevTeam R&D Program #1. These entries separate what is being measured from what is merely observed, preserve the graph intervention boundary, and prevent preliminary patterns from being presented as settled findings.',
+    'Units used in 1DevTeam R&D Program #1 to separate measurement, observations, intervention periods, and findings without promoting preliminary patterns into conclusions.',
   Glossary:
-    'The glossary collects supporting terms used across Ajenda, the development method, architecture work, and the research program. They are included so a reader can move through the site without needing to infer specialized meanings from context alone.',
+    'Supporting terms used across Ajenda, the development method, architecture work, and the research program.',
 }
 
 const siteReferences: Partial<Record<string, readonly { label: string; href: string }[]>> = {
@@ -89,26 +91,8 @@ export function WikiPage() {
       <PageHero
         eyebrow="Technical Wiki"
         title="Reference documentation for the systems behind the work"
-        description="A connected technical reference for people building software alongside AI. The wiki defines the systems, architecture, research language, and technical concepts used across 1DevTeam while keeping implemented behavior, development objectives, hypotheses, and unresolved questions explicitly separate."
+        description="Definitions for 1DevTeam software, development systems, architecture, and research terminology. Implemented behavior, development objectives, hypotheses, and unresolved questions remain explicitly separated."
       />
-
-      <section className="section-pad border-b border-[var(--border)]">
-        <div className="container-site max-w-5xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">How to read the reference</p>
-          <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">Follow the relationships, not just the definitions.</h2>
-          <div className="mt-6 max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
-            <p>
-              This wiki is structured as a companion to the technical narrative across the rest of the site. Individual definitions are useful on their own, but the larger value comes from following how one concept leads into another: process discipline leads to context transfer, context transfer exposes the need for persistent architecture, architecture changes how blast radius and proof can be reasoned about, and those changes become measurable inside the research program.
-            </p>
-            <p>
-              A useful first reading path is <a href="#pride-protocol" className="font-medium text-[var(--brand)] hover:underline">PRIDE Protocol</a> → <a href="#snapshot" className="font-medium text-[var(--brand)] hover:underline">Snapshot</a> → <a href="#architectural-graph" className="font-medium text-[var(--brand)] hover:underline">Architectural Graph</a> → <a href="#architectural-blast-radius" className="font-medium text-[var(--brand)] hover:underline">Architectural blast radius</a> → <a href="#reasoning-scope" className="font-medium text-[var(--brand)] hover:underline">Reasoning scope</a> → <a href="#pr-cascade" className="font-medium text-[var(--brand)] hover:underline">Corrective PR cascade</a>.
-            </p>
-            <p>
-              The preserved PRIDE artifact, Snapshot execution and JSON excerpt, and live Architectural Graph remain on the homepage as canonical figures. Wiki entries cross-reference those figures rather than duplicating them.
-            </p>
-          </div>
-        </div>
-      </section>
 
       <section className="border-b border-[var(--border)] bg-[var(--surface)] py-8">
         <div className="container-site">
@@ -147,7 +131,7 @@ export function WikiPage() {
             </div>
           </div>
 
-          <p className="mt-5 text-sm text-[var(--text-subtle)]">
+          <p className="mt-5 text-sm text-[var(--text-subtle)]" aria-live="polite">
             <strong className="text-[var(--text)]">{filtered.length}</strong> of {wikiEntries.length} canonical entries
             {searching ? ' match the current reference view.' : ' are available across Systems, Architecture, Research, and Glossary.'}
           </p>
@@ -157,7 +141,7 @@ export function WikiPage() {
       <section className="section-pad">
         <div className="container-site grid gap-12 lg:grid-cols-[0.27fr_0.73fr]">
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">On this page</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Reference index</p>
             <nav className="mt-5 max-h-[70vh] space-y-7 overflow-auto pr-3" aria-label="Wiki entry index">
               {grouped.map((group) => (
                 <div key={group.category}>
@@ -220,6 +204,12 @@ export function WikiPage() {
                               <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.title}</h3>
                               <p className="mt-4 text-lg font-medium leading-relaxed text-[var(--text)]">{entry.summary}</p>
                               <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">{entry.detail}</p>
+
+                              {featuredWikiIds.has(entry.id) && (
+                                <Link to={`/wiki/${entry.id}`} className="mt-5 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">
+                                  Read expanded reference →
+                                </Link>
+                              )}
 
                               {references && (
                                 <div className="mt-5 space-y-1.5 text-sm">

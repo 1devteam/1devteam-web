@@ -25,8 +25,9 @@ export function ProductsPage() {
       <section className="section-pad">
         <div className="container-site">
           <div className="max-w-4xl">
-            <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
-              Product pages remain visually discrete because the products themselves are discrete systems. The surrounding explanation stays continuous: each product should make clear what problem it addresses, what is implemented now, and which claims remain development objectives rather than established outcomes.
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Current portfolio</p>
+            <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
+              Ajenda AI is the current flagship product under active private development. Grafted Plus and Grafted First are applied R&amp;D outputs whose product objectives remain separate from the conclusions of the research program that may inform them.
             </p>
           </div>
 
@@ -43,7 +44,7 @@ export function ProductsPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="max-w-2xl text-[17px] leading-relaxed text-[var(--text-muted)]">
-                    Ajenda AI is an execution system for converting goals into structured missions, plans, tasks, approvals, and controlled actions. The system is being developed around the requirements of durable execution rather than conversation alone. Its architecture includes explicit authority boundaries, persistent mission state, capability selection, review paths, recovery behavior, execution evidence, and controlled interaction with connected systems.
+                    Ajenda AI is an execution system for converting goals into structured missions, plans, tasks, approvals, and controlled actions. Its architecture includes explicit authority boundaries, persistent mission state, capability selection, review paths, recovery behavior, execution evidence, and controlled interaction with connected systems.
                   </p>
                   <Button asChild className="mt-6">
                     <Link to="/products/ajenda">Explore Ajenda AI <ArrowRight className="h-4 w-4" aria-hidden /></Link>
@@ -53,7 +54,7 @@ export function ProductsPage() {
               <div className="border-t border-[var(--border)] bg-[var(--surface)] p-6 lg:border-l lg:border-t-0 lg:p-8">
                 <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Current status</p>
                 <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
-                  Ajenda AI is under active private development and is locally operational. This site does not represent it as a generally available hosted service or claim customer deployment that has not occurred.
+                  Ajenda AI is under active private development and is locally operational. It is not represented as a generally available hosted service or as a customer deployment.
                 </p>
               </div>
             </div>
@@ -63,7 +64,7 @@ export function ProductsPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&amp;D outputs</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Grafted Plus and Grafted First</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              These systems are emerging from the same architecture and repair problems examined in the formal R&amp;D program. Their product objectives remain separate from the study&apos;s conclusions: research can support, narrow, change, or contradict the assumptions behind either system.
+              These systems emerge from architecture and repair problems examined in the formal R&amp;D program. Research can support, narrow, change, or contradict the assumptions behind either system; product direction does not determine the study&apos;s conclusions.
             </p>
           </div>
 
@@ -94,7 +95,7 @@ export function ProductsPage() {
               Grafted First → intended architecture → implementation → Grafted Plus → reconstructed architecture → drift analysis
             </p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
-              This remains a development hypothesis, not a completed research finding. The research program can support, narrow, change, or contradict the assumptions behind these systems.
+              This remains a development hypothesis, not a completed research finding.
             </p>
             <Button asChild variant="outline" className="mt-5"><Link to="/research">Read the R&amp;D program</Link></Button>
           </div>

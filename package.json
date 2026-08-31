@@ -5,11 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build --ssr src/prerender-entry.tsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/check-prerender.mjs && node scripts/check-bundle.mjs",
     "lint": "oxlint",
     "audit:contrast": "node scripts/check-contrast.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "audit:seo": "node scripts/check-routes.mjs && node scripts/generate-sitemap.mjs --check",
+    "audit:prerender": "node scripts/check-prerender.mjs",
+    "audit:bundle": "node scripts/check-bundle.mjs",
+    "audit:browser": "node scripts/check-browser.mjs",
+    "audit:prod-deps": "npm audit --omit=dev --audit-level=high",
+    "audit:deps": "npm audit --audit-level=moderate",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,18 +31,19 @@
     "lucide-react": "^1.24.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1",
+    "react-router-dom": "^7.18.2",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@cloudflare/workers-types": "^5.20260731.1",
     "@tailwindcss/vite": "^4.3.2",
     "@types/mdx": "^2.0.14",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@types/react-router-dom": "^5.3.3",
-    "@cloudflare/workers-types": "^5.20260731.1",
     "@vitejs/plugin-react": "^6.0.3",
     "jsdom": "^29.1.1",
     "oxlint": "^1.71.0",
@@ -45,6 +51,6 @@
     "tailwindcss": "^4.3.2",
     "typescript": "~6.0.2",
     "vite": "^8.1.1",
-    "wrangler": "^4.110.0"
+    "wrangler": "^4.127.1"
   }
 }

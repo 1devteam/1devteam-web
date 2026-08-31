@@ -18,6 +18,7 @@ type RouteMeta = {
   description: string
   robots: string
   type: 'website' | 'article'
+  image?: string
 }
 
 const routes = routeManifest as RouteMeta[]
@@ -61,7 +62,7 @@ export function Seo({
   const resolvedType = manifestMeta?.type ?? type
   const resolvedRobots = manifestMeta?.robots ?? robots
   const url = `${siteConfig.url}${path}`
-  const image = `${siteConfig.url}${siteConfig.ogImage}`
+  const image = `${siteConfig.url}${manifestMeta?.image ?? siteConfig.ogImage}`
 
   useEffect(() => {
     document.title = fullTitle
@@ -88,6 +89,8 @@ export function Seo({
         script = document.createElement('script')
         script.id = scriptId
         script.type = 'application/ld+json'
+        const nonce = document.head.querySelector('meta[name="csp-nonce"]')?.getAttribute('content')
+        if (nonce) script.nonce = nonce
         document.head.appendChild(script)
       }
       script.textContent = JSON.stringify(jsonLd)

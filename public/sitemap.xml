@@ -2,15 +2,47 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://1devteam.com/</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/work</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/wiki</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/pride-protocol</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/snapshot</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/architectural-graph</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/architectural-blast-radius</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/reasoning-scope</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/pr-cascade</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/decision-ownership</loc>
+    <lastmod>2026-08-30</lastmod>
+  </url>
+  <url>
+    <loc>https://1devteam.com/wiki/proof-selection</loc>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/research</loc>
@@ -18,23 +50,23 @@
   </url>
   <url>
     <loc>https://1devteam.com/services</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/enterprise</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/products</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/products/ajenda</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/method</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/insights</loc>
@@ -42,23 +74,23 @@
   </url>
   <url>
     <loc>https://1devteam.com/insights/from-goals-to-execution</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/insights/calibrating-ai-trust</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
-    <loc>https://1devteam.com/insights/build-journals-over-case-study-theater</loc>
-    <lastmod>2026-08-29</lastmod>
+    <loc>https://1devteam.com/insights/architectural-scope-and-corrective-repair</loc>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/about</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/contact</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-08-30</lastmod>
   </url>
   <url>
     <loc>https://1devteam.com/privacy</loc>

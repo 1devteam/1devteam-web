@@ -1,32 +1,44 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
-import { AboutPage } from '@/pages/AboutPage'
-import { BrandPage } from '@/pages/BrandPage'
-import { EnterprisePage } from '@/pages/EnterprisePage'
-import { AjendaPage } from '@/pages/AjendaPage'
-import { ContactPage } from '@/pages/ContactPage'
-import { HomePage } from '@/pages/HomePage'
-import { InsightArticlePage } from '@/pages/InsightArticlePage'
-import { InsightsPage } from '@/pages/InsightsPage'
-import { MethodPage } from '@/pages/MethodPage'
-import { NotFoundPage } from '@/pages/NotFoundPage'
-import { PrivacyPage } from '@/pages/PrivacyPage'
-import { ProductsPage } from '@/pages/ProductsPage'
-import { ResearchPage } from '@/pages/ResearchPage'
-import { ServicesPage } from '@/pages/ServicesPage'
-import { TermsPage } from '@/pages/TermsPage'
-import { TrustPage } from '@/pages/TrustPage'
-import { WikiPage } from '@/pages/WikiPage'
-import { WorkPage } from '@/pages/WorkPage'
 
-export default function App() {
+const AboutPage = lazy(() => import('@/pages/AboutPage').then((module) => ({ default: module.AboutPage })))
+const BrandPage = lazy(() => import('@/pages/BrandPage').then((module) => ({ default: module.BrandPage })))
+const EnterprisePage = lazy(() => import('@/pages/EnterprisePage').then((module) => ({ default: module.EnterprisePage })))
+const AjendaPage = lazy(() => import('@/pages/AjendaPage').then((module) => ({ default: module.AjendaPage })))
+const ContactPage = lazy(() => import('@/pages/ContactPage').then((module) => ({ default: module.ContactPage })))
+const HomePage = lazy(() => import('@/pages/HomePage').then((module) => ({ default: module.HomePage })))
+const InsightArticlePage = lazy(() => import('@/pages/InsightArticlePage').then((module) => ({ default: module.InsightArticlePage })))
+const InsightsPage = lazy(() => import('@/pages/InsightsPage').then((module) => ({ default: module.InsightsPage })))
+const MethodPage = lazy(() => import('@/pages/MethodPage').then((module) => ({ default: module.MethodPage })))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })))
+const PrivacyPage = lazy(() => import('@/pages/PrivacyPage').then((module) => ({ default: module.PrivacyPage })))
+const ProductsPage = lazy(() => import('@/pages/ProductsPage').then((module) => ({ default: module.ProductsPage })))
+const ResearchPage = lazy(() => import('@/pages/ResearchPage').then((module) => ({ default: module.ResearchPage })))
+const ServicesPage = lazy(() => import('@/pages/ServicesPage').then((module) => ({ default: module.ServicesPage })))
+const TermsPage = lazy(() => import('@/pages/TermsPage').then((module) => ({ default: module.TermsPage })))
+const TrustPage = lazy(() => import('@/pages/TrustPage').then((module) => ({ default: module.TrustPage })))
+const WikiPage = lazy(() => import('@/pages/WikiPage').then((module) => ({ default: module.WikiPage })))
+const WikiEntryPage = lazy(() => import('@/pages/WikiEntryPage').then((module) => ({ default: module.WikiEntryPage })))
+const WorkPage = lazy(() => import('@/pages/WorkPage').then((module) => ({ default: module.WorkPage })))
+
+function RouteLoading() {
   return (
-    <BrowserRouter>
+    <div className="container-site py-16" role="status" aria-live="polite">
+      <p className="text-sm font-medium text-[var(--text-muted)]">Loading page…</p>
+    </div>
+  )
+}
+
+export function AppRoutes() {
+  return (
+    <Suspense fallback={<RouteLoading />}>
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
           <Route path="wiki" element={<WikiPage />} />
+          <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />
           <Route path="services" element={<ServicesPage />} />
           <Route path="enterprise" element={<EnterprisePage />} />
@@ -44,6 +56,14 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
+    </Suspense>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   )
 }

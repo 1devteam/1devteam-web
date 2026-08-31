@@ -27,6 +27,8 @@ export function SnapshotArtifact() {
         <img
           src="/artifacts/snapshot-v10.svg"
           alt="Snapshot v10 execution in the Ajenda development shell"
+          loading="lazy"
+          decoding="async"
           className="block w-full"
         />
         <figcaption className="border-t border-white/10 bg-[#0a1120] px-5 py-4 text-sm leading-relaxed text-slate-200">

@@ -8,31 +8,51 @@ import { Label } from '@/components/ui/label'
 import { inboxForInterest, projectInterests, siteConfig } from '@/data/site'
 
 type FormState = { name: string; email: string; company: string; interest: string; context: string }
+type FieldErrors = Partial<Record<keyof FormState, string>>
 const initial: FormState = { name: '', email: '', company: '', interest: '', context: '' }
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function validate(form: FormState): FieldErrors {
+  const errors: FieldErrors = {}
+  if (!form.name.trim()) errors.name = 'Enter your name.'
+  if (!form.email.trim()) errors.email = 'Enter your work email.'
+  else if (!emailPattern.test(form.email.trim())) errors.email = 'Enter a valid email address.'
+  if (!form.interest) errors.interest = 'Select a project interest.'
+  return errors
+}
 
 export function ContactPage() {
   const [form, setForm] = useState<FormState>(initial)
+  const [errors, setErrors] = useState<FieldErrors>({})
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [destination, setDestination] = useState<string>(siteConfig.email)
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
+    setErrors((prev) => ({ ...prev, [key]: undefined }))
+    if (status === 'error') setStatus('idle')
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    const nextErrors = validate(form)
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors)
+      setStatus('error')
+      const firstField = ['name', 'email', 'interest'].find((field) => nextErrors[field as keyof FormState])
+      if (firstField) document.getElementById(firstField)?.focus()
+      return
+    }
+
     setStatus('submitting')
     try {
-      if (!form.name.trim() || !form.email.trim() || !form.interest) {
-        setStatus('error')
-        return
-      }
       const inbox = inboxForInterest(form.interest)
       setDestination(inbox)
       const subject = encodeURIComponent(`[1DevTeam] ${form.interest}`)
       const body = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nCompany or role: ${form.company || 'Not provided'}\nInterest: ${form.interest}\n\nContext:\n${form.context || 'Not provided'}`)
       window.location.href = `mailto:${inbox}?subject=${subject}&body=${body}`
       setStatus('success')
+      setErrors({})
       setForm(initial)
     } catch {
       setStatus('error')
@@ -70,11 +90,13 @@ export function ContactPage() {
               <form onSubmit={onSubmit} className="space-y-5 rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 shadow-sm md:p-8" data-analytics="contact-form" noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="name">Name <span className="text-[var(--danger)]">*</span></Label>
-                  <Input id="name" name="name" autoComplete="name" required value={form.name} onChange={(e) => update('name', e.target.value)} />
+                  <Input id="name" name="name" autoComplete="name" required aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} value={form.name} onChange={(e) => update('name', e.target.value)} />
+                  {errors.name && <p id="name-error" className="text-sm text-[var(--danger)]" role="alert">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Work email <span className="text-[var(--danger)]">*</span></Label>
-                  <Input id="email" name="email" type="email" autoComplete="email" required value={form.email} onChange={(e) => update('email', e.target.value)} />
+                  <Input id="email" name="email" type="email" inputMode="email" autoComplete="email" required aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} value={form.email} onChange={(e) => update('email', e.target.value)} />
+                  {errors.email && <p id="email-error" className="text-sm text-[var(--danger)]" role="alert">{errors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="company">Company or role</Label>
@@ -82,16 +104,17 @@ export function ContactPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="interest">Project interest <span className="text-[var(--danger)]">*</span></Label>
-                  <select id="interest" name="interest" required value={form.interest} onChange={(e) => update('interest', e.target.value)} className="flex h-11 w-full rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3.5 text-[15px] text-[var(--text)] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-bright)]">
+                  <select id="interest" name="interest" required aria-invalid={Boolean(errors.interest)} aria-describedby={errors.interest ? 'interest-error' : undefined} value={form.interest} onChange={(e) => update('interest', e.target.value)} className="flex h-11 w-full rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white px-3.5 text-[15px] text-[var(--text)] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-bright)]">
                     <option value="" disabled>Select an option</option>
                     {projectInterests.map((item) => <option key={item} value={item}>{item}</option>)}
                   </select>
+                  {errors.interest && <p id="interest-error" className="text-sm text-[var(--danger)]" role="alert">{errors.interest}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="context">Context (optional)</Label>
                   <Textarea id="context" name="context" rows={5} placeholder="What are you trying to build, change, repair, or understand?" value={form.context} onChange={(e) => update('context', e.target.value)} />
                 </div>
-                {status === 'error' && <p className="text-sm text-[var(--danger)]" role="alert">Please complete the required fields.</p>}
+                {status === 'error' && !Object.keys(errors).length && <p className="text-sm text-[var(--danger)]" role="alert">The email draft could not be opened. Use the direct email address shown beside the form.</p>}
                 <Button type="submit" size="lg" disabled={status === 'submitting'}>{status === 'submitting' ? 'Opening…' : 'Open email draft'}</Button>
               </form>
             )}
@@ -101,29 +124,15 @@ export function ContactPage() {
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">
               <h2 className="text-lg font-semibold">Company and legal contact</h2>
               <dl className="mt-3 space-y-2 text-base leading-relaxed text-[var(--text-muted)]">
-                <div>
-                  <dt className="font-medium text-[var(--text)]">Legal entity</dt>
-                  <dd>{siteConfig.legalName}</dd>
-                </div>
-                <div>
-                  <dt className="font-medium text-[var(--text)]">Company website</dt>
-                  <dd><a href={siteConfig.url} className="text-[var(--brand)] hover:underline">{siteConfig.url}</a></dd>
-                </div>
-                <div>
-                  <dt className="font-medium text-[var(--text)]">General and legal inquiries</dt>
-                  <dd><a href={`mailto:${siteConfig.email}`} className="text-[var(--brand)] hover:underline">{siteConfig.email}</a></dd>
-                </div>
-                <div>
-                  <dt className="font-medium text-[var(--text)]">Privacy and LinkedIn data requests</dt>
-                  <dd><a href={`mailto:${siteConfig.privacyEmail}`} className="text-[var(--brand)] hover:underline">{siteConfig.privacyEmail}</a></dd>
-                </div>
+                <div><dt className="font-medium text-[var(--text)]">Legal entity</dt><dd>{siteConfig.legalName}</dd></div>
+                <div><dt className="font-medium text-[var(--text)]">Company website</dt><dd><a href={siteConfig.url} className="text-[var(--brand)] hover:underline">{siteConfig.url}</a></dd></div>
+                <div><dt className="font-medium text-[var(--text)]">General and legal inquiries</dt><dd><a href={`mailto:${siteConfig.email}`} className="text-[var(--brand)] hover:underline">{siteConfig.email}</a></dd></div>
+                <div><dt className="font-medium text-[var(--text)]">Privacy and LinkedIn data requests</dt><dd><a href={`mailto:${siteConfig.privacyEmail}`} className="text-[var(--brand)] hover:underline">{siteConfig.privacyEmail}</a></dd></div>
               </dl>
             </div>
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
               <h2 className="text-lg font-semibold">Context standard</h2>
-              <p className="mt-2 text-base leading-relaxed text-[var(--text-muted)]">
-                Incomplete information is acceptable. Missing information can be identified during analysis rather than replaced with assumptions.
-              </p>
+              <p className="mt-2 text-base leading-relaxed text-[var(--text-muted)]">Incomplete information is acceptable. Missing information can be identified during analysis rather than replaced with assumptions.</p>
             </div>
             <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6">
               <h2 className="text-lg font-semibold">Direct email</h2>
