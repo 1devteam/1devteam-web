@@ -1,35 +1,35 @@
-import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import AxeBuilder from '@axe-core/playwright'
 import { chromium } from 'playwright'
+import { preview } from 'vite'
 
 const manifest = JSON.parse(await readFile('shared/route-manifest.json', 'utf8'))
 const knownPaths = new Set(manifest.map((route) => route.path))
 const origin = 'http://127.0.0.1:4173'
 const canonicalOrigin = 'https://1devteam.com'
-const server = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--port', '4173'], {
-  stdio: ['ignore', 'pipe', 'pipe'],
-})
-let serverOutput = ''
-server.stdout.on('data', (chunk) => { serverOutput += chunk.toString() })
-server.stderr.on('data', (chunk) => { serverOutput += chunk.toString() })
 
-async function waitForServer() {
-  for (let attempt = 0; attempt < 50; attempt += 1) {
-    try {
-      const response = await fetch(origin)
-      if (response.ok) return
-    } catch {}
-    await new Promise((resolve) => setTimeout(resolve, 150))
-  }
-  throw new Error(`Preview server did not start.\n${serverOutput}`)
+async function closePreviewServer(server) {
+  await new Promise((resolve, reject) => {
+    server.httpServer.close((error) => {
+      if (error) reject(error)
+      else resolve()
+    })
+  })
 }
 
 const failures = []
 let browser
+let previewServer
 
 try {
-  await waitForServer()
+  previewServer = await preview({
+    preview: {
+      host: '127.0.0.1',
+      port: 4173,
+      strictPort: true,
+    },
+  })
+
   browser = await chromium.launch({ headless: true })
 
   for (const viewport of [
@@ -128,7 +128,7 @@ try {
   }
 } finally {
   if (browser) await browser.close()
-  server.kill('SIGTERM')
+  if (previewServer) await closePreviewServer(previewServer)
 }
 
 if (failures.length) {
