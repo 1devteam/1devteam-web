@@ -19,11 +19,11 @@
   },
   {
     "path": "/wiki",
-    "title": "Technical Wiki for AI-Assisted Software Development · 1DevTeam",
-    "description": "Reference documentation for 1DevTeam software, development systems, architecture, terminology, and applied R&D.",
+    "title": "G.R.A.F.T.+ — Reconstruct Existing Systems · 1DevTeam",
+    "description": "Working G.R.A.F.T.+ prototype: reconstruct existing software into evidence-linked facts. Residuals stay visible. Not a planner. Not merge authority.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-30",
+    "lastmod": "2026-09-13",
     "sitemap": true
   },
   {

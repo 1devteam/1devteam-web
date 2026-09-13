@@ -159,9 +159,9 @@ export function HomePage() {
         <div className="container-site flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Technical reference</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Definitions, architecture terms, and research language are maintained in the Wiki.</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ reconstructs existing systems. The glossary remains underneath the working prototype.</h2>
           </div>
-          <Button asChild variant="secondary"><Link to="/wiki">Open the Technical Wiki</Link></Button>
+          <Button asChild variant="secondary"><Link to="/wiki">Open G.R.A.F.T.+</Link></Button>
         </div>
       </section>
     </>

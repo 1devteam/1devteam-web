@@ -34,9 +34,9 @@ export function WikiEntryPage() {
         }}
       />
 
-      <PageHero eyebrow={`Technical Wiki · ${entry.category}`} title={entry.title} description={entry.description}>
+      <PageHero eyebrow={`Reference · ${entry.category}`} title={entry.title} description={entry.description}>
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline"><Link to="/wiki"><ArrowLeft className="h-4 w-4" aria-hidden /> Wiki index</Link></Button>
+          <Button asChild variant="outline"><Link to="/wiki"><ArrowLeft className="h-4 w-4" aria-hidden /> G.R.A.F.T.+ and glossary</Link></Button>
           {entry.status && <Badge variant="brand" className="self-center">{entry.status}</Badge>}
         </div>
       </PageHero>

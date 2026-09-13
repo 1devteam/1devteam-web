@@ -29,7 +29,7 @@ export function inboxForInterest(interest: string) {
 
 export const navLinks = [
   { label: 'Work', href: '/work' },
-  { label: 'Wiki', href: '/wiki' },
+  { label: 'G.R.A.F.T.+', href: '/wiki' },
   { label: 'Products', href: '/products' },
   { label: 'Services', href: '/services' },
   { label: 'Method', href: '/method' },
@@ -40,7 +40,7 @@ export const footerLinks = {
   company: [
     { label: 'About', href: '/about' },
     { label: 'Work', href: '/work' },
-    { label: 'Technical Wiki', href: '/wiki' },
+    { label: 'G.R.A.F.T.+', href: '/wiki' },
     { label: 'Research & Development', href: '/research' },
     { label: 'Contact', href: '/contact' },
   ],
