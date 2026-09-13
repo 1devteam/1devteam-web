@@ -129,7 +129,7 @@ export function AboutPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild><Link to="/method">Development method</Link></Button>
             <Button asChild variant="outline"><Link to="/research">Formal R&amp;D program</Link></Button>
-            <Button asChild variant="outline"><Link to="/wiki">Technical Wiki</Link></Button>
+            <Button asChild variant="outline"><Link to="/wiki">G.R.A.F.T.+</Link></Button>
           </div>
         </div>
       </section>

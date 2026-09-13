@@ -1,0 +1,369 @@
+import type {
+  EdgeKind,
+  GraftEdge,
+  GraftNode,
+  Layer,
+  NodeKind,
+  SubjectProfile,
+} from "./types.ts";
+import {
+  AJENDA_CAPABILITIES,
+  AJENDA_FACTS,
+  AJENDA_PROVENANCE,
+  OMNIPATH_CAPABILITIES,
+  OMNIPATH_FACTS,
+  OMNIPATH_PROVENANCE,
+} from "./facts.ts";
+
+function n(
+  id: string,
+  kind: NodeKind,
+  source: string,
+  domain: string,
+  layer: Layer = "generated",
+): GraftNode {
+  return { id, kind, label: id, source, layer, domain };
+}
+
+function e(
+  from: string,
+  to: string,
+  kind: EdgeKind,
+  evidence: string,
+  layer: Layer = "generated",
+): GraftEdge {
+  return { from, to, kind, evidence, layer };
+}
+
+export const AJENDA: SubjectProfile = {
+  id: "ajenda",
+  name: "Ajenda",
+  dna: "Distilled reconstruction of the longitudinal PR-cascade subject. Leases, RLS, knowledge store, governed egress.",
+  repoHint: "1devteam/ajenda-ai",
+  files: [
+    "backend/services/lease.py",
+    "backend/services/knowledge.py",
+    "backend/services/runtime_guard.py",
+    "alembic/versions/0001_init.py",
+    "docs/notes.md",
+  ],
+  scenarios: [
+    {
+      id: "lease-surface",
+      kind: "surface",
+      label: "Lease surface",
+      files: ["backend/services/lease.py"],
+      intent: "Lease path is mapped and schema-valid.",
+    },
+    {
+      id: "runtime-authority",
+      kind: "authority",
+      label: "Runtime authority",
+      files: ["backend/services/runtime_guard.py"],
+      intent: "Runtime and egress boundaries are mapped. Consumption stays open.",
+    },
+    {
+      id: "knowledge-residual",
+      kind: "residual",
+      label: "Knowledge residual",
+      files: ["backend/services/knowledge.py"],
+      intent: "Knowledge store is bound. Behavioral consumption is not proven.",
+    },
+    {
+      id: "unmapped-notes",
+      kind: "unmapped",
+      label: "Unmapped notes",
+      files: ["docs/notes.md"],
+      intent: "Unmapped changed files fail closed.",
+    },
+  ],
+  nodes: [
+    n("py:api.leases", "python_module", "backend/services/lease.py", "surface"),
+    n("py:lease", "python_module", "backend/services/lease.py", "runtime"),
+    n("py:knowledge", "python_module", "backend/services/knowledge.py", "runtime"),
+    n("py:knowledge.store", "python_module", "backend/services/knowledge.py", "data"),
+    n("py:runtime.guard", "python_module", "backend/services/runtime_guard.py", "authority"),
+    n("py:egress", "python_module", "backend/services/runtime_guard.py", "egress"),
+    n("table:leases", "db_table", "alembic/versions/0001_init.py", "data"),
+    n("table:knowledge_records", "db_table", "alembic/versions/0001_init.py", "data"),
+    n("bound:tenant-data", "security_boundary", "alembic/versions/0001_init.py", "authority", "overlay"),
+    n("bound:runtime", "runtime_boundary", "backend/services/runtime_guard.py", "authority", "overlay"),
+    n("bound:egress", "network_egress", "backend/services/runtime_guard.py", "egress", "overlay"),
+    n("state:lease-lock", "state_resource", "backend/services/lease.py", "runtime", "overlay"),
+    n("job:hourly-lease-reaper", "business_job", "backend/services/lease.py", "runtime", "overlay"),
+    n("test:lease", "test_module", "tests/unit/test_lease.py", "proof", "proof"),
+    n("test:knowledge", "test_module", "tests/unit/test_knowledge.py", "proof", "proof"),
+  ],
+  edges: [
+    e("py:api.leases", "py:lease", "imports", "backend/services/lease.py"),
+    e("py:lease", "table:leases", "owns", "backend/services/lease.py"),
+    e("py:lease", "state:lease-lock", "state_ownership", "backend/services/lease.py", "overlay"),
+    e("py:lease", "job:hourly-lease-reaper", "owns", "backend/services/lease.py", "overlay"),
+    e("py:knowledge", "py:knowledge.store", "owns", "backend/services/knowledge.py"),
+    e("py:knowledge", "table:knowledge_records", "owns", "backend/services/knowledge.py"),
+    e("py:runtime.guard", "bound:runtime", "calls", "backend/services/runtime_guard.py", "overlay"),
+    e("py:runtime.guard", "py:egress", "imports", "backend/services/runtime_guard.py"),
+    e("py:egress", "bound:egress", "egress_authority", "backend/services/runtime_guard.py", "overlay"),
+    e("table:leases", "bound:tenant-data", "tenant_data_boundary", "alembic/versions/0001_init.py", "overlay"),
+    e("table:knowledge_records", "bound:tenant-data", "tenant_data_boundary", "alembic/versions/0001_init.py", "overlay"),
+    e("test:lease", "py:lease", "tests", "tests/unit/test_lease.py", "proof"),
+    e("test:knowledge", "py:knowledge", "tests", "tests/unit/test_knowledge.py", "proof"),
+  ],
+  invariants: [
+    {
+      id: "INV-lease-lock",
+      statement: "Lease writes require exclusive state ownership.",
+      sources: ["py:lease", "state:lease-lock"],
+      risk: "runtime",
+    },
+    {
+      id: "INV-knowledge-consumption",
+      statement: "A bound knowledge store must be behaviorally consumed.",
+      sources: ["py:knowledge", "py:knowledge.store"],
+      risk: "data",
+    },
+    {
+      id: "INV-egress-authority",
+      statement: "Network egress must sit behind an explicit authority boundary.",
+      sources: ["py:egress", "bound:egress"],
+      risk: "egress",
+    },
+  ],
+  findings: [
+    {
+      id: "GF-lease-lock",
+      title: "Lease lock is owned and tested",
+      detail:
+        "lease.py owns the lease-lock state resource. tests/unit/test_lease.py maps onto that module.",
+      relatedNodes: ["py:lease", "state:lease-lock", "job:hourly-lease-reaper"],
+      blocking: false,
+      expectedBinding: { from: "py:lease", to: "state:lease-lock", kind: "state_ownership" },
+      expectedConsumption: { from: "test:lease", to: "py:lease", kind: "tests" },
+      schemaTargetKind: "state_resource",
+    },
+    {
+      id: "GF-knowledge-unconsumed",
+      title: "Knowledge store consumption is missing",
+      detail:
+        "knowledge.py owns the store and table. No consumes edge witnesses behavioral use. Acknowledgement keeps the violation visible.",
+      relatedNodes: ["py:knowledge", "py:knowledge.store", "table:knowledge_records"],
+      blocking: true,
+      expectedBinding: { from: "py:knowledge", to: "py:knowledge.store", kind: "owns" },
+      expectedConsumption: { from: "py:knowledge", to: "py:knowledge.store", kind: "consumes" },
+      schemaTargetKind: "python_module",
+    },
+    {
+      id: "GF-egress-open",
+      title: "Egress authority is bound, consumption stays open",
+      detail:
+        "runtime_guard.py declares an egress boundary. Whether callers consume that authority is not proven.",
+      relatedNodes: ["py:runtime.guard", "py:egress", "bound:egress"],
+      blocking: false,
+      proofMode: "open",
+      expectedBinding: { from: "py:egress", to: "bound:egress", kind: "egress_authority" },
+      schemaTargetKind: "network_egress",
+    },
+  ],
+  acknowledgedFindingIds: ["GF-knowledge-unconsumed"],
+  provenance: AJENDA_PROVENANCE,
+  capabilities: AJENDA_CAPABILITIES,
+  facts: AJENDA_FACTS,
+};
+
+export const OMNIPATH: SubjectProfile = {
+  id: "omnipath",
+  name: "Omnipath v2",
+  dna: "Source-backed reconstruction of 1devteam/omnipath-v2@cd07968. Agents, NATS bus, saga compensation, Redis economy. Read-only.",
+  repoHint: "1devteam/omnipath-v2@cd07968",
+  files: [
+    "backend/core/saga/saga_orchestrator.py",
+    "backend/agents/factory/agent_factory.py",
+    "backend/economy/resource_marketplace.py",
+    "backend/orchestration/mission_executor.py",
+    "HETZNER_DEPLOYMENT_GUIDE.md",
+  ],
+  scenarios: [
+    {
+      id: "saga-orch",
+      kind: "surface",
+      label: "Saga orchestration",
+      files: ["backend/core/saga/saga_orchestrator.py"],
+      intent: "Compensation is implemented and tested on EventStore. NATS is a separate bus.",
+    },
+    {
+      id: "factory-authority",
+      kind: "authority",
+      label: "Agent factory",
+      files: ["backend/agents/factory/agent_factory.py"],
+      intent: "Factory binds governance hooks. PRIDE preamble is not imported here.",
+    },
+    {
+      id: "marketplace-residual",
+      kind: "residual",
+      label: "Marketplace spend",
+      files: ["backend/economy/resource_marketplace.py"],
+      intent: "Redis balances exist. Risk-tier pricing is not consumed.",
+    },
+    {
+      id: "unmapped-deploy",
+      kind: "unmapped",
+      label: "Unmapped deploy guide",
+      files: ["HETZNER_DEPLOYMENT_GUIDE.md"],
+      intent: "Unmapped changed files fail closed.",
+    },
+  ],
+  nodes: [
+    n("py:missions.routes", "python_module", "backend/api/routes/missions.py", "surface"),
+    n("py:missions.v45", "python_module", "backend/api/routes/missions_v45.py", "surface"),
+    n("py:mission.executor", "python_module", "backend/orchestration/mission_executor.py", "runtime"),
+    n("py:saga", "python_module", "backend/core/saga/saga_orchestrator.py", "runtime"),
+    n("py:event_store", "python_module", "backend/core/event_sourcing/event_store_impl.py", "runtime"),
+    n("py:nats", "python_module", "backend/core/event_bus/nats_bus.py", "runtime"),
+    n("py:marketplace", "python_module", "backend/economy/resource_marketplace.py", "economy"),
+    n("py:gov.economy", "python_module", "backend/economy/governance_economy.py", "economy"),
+    n("py:factory", "python_module", "backend/agents/factory/agent_factory.py", "runtime"),
+    n("py:pride", "python_module", "backend/agents/governance/pride_kernel.py", "authority"),
+    n("py:hooks", "python_module", "backend/agents/integration/governance_hooks.py", "authority"),
+    n("py:policy", "python_module", "backend/agents/compliance/policy_engine.py", "authority"),
+    n("py:auth", "python_module", "backend/security/auth_utils.py", "authority"),
+    n("agent:factory", "agent", "backend/agents/factory/agent_factory.py", "runtime", "overlay"),
+    n("agent:governance", "agent", "backend/agents/governance/pride_kernel.py", "authority", "overlay"),
+    n("agent:compliance", "agent", "backend/agents/compliance/policy_engine.py", "authority", "overlay"),
+    n("saga:mission-execution", "saga", "backend/core/saga/saga_orchestrator.py", "runtime", "overlay"),
+    n("event:saga.compensated", "event_stream", "backend/core/saga/saga_orchestrator.py", "runtime", "overlay"),
+    n("event:mission.started", "event_stream", "backend/core/event_bus/nats_bus.py", "runtime", "overlay"),
+    n("policy:risk-tier", "policy", "backend/economy/governance_economy.py", "economy", "overlay"),
+    n("state:redis-balance", "state_resource", "backend/economy/resource_marketplace.py", "economy", "overlay"),
+    n("state:redis-mission", "state_resource", "backend/orchestration/mission_executor.py", "runtime", "overlay"),
+    n("table:tenants", "db_table", "alembic/versions/3d39706f076f_initial_schema_with_users_tenants_.py", "data"),
+    n("table:agents", "db_table", "alembic/versions/3d39706f076f_initial_schema_with_users_tenants_.py", "data"),
+    n("bound:tenant-data", "security_boundary", "alembic/versions/3d39706f076f_initial_schema_with_users_tenants_.py", "authority", "overlay"),
+    n("bound:runtime", "runtime_boundary", "backend/core/saga/saga_orchestrator.py", "runtime", "overlay"),
+    n("test:saga", "test_module", "tests/unit/test_phase1_persistence.py", "proof", "proof"),
+    n("test:economy", "test_module", "tests/unit/test_economy.py", "proof", "proof"),
+    n("test:pride", "test_module", "tests/unit/test_pride_kernel.py", "proof", "proof"),
+  ],
+  edges: [
+    e("py:missions.v45", "py:mission.executor", "imports", "backend/api/routes/missions_v45.py"),
+    e("py:mission.executor", "state:redis-mission", "state_ownership", "backend/orchestration/mission_executor.py", "overlay"),
+    e("py:saga", "py:event_store", "imports", "backend/core/saga/saga_orchestrator.py"),
+    e("py:saga", "py:hooks", "calls", "backend/core/saga/saga_orchestrator.py", "overlay"),
+    e("py:factory", "py:hooks", "imports", "backend/agents/factory/agent_factory.py"),
+    e("py:factory", "agent:factory", "owns", "backend/agents/factory/agent_factory.py", "overlay"),
+    e("py:pride", "agent:governance", "owns", "backend/agents/governance/pride_kernel.py", "overlay"),
+    e("py:policy", "agent:compliance", "owns", "backend/agents/compliance/policy_engine.py", "overlay"),
+    e("py:saga", "saga:mission-execution", "owns", "backend/core/saga/saga_orchestrator.py", "overlay"),
+    e("py:saga", "event:saga.compensated", "emits", "backend/core/saga/saga_orchestrator.py", "overlay"),
+    e("py:nats", "event:mission.started", "emits", "backend/core/event_bus/nats_bus.py", "overlay"),
+    e("py:gov.economy", "policy:risk-tier", "owns", "backend/economy/governance_economy.py", "overlay"),
+    e("py:marketplace", "state:redis-balance", "state_ownership", "backend/economy/resource_marketplace.py", "overlay"),
+    e("table:agents", "bound:tenant-data", "tenant_data_boundary", "alembic/versions/3d39706f076f_initial_schema_with_users_tenants_.py", "overlay"),
+    e("table:tenants", "bound:tenant-data", "tenant_data_boundary", "alembic/versions/3d39706f076f_initial_schema_with_users_tenants_.py", "overlay"),
+    e("py:saga", "bound:runtime", "calls", "backend/core/saga/saga_orchestrator.py", "overlay"),
+    e("py:factory", "agent:factory", "calls", "backend/agents/factory/agent_factory.py", "overlay"),
+    e("test:saga", "py:saga", "tests", "tests/unit/test_phase1_persistence.py", "proof"),
+    e("test:economy", "py:marketplace", "tests", "tests/unit/test_economy.py", "proof"),
+    e("test:pride", "py:pride", "tests", "tests/unit/test_pride_kernel.py", "proof"),
+  ],
+  invariants: [
+    {
+      id: "INV-saga-compensation",
+      statement: "A started saga must compensate on failure or remain INDETERMINATE.",
+      sources: ["saga:mission-execution", "event:saga.compensated", "py:saga"],
+      risk: "orchestration",
+    },
+    {
+      id: "INV-risk-pricing",
+      statement: "Economy writes require governance risk-tier pricing to be consumed.",
+      sources: ["policy:risk-tier", "py:marketplace", "py:gov.economy"],
+      risk: "economy",
+    },
+    {
+      id: "INV-pride-preamble",
+      statement: "Factory-created agents must receive the immutable PRIDE preamble.",
+      sources: ["py:pride", "py:factory", "agent:governance"],
+      risk: "authority",
+    },
+  ],
+  findings: [
+    {
+      id: "OP-saga-compensation",
+      title: "Saga compensation is implemented and tested",
+      detail:
+        "saga_orchestrator.py emits saga.compensated through EventStore.append. tests/unit/test_phase1_persistence.py proves compensate-on-failure. This closes the distilled residual that treated compensation as unmodeled.",
+      relatedNodes: ["py:saga", "event:saga.compensated", "saga:mission-execution"],
+      blocking: false,
+      expectedBinding: { from: "py:saga", to: "event:saga.compensated", kind: "emits" },
+      expectedConsumption: { from: "test:saga", to: "py:saga", kind: "tests" },
+      schemaTargetKind: "event_stream",
+    },
+    {
+      id: "OP-pride-unconsumed",
+      title: "PRIDE preamble is not imported by the agent factory",
+      detail:
+        "pride_kernel.py exports an immutable preamble. agent_factory.py imports governance_hooks only. governance_hooks.py does not import pride_kernel. Whether created agents receive the preamble is not proven. Residual stays INDETERMINATE.",
+      relatedNodes: ["py:pride", "py:factory", "agent:governance"],
+      blocking: false,
+      proofMode: "open",
+      expectedBinding: { from: "py:factory", to: "py:pride", kind: "imports" },
+      schemaTargetKind: "python_module",
+    },
+    {
+      id: "OP-marketplace-unconsumed",
+      title: "Marketplace writes do not consume risk-tier pricing",
+      detail:
+        "governance_economy.py defines RISK_MULTIPLIERS. resource_marketplace.py talks to Redis only and has no consumes edge onto that policy. Schema-valid economy modules are not proof of behavioral consumption.",
+      relatedNodes: ["py:marketplace", "policy:risk-tier", "py:gov.economy"],
+      blocking: true,
+      expectedBinding: { from: "py:gov.economy", to: "policy:risk-tier", kind: "owns" },
+      expectedConsumption: { from: "py:marketplace", to: "policy:risk-tier", kind: "consumes" },
+      schemaTargetKind: "policy",
+    },
+    {
+      id: "OP-bus-drift",
+      title: "Event bus authority disagrees with the public README",
+      detail:
+        "README claims Redis Streams as the event bus. nats_bus.py implements NATS and is imported by a test, not by mission_executor.py. The executor persists mission state on Redis hashes after its event_bus field was removed. Completeness is not forced.",
+      relatedNodes: ["py:nats", "event:mission.started", "py:mission.executor"],
+      blocking: false,
+      proofMode: "open",
+      expectedBinding: { from: "py:nats", to: "event:mission.started", kind: "emits" },
+      expectedConsumption: { from: "py:mission.executor", to: "py:nats", kind: "consumes" },
+      schemaTargetKind: "event_stream",
+    },
+  ],
+  acknowledgedFindingIds: ["OP-marketplace-unconsumed"],
+  provenance: OMNIPATH_PROVENANCE,
+  capabilities: OMNIPATH_CAPABILITIES,
+  facts: OMNIPATH_FACTS,
+};
+
+export const SUBJECTS = [AJENDA, OMNIPATH];
+
+export function getSubject(id: SubjectProfile["id"]): SubjectProfile {
+  return SUBJECTS.find((item) => item.id === id) ?? AJENDA;
+}
+
+export const CORE_TRANSFERS = [
+  "Same schema on both subjects",
+  "Unmapped files never clear",
+  "Merge authorization stays not-determined",
+  "Acknowledgements are not repairs",
+  "Independent proof stages",
+  "Truth graph is fact substrate, not a planner",
+];
+
+export const PROFILE_ONLY = {
+  ajenda: [
+    "RLS inventory",
+    "Exact egress classes",
+    "Exact state-resource lists",
+    "PR-cascade longitudinal study",
+  ],
+  omnipath: [
+    "PRIDE preamble vs factory hooks",
+    "Risk-tier pricing unconsumed by marketplace",
+    "NATS bus vs README Redis Streams",
+    "Tenant columns without RLS",
+  ],
+};

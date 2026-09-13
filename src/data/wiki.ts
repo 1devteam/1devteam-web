@@ -55,22 +55,22 @@ export const wikiEntries: readonly WikiEntry[] = [
   },
   {
     id: 'grafted-plus',
-    title: 'Grafted Plus',
+    title: 'G.R.A.F.T.+',
     category: 'Systems',
-    summary: 'An R&D system concept for reconstructing and exposing the architecture of existing software.',
+    summary: 'A reconstruction system that extracts architectural truth from an existing software system into evidence-linked facts.',
     detail:
-      'Grafted Plus is intended to extract and map architectural truth from an existing system into a machine-reasonable representation so an external language model can reason across ownership, dependencies, invariants, state, data paths, runtime boundaries, blast radius, and proof obligations without repeatedly rebuilding the architecture from isolated files.',
-    related: ['Grafted First', 'Reconstructed architecture', 'Architecture drift'],
-    status: 'R&D / in development',
+      'G.R.A.F.T.+ (Graph Reasoning for Architecture, Fidelity & Traceability) maps ownership, dependencies, invariants, state, data paths, runtime boundaries, blast radius, and proof obligations so an external language model can reason across the actual system without repeatedly rebuilding architecture from isolated files. Residuals stay visible. It is a fact substrate, not a planner and not merge authority. Repository and package identifier: graft_plus.',
+    related: ['G.R.A.F.T.1st', 'Reconstructed architecture', 'Architecture drift'],
+    status: 'Working prototype on this page',
   },
   {
     id: 'grafted-first',
-    title: 'Grafted First',
+    title: 'G.R.A.F.T.1st',
     category: 'Systems',
     summary: 'An R&D system concept for modeling intended architecture before substantial implementation begins.',
     detail:
-      'Grafted First is intended to represent the complete intended system—components, models, contracts, invariants, dependencies, constraints, state, data relationships, boundaries, and interacting variables—before implementation. An external language model can then reason over the explicit design and guide implementation against it. Comparative effectiveness remains a research question.',
-    related: ['Grafted Plus', 'Intended architecture', 'Architecture drift'],
+      'G.R.A.F.T.1st is intended to represent the complete intended system—components, models, contracts, invariants, dependencies, constraints, state, data relationships, boundaries, and interacting variables—before implementation. An external language model can then reason over the explicit design and guide implementation against it. Comparative effectiveness remains a research question. This lab is G.R.A.F.T.+ only.',
+    related: ['G.R.A.F.T.+', 'Intended architecture', 'Architecture drift'],
     status: 'R&D / in development',
   },
   {
@@ -286,8 +286,8 @@ export const wikiEntries: readonly WikiEntry[] = [
     category: 'Glossary',
     summary: 'An explicit model of what a software system is designed to become.',
     detail:
-      'Within the Grafted First concept, intended architecture includes components, contracts, invariants, dependencies, constraints, state, data relationships, ownership, and boundaries modeled before substantial implementation.',
-    related: ['Grafted First', 'Reconstructed architecture', 'Architecture drift'],
+      'Within the G.R.A.F.T.1st concept, intended architecture includes components, contracts, invariants, dependencies, constraints, state, data relationships, ownership, and boundaries modeled before substantial implementation.',
+    related: ['G.R.A.F.T.1st', 'Reconstructed architecture', 'Architecture drift'],
   },
   {
     id: 'reconstructed-architecture',
@@ -295,8 +295,8 @@ export const wikiEntries: readonly WikiEntry[] = [
     category: 'Glossary',
     summary: 'A machine-reasonable representation extracted from an existing software system.',
     detail:
-      'Within the Grafted Plus concept, reconstructed architecture is intended to reflect the actual system rather than the design originally intended for it. The quality of that reconstruction depends on the evidence extracted and the completeness of the mapping.',
-    related: ['Grafted Plus', 'Intended architecture', 'Architecture drift'],
+      'Within the G.R.A.F.T.+ concept, reconstructed architecture is intended to reflect the actual system rather than the design originally intended for it. The quality of that reconstruction depends on the evidence extracted and the completeness of the mapping.',
+    related: ['G.R.A.F.T.+', 'Intended architecture', 'Architecture drift'],
   },
   {
     id: 'architecture-drift',
@@ -304,7 +304,7 @@ export const wikiEntries: readonly WikiEntry[] = [
     category: 'Glossary',
     summary: 'Difference between intended system architecture and reconstructed actual architecture.',
     detail:
-      'A future Grafted workflow may compare an intended architecture produced at project origin with an architecture reconstructed after implementation. This comparison remains a development hypothesis rather than an established research result.',
-    related: ['Grafted First', 'Grafted Plus', 'Intended architecture', 'Reconstructed architecture'],
+      'A future G.R.A.F.T. workflow may compare an intended architecture produced at project origin with an architecture reconstructed after implementation. This comparison remains a development hypothesis rather than an established research result.',
+    related: ['G.R.A.F.T.1st', 'G.R.A.F.T.+', 'Intended architecture', 'Reconstructed architecture'],
   },
 ]

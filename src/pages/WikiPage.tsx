@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
+import { Workbench } from '@/components/graft/workbench'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
+import { Button } from '@/components/ui/button'
 import { wikiCategories, wikiEntries, type WikiCategory } from '@/data/wiki'
 import { featuredWikiIds } from '@/data/wikiFeatured'
 
@@ -29,7 +31,7 @@ const siteReferences: Partial<Record<string, readonly { label: string; href: str
   snapshot: [{ label: 'Inspect Snapshot execution and structured output', href: '/#snapshot' }],
   'architectural-graph': [{ label: 'Inspect the canonical interactive Architectural Graph', href: '/#architecture-graph' }],
   'ajenda-ai': [{ label: 'Explore Ajenda AI', href: '/products/ajenda' }],
-  'grafted-plus': [{ label: 'Read the R&D program', href: '/research' }],
+  'grafted-plus': [{ label: 'Open the working G.R.A.F.T.+ prototype', href: '#graft-plus' }],
   'grafted-first': [{ label: 'Read the R&D program', href: '/research' }],
   'architectural-blast-radius': [{ label: 'Read the R&D program', href: '/research' }],
   'pr-cascade': [{ label: 'Read the R&D program', href: '/research' }],
@@ -82,23 +84,30 @@ export function WikiPage() {
 
   return (
     <>
-      <Seo
-        title="Technical Wiki"
-        description="Reference documentation for 1DevTeam software, development systems, architecture, terminology, and applied R&D."
-        path="/wiki"
-      />
+      <Seo path="/wiki" />
 
       <PageHero
-        eyebrow="Technical Wiki"
-        title="Reference documentation for the systems behind the work"
-        description="Definitions for 1DevTeam software, development systems, architecture, and research terminology. Implemented behavior, development objectives, hypotheses, and unresolved questions remain explicitly separated."
-      />
+        eyebrow="G.R.A.F.T.+"
+        title="Reconstruct existing systems into evidence-linked facts"
+        description="Graph Reasoning for Architecture, Fidelity & Traceability. This page is the working G.R.A.F.T.+ prototype: two reconstruction subjects, visible residuals, and a fact packet a planner can consume. It is not a planner and not merge authority."
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <a href="#graft-plus">Open the prototype</a>
+          </Button>
+          <Button asChild variant="outline">
+            <a href="#reference">Canonical glossary</a>
+          </Button>
+        </div>
+      </PageHero>
 
-      <section className="border-b border-[var(--border)] bg-[var(--surface)] py-8">
+      <Workbench />
+
+      <section id="reference" className="border-b border-[var(--border)] bg-[var(--surface)] py-8 scroll-mt-24">
         <div className="container-site">
           <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
             <label className="relative block max-w-2xl">
-              <span className="sr-only">Search the technical wiki</span>
+              <span className="sr-only">Search the technical glossary</span>
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-subtle)]" aria-hidden />
               <input
                 type="search"
@@ -133,7 +142,7 @@ export function WikiPage() {
 
           <p className="mt-5 text-sm text-[var(--text-subtle)]" aria-live="polite">
             <strong className="text-[var(--text)]">{filtered.length}</strong> of {wikiEntries.length} canonical entries
-            {searching ? ' match the current reference view.' : ' are available across Systems, Architecture, Research, and Glossary.'}
+            {searching ? ' match the current reference view.' : ' remain available under the working prototype.'}
           </p>
         </div>
       </section>
@@ -169,7 +178,7 @@ export function WikiPage() {
               <div className="border-l-4 border-[var(--border)] py-2 pl-6">
                 <h2 className="text-xl font-semibold">No matching wiki entry</h2>
                 <p className="mt-2 text-base leading-relaxed text-[var(--text-muted)]">
-                  Change the search term or select a different category. The wiki only returns concepts currently defined in the reference set.
+                  Change the search term or select a different category. The glossary only returns concepts currently defined in the reference set.
                 </p>
               </div>
             ) : (
@@ -254,10 +263,10 @@ export function WikiPage() {
         <div className="container-site max-w-4xl">
           <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Evidence boundary</p>
           <p className="mt-3 text-xl font-semibold leading-relaxed">
-            Implemented behavior is described as implemented. Development objectives remain objectives. Research hypotheses remain hypotheses. Unknowns remain unresolved until evidence supports a stronger classification.
+            The prototype reconstructs what exists. Implemented behavior is described as implemented. Development objectives remain objectives. Research hypotheses remain hypotheses.
           </p>
           <p className="mt-4 text-base leading-relaxed text-slate-300">
-            The wiki is a reference layer for the work, not a substitute for the underlying artifacts, repository evidence, study records, or implementation itself.
+            G.R.A.F.T.+ is a fact substrate, not a substitute for repository evidence, study records, or merge authorization. Schema-valid is not proof of behavioral consumption.
           </p>
         </div>
       </section>
