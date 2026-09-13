@@ -13,7 +13,7 @@ export function ProductsPage() {
     <>
       <Seo
         title="Products"
-        description="Software developed by 1DevTeam from recurring system problems, including Ajenda AI, Grafted Plus, and Grafted First."
+        description="Software developed by 1DevTeam from recurring system problems, including Ajenda AI, G.R.A.F.T.+, and G.R.A.F.T.1st."
         path="/products"
       />
       <PageHero
@@ -27,7 +27,7 @@ export function ProductsPage() {
           <div className="max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Current portfolio</p>
             <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              Ajenda AI is the current flagship product under active private development. Grafted Plus and Grafted First are applied R&amp;D outputs whose product objectives remain separate from the conclusions of the research program that may inform them.
+              Ajenda AI is the current flagship product under active private development. G.R.A.F.T.+ and G.R.A.F.T.1st are applied R&amp;D outputs whose product objectives remain separate from the conclusions of the research program that may inform them.
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export function ProductsPage() {
 
           <div className="mt-16 max-w-4xl border-t border-[var(--border)] pt-8">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&amp;D outputs</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Grafted Plus and Grafted First</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ and G.R.A.F.T.1st</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
               These systems emerge from architecture and repair problems examined in the formal R&amp;D program. Research can support, narrow, change, or contradict the assumptions behind either system; product direction does not determine the study&apos;s conclusions.
             </p>
@@ -84,6 +84,11 @@ export function ProductsPage() {
                     <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-subtle)]">Operating model</p>
                     <p className="mt-2 text-base font-medium leading-relaxed text-[var(--text)]">{tool.operatingModel}</p>
                   </div>
+                  {tool.name === 'G.R.A.F.T.+' ? (
+                    <Button asChild variant="outline">
+                      <Link to="/wiki">Open the working prototype</Link>
+                    </Button>
+                  ) : null}
                 </CardContent>
               </Card>
             ))}
@@ -92,7 +97,7 @@ export function ProductsPage() {
           <div className="mt-10 max-w-4xl border-t border-[var(--border)] pt-7">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Intended future relationship</p>
             <p className="mt-3 text-base font-medium leading-relaxed text-[var(--text)]">
-              Grafted First → intended architecture → implementation → Grafted Plus → reconstructed architecture → drift analysis
+              G.R.A.F.T.1st → intended architecture → implementation → G.R.A.F.T.+ → reconstructed architecture → drift analysis
             </p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
               This remains a development hypothesis, not a completed research finding.

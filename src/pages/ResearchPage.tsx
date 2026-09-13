@@ -45,7 +45,7 @@ export function ResearchPage() {
               <h3 className="text-2xl font-semibold tracking-tight">Scientific boundary</h3>
               <div className="mt-4 space-y-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
                 <p>
-                  This study is an empirical investigation, not a product-validation exercise. Graph-assisted development, invariant-centered repair, Grafted Plus, and Grafted First are not assumed to be superior in advance.
+                  This study is an empirical investigation, not a product-validation exercise. Graph-assisted development, invariant-centered repair, G.R.A.F.T.+, and G.R.A.F.T.1st are not assumed to be superior in advance.
                 </p>
                 <p>
                   Positive, negative, null, and contradictory results remain valid research outcomes. Product objectives do not determine scientific conclusions, and preliminary observations remain revisable until the evidence supports a stronger classification.
@@ -102,9 +102,9 @@ export function ResearchPage() {
         <div className="container-site">
           <div className="max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&amp;D relationship</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Grafted Plus and Grafted First</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ and G.R.A.F.T.1st</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              The study can inform Grafted Plus and Grafted First, but those systems remain development outputs rather than evidence of the study&apos;s conclusion. Research may support their current design assumptions, narrow them, contradict them, or expose different mechanisms entirely.
+              The study can inform G.R.A.F.T.+ and G.R.A.F.T.1st, but those systems remain development outputs rather than evidence of the study&apos;s conclusion. Research may support their current design assumptions, narrow them, contradict them, or expose different mechanisms entirely.
             </p>
           </div>
 
@@ -118,13 +118,20 @@ export function ResearchPage() {
                 <h3 className="mt-3 text-2xl font-semibold tracking-tight">{tool.name}</h3>
                 <p className="mt-4 max-w-4xl text-[17px] leading-relaxed text-[var(--text-muted)]">{tool.description}</p>
                 <p className="mt-4 max-w-4xl font-mono text-sm leading-relaxed text-[var(--text)]">{tool.operatingModel}</p>
+                {tool.name === 'G.R.A.F.T.+' ? (
+                  <p className="mt-4">
+                    <Link to="/wiki" className="text-sm font-semibold text-[var(--brand)] hover:underline">
+                      Open the working prototype and user guide →
+                    </Link>
+                  </p>
+                ) : null}
               </article>
             ))}
           </div>
 
           <div className="mt-10 max-w-5xl border-t border-[var(--border)] pt-7">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Intended future relationship</p>
-            <p className="mt-3 font-mono text-base font-medium leading-relaxed text-[var(--text)]">Grafted First → intended architecture → implementation → Grafted Plus → reconstructed architecture → drift analysis</p>
+            <p className="mt-3 font-mono text-base font-medium leading-relaxed text-[var(--text)]">G.R.A.F.T.1st → intended architecture → implementation → G.R.A.F.T.+ → reconstructed architecture → drift analysis</p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">This remains a development hypothesis, not a completed research finding.</p>
           </div>
         </div>

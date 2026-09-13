@@ -1,6 +1,6 @@
 # Public release status
 
-**Reviewed:** July 31, 2026
+**Reviewed:** September 13, 2026
 
 ## What is live
 
@@ -12,6 +12,12 @@
 - Ajenda AI is presented as the flagship product and explicitly described as a
   private, locally operational development system—not a generally available
   hosted service.
+- `/wiki` is the working **G.R.A.F.T.+** reconstruction prototype plus a user
+  guide. The former glossary-first index is replaced. Dedicated `/wiki/:id`
+  references and hash anchors (`#snapshot`, `#architectural-graph`, …) remain.
+  G.R.A.F.T.+ is described as a fact substrate: not a planner, not merge
+  authority. See [`GRAFT.md`](GRAFT.md).
+- Official names are locked to G.R.A.F.T.+ and G.R.A.F.T.1st in public copy.
 - OmniPath recovery projects and SweepstacX are described with their recovery or
   maturity limitations rather than implied production claims.
 - The contact form opens a pre-filled message in the visitor's email client. It
@@ -31,8 +37,6 @@
   privacy handling, and monitoring are configured together.
 - Replace research-style portfolio summaries with dated build journals and
   screenshots as public evidence becomes available.
+- The public G.R.A.F.T.+ page reconstructs prepared subjects (Ajenda, Omnipath
+  v2). Arbitrary-repository ingest is not claimed as shipping on 1devteam.com.
 - Add automated browser accessibility and route tests to CI.
-- `npm audit --omit=dev` currently reports the React Router server-action/RSC
-  advisory. This site is a client-only Vite SPA and does not implement React
-  Server Components or React Router server actions; update when a compatible
-  patched release is available and keep this rationale under review.

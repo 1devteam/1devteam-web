@@ -92,11 +92,11 @@ export function EnterprisePage() {
         <div className="container-site grid gap-10 lg:grid-cols-[0.34fr_0.66fr]">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Related material</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Method, evidence, and architecture terms</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Method, evidence, and reconstruction</h2>
           </div>
           <div className="max-w-4xl">
             <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">
-              PRIDE Protocol defines the development process; the Work section exposes current artifacts and implementation evidence; the Technical Wiki defines architectural blast radius, reasoning scope, decision ownership, invariants, and related terms used in this work.
+              PRIDE Protocol defines the development process; the Work section exposes current artifacts and implementation evidence; G.R.A.F.T.+ reconstructs existing systems and keeps blast radius, reasoning scope, decision ownership, and related terms in a compact index.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild variant="outline"><Link to="/method">Development method</Link></Button>
