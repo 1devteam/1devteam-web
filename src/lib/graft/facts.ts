@@ -8,6 +8,7 @@ import type {
 } from "./types.ts";
 
 const OMNIPATH_SHA = "cd07968d3061e02147caba1ece40b4203f1acd51";
+const AJENDA_SHA = "ea155f0";
 
 function ev(
   path: string,
@@ -28,11 +29,16 @@ function fact(partial: TruthFact): TruthFact {
   return partial;
 }
 
+function ajendaEv(path: string, note: string, proofClass: ProofClass, symbol?: string): EvidenceLink {
+  return { path, note, proofClass, symbol, sha: proofClass === "distilled" ? undefined : AJENDA_SHA };
+}
+
 export const AJENDA_PROVENANCE: Provenance = {
   kind: "distilled",
   repo: "1devteam/ajenda-ai",
+  sha: AJENDA_SHA,
   capturedAt: "2026-09-13",
-  note: "Distilled longitudinal control. Not a full repository inventory. Not a planner.",
+  note: "Distilled from merged main at ea155f0. Not a full repository inventory. Not a planner.",
 };
 
 export const OMNIPATH_PROVENANCE: Provenance = {
@@ -207,6 +213,51 @@ export const AJENDA_FACTS: TruthFact[] = [
         "AgentFactory",
       ),
     ],
+  }),
+  fact({
+    id: "AJ-inv-crm-acceptance",
+    capability: "crm",
+    kind: "inventory",
+    claim: "Internal CRM persistence spans tenant-scoped record upserts, workflow projections, and mission-level acceptance checks.",
+    nodes: ["py:crm.records", "py:crm.workflow", "py:mission.acceptance"],
+    evidence: [
+      ajendaEv("backend/services/light_crm/records.py", "LightCrmRecordService owns tenant-scoped CRM record writes and opportunity creation.", "source-symbol", "LightCrmRecordService"),
+      ajendaEv("backend/services/light_crm/workflow.py", "CRM upsert completion projects contacts into opportunities and logs activity.", "source-symbol", "on_crm_upsert_completed"),
+      ajendaEv("backend/services/mission_acceptance.py", "Mission acceptance evaluates persisted CRM records and projections.", "source-symbol", "evaluate_mission_acceptance"),
+    ],
+  }),
+  fact({
+    id: "AJ-con-crm-opportunity-projection",
+    capability: "crm",
+    kind: "contract",
+    claim: "A CRM mission that requires internal persistence must produce an opportunity projection whose contact ID belongs to a persisted CRM record.",
+    nodes: ["py:mission.acceptance", "py:crm.workflow", "py:crm.records"],
+    declared: "internal_crm_opportunities_min",
+    observed: "evaluate_mission_acceptance rejects missing or foreign contact projections",
+    evidence: [
+      ajendaEv("backend/services/mission_acceptance.py", "Acceptance filters projected contact IDs against persisted CRM record IDs.", "source-symbol", "evaluate_mission_acceptance"),
+      ajendaEv("tests/unit/services/test_mission_acceptance.py", "Unit tests cover valid, missing, and foreign opportunity projections.", "unit-test", "test_acceptance_requires_internal_crm_opportunity_projection"),
+    ],
+  }),
+  fact({
+    id: "AJ-prf-crm-acceptance",
+    capability: "crm",
+    kind: "proof",
+    claim: "The CRM opportunity acceptance contract is covered by focused unit tests; no live G.R.A.F.T. trace is asserted here.",
+    nodes: ["test:crm.acceptance", "py:mission.acceptance"],
+    evidence: [
+      ajendaEv("tests/unit/services/test_mission_acceptance.py", "Focused acceptance tests exercise the persisted-record and opportunity-projection contract.", "unit-test", "test_acceptance_requires_internal_crm_opportunity_projection"),
+      ajendaEv("tests/unit/services/test_light_crm.py", "Workflow tests cover opportunity creation after CRM upsert.", "unit-test", "test_on_crm_upsert_completed_creates_opportunity_for_contact"),
+    ],
+  }),
+  fact({
+    id: "AJ-fresh-crm-main",
+    capability: "crm",
+    kind: "freshness",
+    claim: "CRM acceptance facts are aligned to Ajenda main ea155f0 as of 2026-09-13; they require refresh after later CRM contract changes.",
+    nodes: ["py:mission.acceptance", "py:crm.workflow"],
+    stale: false,
+    evidence: [ajendaEv(".git", "Merged main revision recorded in subject provenance.", "distilled")],
   }),
 ];
 
