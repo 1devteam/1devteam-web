@@ -60,7 +60,12 @@ export function GraphMap({ nodes, edges, highlight, selected, onSelect }: Props)
     Math.max(1, ...allCols.map((col) => nodes.filter((n) => n.domain === col).length)) * rowHeight;
 
   return (
-    <div className="max-w-full overflow-x-auto rounded-lg border border-border bg-surface">
+    <div
+      className="max-w-full overflow-x-auto rounded-lg border border-border bg-surface"
+      tabIndex={0}
+      role="region"
+      aria-label="Scrollable architectural graph"
+    >
       <svg
         role="img"
         aria-label="Architectural graph, consumer to dependency"

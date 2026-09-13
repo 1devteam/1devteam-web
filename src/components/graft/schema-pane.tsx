@@ -26,7 +26,10 @@ export function SchemaPane() {
       <div className="grid gap-4">
         <article className="rounded-lg border border-border bg-surface p-5">
           <p className="font-mono text-xs tracking-widest text-subtle">PACKET SHAPE</p>
-          <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-accent">
+          <pre
+            tabIndex={0}
+            className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-accent"
+          >
 {`graft_plus  schema ${"1.0-core"}
 truth        schema ${"1.0-truth"}
 nodes[]  edges[]  invariants[]  residuals[]
