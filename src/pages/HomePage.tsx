@@ -88,7 +88,7 @@ export function HomePage() {
           <div className="max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">AI-assisted development systems</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Three systems address three different sources of development error</h2>
-            <p className="mt-4 text-[18px] leading-relaxed text-[var(--text-muted)]">PRIDE governs process, Snapshot transfers project context, and the Architectural Graph preserves machine-readable system structure. The full methodology lives on the Method page; the Wiki defines the terminology; this page preserves the primary public artifacts.</p>
+            <p className="mt-4 text-[18px] leading-relaxed text-[var(--text-muted)]">PRIDE governs process, Snapshot transfers project context, and the Architectural Graph preserves machine-readable system structure. The full methodology lives on the Method page; G.R.A.F.T.+ is the working reconstruction prototype and user guide; this page preserves the primary public artifacts.</p>
           </div>
           <div className="mt-10 grid gap-7 lg:grid-cols-3">
             {developmentSystems.map((system) => (
@@ -159,7 +159,7 @@ export function HomePage() {
         <div className="container-site flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Technical reference</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ reconstructs existing systems. The glossary remains underneath the working prototype.</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ reconstructs existing systems. The working prototype and user guide live on one page.</h2>
           </div>
           <Button asChild variant="secondary"><Link to="/wiki">Open G.R.A.F.T.+</Link></Button>
         </div>

@@ -6,6 +6,11 @@ The public site intentionally distinguishes repository availability, local
 operability, and production availability. Ajenda AI is the flagship and remains
 in private development; recovered and archival projects are labeled as such.
 
+**G.R.A.F.T.+** (Graph Reasoning for Architecture, Fidelity & Traceability) is
+the working reconstruction prototype on [`/wiki`](https://1devteam.com/wiki),
+with a user guide on the same page. It is a fact substrate, not a planner and
+not merge authority. See [`docs/GRAFT.md`](docs/GRAFT.md).
+
 ## Stack
 
 - React 19 + TypeScript + Vite
@@ -34,7 +39,9 @@ does not display a false server-side delivery confirmation.
 |-------|---------|
 | `/` | Homepage: hero → proof → build areas → Ajenda → work → R&D → method → insights → CTA |
 | `/work` | Evidence & build journals |
-| `/research` | First formal R&D program, study framing, Grafted Plus, and Grafted First |
+| `/wiki` | Working G.R.A.F.T.+ prototype, user guide, and term index |
+| `/wiki/:id` | Expanded technical references (PRIDE, Snapshot, graph, blast radius, …) |
+| `/research` | First formal R&D program, study framing, G.R.A.F.T.+, and G.R.A.F.T.1st |
 | `/services` | Custom client evaluation |
 | `/enterprise` | Enterprise buyer landing |
 | `/products` | Product portfolio |
@@ -51,12 +58,16 @@ The site is intentionally organized so routine changes can be made safely by a c
 
 - **Company links, contact addresses, social links, and logo paths:** `src/data/site.ts`
 - **Company and Ajenda brand files:** `public/brand/`
-- **R&D program and Grafted Plus / Grafted First descriptions:** `src/data/research.ts`
+- **R&D program and G.R.A.F.T.+ / G.R.A.F.T.1st descriptions:** `src/data/research.ts`
+- **G.R.A.F.T.+ user guide copy:** `src/data/graftGuide.ts` (public page) and `docs/GRAFT.md` (repository)
+- **G.R.A.F.T.+ reconstruction engine:** `src/lib/graft/` and `src/components/graft/`
 - **Page-level copy and layout:** `src/pages/`
 - **Homepage sections:** `src/components/home/`
 - **Header and footer:** `src/components/layout/`
 
 For a company-logo change, update the company logo files in `public/brand/` or change `siteConfig.brand.companyOnLight` / `companyOnDark` in `src/data/site.ts`. Header and footer both consume those centralized paths.
+
+Official product names are locked: **G.R.A.F.T.+** (package `graft_plus`) and **G.R.A.F.T.1st**. Do not revive “Grafted Plus” / “Grafted First” in public copy.
 
 ## Deployment
 

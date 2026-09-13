@@ -10,20 +10,20 @@ export const researchProgram = {
 
 export const rdTools = [
   {
-    name: 'Grafted Plus',
+    name: 'G.R.A.F.T.+',
     scope: 'Existing systems',
     status: 'Applied R&D output · in development',
     description:
-      "Grafted Plus is intended to reconstruct and expose the architecture of an existing software system so an external language model can reason over system structure, ownership, dependencies, invariants, and change impact with less repeated architectural reconstruction. Its capabilities and comparative value remain subjects of active development and research.",
+      'G.R.A.F.T.+ reconstructs and exposes the architecture of an existing software system so an external language model can reason over structure, ownership, dependencies, invariants, and change impact with less repeated architectural reconstruction. Residuals stay visible. It is a fact substrate, not a planner and not merge authority. Capabilities and comparative value remain subjects of active development and research.',
     operatingModel:
       'Existing system → reconstruct architectural state → expose ownership, dependencies, invariants, blast radius, and proof relationships → reason across the system.',
   },
   {
-    name: 'Grafted First',
+    name: 'G.R.A.F.T.1st',
     scope: 'Project-origin architecture',
     status: 'Applied R&D output · in development',
     description:
-      'Grafted First is intended to model the architecture of a software system before implementation begins. The objective is to represent contracts, nodes, models, ownership, dependencies, state, boundaries, and system interactions in a form that can be reasoned over before the first implementation decisions are committed to code. Its relationship to implementation quality remains a research and development question rather than an established conclusion.',
+      'G.R.A.F.T.1st is intended to model the architecture of a software system before implementation begins. The objective is to represent contracts, nodes, models, ownership, dependencies, state, boundaries, and system interactions in a form that can be reasoned over before the first implementation decisions are committed to code. Its relationship to implementation quality remains a research and development question rather than an established conclusion. This lab is G.R.A.F.T.+ only.',
     operatingModel:
       'Intended system → explicitly model the architectural problem → reason across the complete design → build against that model.',
   },

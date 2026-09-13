@@ -5,7 +5,7 @@
     "description": "1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-30",
+    "lastmod": "2026-09-13",
     "sitemap": true
   },
   {
@@ -20,7 +20,7 @@
   {
     "path": "/wiki",
     "title": "G.R.A.F.T.+ — Reconstruct Existing Systems · 1DevTeam",
-    "description": "Working G.R.A.F.T.+ prototype: reconstruct existing software into evidence-linked facts. Residuals stay visible. Not a planner. Not merge authority.",
+    "description": "Working G.R.A.F.T.+ prototype and user guide: reconstruct existing software into evidence-linked facts. Residuals stay visible. Not a planner. Not merge authority.",
     "robots": "index, follow",
     "type": "website",
     "lastmod": "2026-09-13",
@@ -112,7 +112,7 @@
     "description": "1DevTeam R&D Program #1 studies architectural reasoning scope and corrective PR cascades in AI-assisted software development.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-29",
+    "lastmod": "2026-09-13",
     "sitemap": true
   },
   {
@@ -130,16 +130,16 @@
     "description": "System-level software development for complex architectures where changes can cross state, security, authority, data, integration, runtime, and operational boundaries.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-30",
+    "lastmod": "2026-09-13",
     "sitemap": true
   },
   {
     "path": "/products",
     "title": "Software Products & Applied R&D Systems · 1DevTeam",
-    "description": "Software developed by 1DevTeam from recurring system problems, including Ajenda AI, Grafted Plus, and Grafted First.",
+    "description": "Software developed by 1DevTeam from recurring system problems, including Ajenda AI, G.R.A.F.T.+, and G.R.A.F.T.1st.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-08-30",
+    "lastmod": "2026-09-13",
     "sitemap": true
   },
   {

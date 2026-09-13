@@ -1,87 +1,10 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Search } from 'lucide-react'
 import { Workbench } from '@/components/graft/workbench'
+import { GraftUserGuide } from '@/components/graft/user-guide'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { Button } from '@/components/ui/button'
-import { wikiCategories, wikiEntries, type WikiCategory } from '@/data/wiki'
-import { featuredWikiIds } from '@/data/wikiFeatured'
-
-const allCategories = ['All', ...wikiCategories] as const
-
-type CategoryFilter = 'All' | WikiCategory
-
-const chapterIntroductions: Record<WikiCategory, string> = {
-  Systems:
-    'Development systems and software that address distinct parts of the work: process discipline, project-context transfer, persistent architecture, product execution, and applied R&D outputs.',
-  Architecture:
-    'Terms for reasoning beyond the file being edited, including ownership, dependencies, invariants, blast radius, graph relationships, and the proof surface surrounding a change.',
-  Research:
-    'Units used in 1DevTeam R&D Program #1 to separate measurement, observations, intervention periods, and findings without promoting preliminary patterns into conclusions.',
-  Glossary:
-    'Supporting terms used across Ajenda, the development method, architecture work, and the research program.',
-}
-
-const siteReferences: Partial<Record<string, readonly { label: string; href: string }[]>> = {
-  'pride-protocol': [
-    { label: 'View the preserved PRIDE working artifact', href: '/#pride-protocol' },
-    { label: 'Read the development method', href: '/method' },
-  ],
-  snapshot: [{ label: 'Inspect Snapshot execution and structured output', href: '/#snapshot' }],
-  'architectural-graph': [{ label: 'Inspect the canonical interactive Architectural Graph', href: '/#architecture-graph' }],
-  'ajenda-ai': [{ label: 'Explore Ajenda AI', href: '/products/ajenda' }],
-  'grafted-plus': [{ label: 'Open the working G.R.A.F.T.+ prototype', href: '#graft-plus' }],
-  'grafted-first': [{ label: 'Read the R&D program', href: '/research' }],
-  'architectural-blast-radius': [{ label: 'Read the R&D program', href: '/research' }],
-  'pr-cascade': [{ label: 'Read the R&D program', href: '/research' }],
-  'reasoning-scope': [{ label: 'Read the R&D program', href: '/research' }],
-  'change-scope': [{ label: 'Read the R&D program', href: '/research' }],
-}
 
 export function WikiPage() {
-  const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<CategoryFilter>('All')
-
-  const idByTitle = useMemo(
-    () => new Map(wikiEntries.map((entry) => [entry.title, entry.id])),
-    [],
-  )
-
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase()
-
-    return wikiEntries.filter((entry) => {
-      if (category !== 'All' && entry.category !== category) return false
-      if (!normalized) return true
-
-      return [
-        entry.title,
-        entry.category,
-        entry.summary,
-        entry.detail,
-        entry.status ?? '',
-        ...entry.related,
-      ]
-        .join(' ')
-        .toLowerCase()
-        .includes(normalized)
-    })
-  }, [category, query])
-
-  const grouped = useMemo(
-    () =>
-      wikiCategories
-        .map((group) => ({
-          category: group,
-          entries: filtered.filter((entry) => entry.category === group),
-        }))
-        .filter((group) => group.entries.length > 0),
-    [filtered],
-  )
-
-  const searching = query.trim().length > 0 || category !== 'All'
-
   return (
     <>
       <Seo path="/wiki" />
@@ -89,175 +12,21 @@ export function WikiPage() {
       <PageHero
         eyebrow="G.R.A.F.T.+"
         title="Reconstruct existing systems into evidence-linked facts"
-        description="Graph Reasoning for Architecture, Fidelity & Traceability. This page is the working G.R.A.F.T.+ prototype: two reconstruction subjects, visible residuals, and a fact packet a planner can consume. It is not a planner and not merge authority."
+        description="Graph Reasoning for Architecture, Fidelity & Traceability. This page is the working G.R.A.F.T.+ prototype and its user guide: two reconstruction subjects, visible residuals, and a fact packet a planner can consume. It is not a planner and not merge authority."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
             <a href="#graft-plus">Open the prototype</a>
           </Button>
           <Button asChild variant="outline">
-            <a href="#reference">Canonical glossary</a>
+            <a href="#guide">Read the user guide</a>
           </Button>
         </div>
       </PageHero>
 
       <Workbench />
 
-      <section id="reference" className="border-b border-[var(--border)] bg-[var(--surface)] py-8 scroll-mt-24">
-        <div className="container-site">
-          <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
-            <label className="relative block max-w-2xl">
-              <span className="sr-only">Search the technical glossary</span>
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-subtle)]" aria-hidden />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search systems, architecture, research, or terminology"
-                className="h-12 w-full rounded-[var(--radius-sm)] border border-[var(--border-control)] bg-white pl-12 pr-4 text-base text-[var(--text)] shadow-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)]"
-              />
-            </label>
-
-            <div className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Wiki categories">
-              {allCategories.map((item) => {
-                const active = category === item
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setCategory(item)}
-                    className={`border-b-2 py-1 text-sm font-semibold transition ${
-                      active
-                        ? 'border-[var(--brand)] text-[var(--text)]'
-                        : 'border-transparent text-[var(--text-muted)] hover:border-[var(--border)] hover:text-[var(--text)]'
-                    }`}
-                    aria-pressed={active}
-                  >
-                    {item}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          <p className="mt-5 text-sm text-[var(--text-subtle)]" aria-live="polite">
-            <strong className="text-[var(--text)]">{filtered.length}</strong> of {wikiEntries.length} canonical entries
-            {searching ? ' match the current reference view.' : ' remain available under the working prototype.'}
-          </p>
-        </div>
-      </section>
-
-      <section className="section-pad">
-        <div className="container-site grid gap-12 lg:grid-cols-[0.27fr_0.73fr]">
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Reference index</p>
-            <nav className="mt-5 max-h-[70vh] space-y-7 overflow-auto pr-3" aria-label="Wiki entry index">
-              {grouped.map((group) => (
-                <div key={group.category}>
-                  <a href={`#chapter-${group.category.toLowerCase()}`} className="text-sm font-semibold text-[var(--text)] hover:text-[var(--brand)]">
-                    {group.category}
-                  </a>
-                  <div className="mt-2 border-l border-[var(--border)] pl-3">
-                    {group.entries.map((entry) => (
-                      <a
-                        key={entry.id}
-                        href={`#${entry.id}`}
-                        className="block py-1.5 text-sm leading-snug text-[var(--text-muted)] hover:text-[var(--brand)]"
-                      >
-                        {entry.title}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </nav>
-          </aside>
-
-          <div className="min-w-0 max-w-4xl">
-            {filtered.length === 0 ? (
-              <div className="border-l-4 border-[var(--border)] py-2 pl-6">
-                <h2 className="text-xl font-semibold">No matching wiki entry</h2>
-                <p className="mt-2 text-base leading-relaxed text-[var(--text-muted)]">
-                  Change the search term or select a different category. The glossary only returns concepts currently defined in the reference set.
-                </p>
-              </div>
-            ) : (
-              grouped.map((group, groupIndex) => (
-                <section
-                  key={group.category}
-                  id={`chapter-${group.category.toLowerCase()}`}
-                  className={`scroll-mt-24 ${groupIndex > 0 ? 'mt-20 border-t border-[var(--border)] pt-14' : ''}`}
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">Reference chapter</p>
-                  <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">{group.category}</h2>
-                  <p className="mt-5 max-w-3xl text-[17px] leading-relaxed text-[var(--text-muted)]">
-                    {chapterIntroductions[group.category]}
-                  </p>
-
-                  <div className="mt-10">
-                    {group.entries.map((entry, entryIndex) => {
-                      const references = siteReferences[entry.id]
-                      return (
-                        <article
-                          key={entry.id}
-                          id={entry.id}
-                          className={`scroll-mt-24 py-10 ${entryIndex > 0 ? 'border-t border-[var(--border)]' : 'border-t-2 border-[var(--text)]'}`}
-                        >
-                          <div className="grid gap-5 md:grid-cols-[0.23fr_0.77fr]">
-                            <div>
-                              <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{entry.category}</p>
-                              {entry.status && <p className="mt-2 text-xs leading-relaxed text-[var(--text-subtle)]">{entry.status}</p>}
-                            </div>
-
-                            <div>
-                              <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{entry.title}</h3>
-                              <p className="mt-4 text-lg font-medium leading-relaxed text-[var(--text)]">{entry.summary}</p>
-                              <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">{entry.detail}</p>
-
-                              {featuredWikiIds.has(entry.id) && (
-                                <Link to={`/wiki/${entry.id}`} className="mt-5 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">
-                                  Read expanded reference →
-                                </Link>
-                              )}
-
-                              {references && (
-                                <div className="mt-5 space-y-1.5 text-sm">
-                                  {references.map((reference) => (
-                                    <a key={reference.href + reference.label} href={reference.href} className="block font-semibold text-[var(--brand)] hover:underline">
-                                      {reference.label} →
-                                    </a>
-                                  ))}
-                                </div>
-                              )}
-
-                              <div className="mt-6 text-sm leading-relaxed text-[var(--text-subtle)]">
-                                <span className="font-semibold uppercase tracking-wide">Related: </span>
-                                {entry.related.map((related, index) => {
-                                  const relatedId = idByTitle.get(related)
-                                  return (
-                                    <span key={related}>
-                                      {index > 0 && <span aria-hidden> · </span>}
-                                      {relatedId ? (
-                                        <a href={`#${relatedId}`} className="font-medium text-[var(--brand)] hover:underline">{related}</a>
-                                      ) : (
-                                        <span>{related}</span>
-                                      )}
-                                    </span>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        </article>
-                      )
-                    })}
-                  </div>
-                </section>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
+      <GraftUserGuide />
 
       <section className="border-t border-[var(--border)] bg-[var(--navy-950)] py-12 text-white">
         <div className="container-site max-w-4xl">
