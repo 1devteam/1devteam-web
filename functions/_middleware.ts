@@ -7,6 +7,7 @@ type RouteMeta = {
   robots: string
   type: 'website' | 'article'
   image?: string
+  canonical?: string
 }
 
 type AssetEnv = {
@@ -56,7 +57,7 @@ function csp(nonce: string) {
     "style-src 'self' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data:",
-    "connect-src 'self' https://cloudflareinsights.com",
+    "connect-src 'self' https://cloudflareinsights.com https://api.github.com https://raw.githubusercontent.com",
     "form-action 'self' mailto:",
     "manifest-src 'self'",
     "worker-src 'self' blob:",
@@ -209,5 +210,5 @@ export const onRequest: PagesFunction<AssetEnv> = async (context) => {
   const route = routesByPath.get(normalizedPath)
   if (!route) return spaDocument(context, notFoundMeta, 404, null)
 
-  return spaDocument(context, route, 200, canonicalUrl(route.path))
+  return spaDocument(context, route, 200, canonicalUrl(route.canonical ?? route.path))
 }
