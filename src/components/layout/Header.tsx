@@ -20,7 +20,7 @@ export function Header() {
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {primaryNavLinks.map((link) => (
-            <NavLink key={link.href} to={link.href} className={({ isActive }) => cn('rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text)]', isActive && 'bg-[var(--surface)] text-[var(--text)]')}>
+            <NavLink key={link.href} to={link.href} end className={({ isActive }) => cn('rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--text)]', isActive && 'bg-[var(--surface)] text-[var(--text)]')}>
               {link.label}
             </NavLink>
           ))}
@@ -37,7 +37,7 @@ export function Header() {
         <div id="mobile-nav" className="border-t border-[var(--border)] bg-[var(--bg)] lg:hidden">
           <nav className="container-site flex flex-col gap-1 py-4" aria-label="Mobile">
             {primaryNavLinks.map((link) => (
-              <NavLink key={link.href} to={link.href} onClick={() => setOpen(false)} className={({ isActive }) => cn('rounded-[var(--radius-sm)] px-3 py-3 text-base font-medium text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]', isActive && 'bg-[var(--surface)] text-[var(--text)]')}>
+              <NavLink key={link.href} to={link.href} end onClick={() => setOpen(false)} className={({ isActive }) => cn('rounded-[var(--radius-sm)] px-3 py-3 text-base font-medium text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]', isActive && 'bg-[var(--surface)] text-[var(--text)]')}>
                 {link.label}
               </NavLink>
             ))}
