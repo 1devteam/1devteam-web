@@ -43,6 +43,7 @@ export function Footer() {
             <div className="mt-4 space-y-1 text-sm text-slate-400">
               <p>{siteConfig.legalName}</p>
               <p>General <a href={`mailto:${siteConfig.email}`} className="hover:text-white">{siteConfig.email}</a></p>
+              <p>Ajenda <a href={`mailto:${siteConfig.productEmail}`} className="hover:text-white">{siteConfig.productEmail}</a></p>
               <p>Privacy <a href={`mailto:${siteConfig.privacyEmail}`} className="hover:text-white">{siteConfig.privacyEmail}</a></p>
             </div>
           </div>

@@ -493,7 +493,7 @@ export function InteractiveArchitectureGraph({ compact = false }: { compact?: bo
               ? 'Coverage: complete direct relationship set for this reviewed decision function in the embedded schema 1.2 projection.'
               : 'Coverage: partial. This node is a loaded neighbor and may have additional canonical relationships outside the reviewed public projection.'}
           </p>
-          <a href="/wiki#decision-ownership" className="mt-4 inline-block text-xs font-semibold text-[var(--brand)] hover:underline">Reference: decision ownership →</a>
+          <a href="/wiki/decision-ownership" className="mt-4 inline-block text-xs font-semibold text-[var(--brand)] hover:underline">Reference: decision ownership →</a>
         </div>
 
         <div className="p-5 xl:p-6">

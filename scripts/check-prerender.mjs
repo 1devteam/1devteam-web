@@ -16,7 +16,8 @@ function escapeRegExp(value) {
 
 for (const route of manifest) {
   const html = await readFile(fileFor(route.path), 'utf8')
-  const canonical = route.path === '/' ? `${origin}/` : `${origin}${route.path}`
+  const canonicalPath = route.canonical ?? route.path
+  const canonical = canonicalPath === '/' ? `${origin}/` : `${origin}${canonicalPath}`
 
   if (!html.includes(`<title>${route.title.replaceAll('&', '&amp;')}</title>`) && !html.includes(`<title>${route.title}</title>`)) {
     failures.push(`${route.path}: prerendered title does not match manifest`)

@@ -102,7 +102,8 @@ try {
         if (result.unknownLinks.length) failures.push(`${viewport.name} ${route.path}: unknown internal route link(s): ${result.unknownLinks.join(', ')}`)
         if (result.brokenFragments.length) failures.push(`${viewport.name} ${route.path}: broken same-page fragment(s): ${result.brokenFragments.join(', ')}`)
         if (result.duplicateIds.length) failures.push(`${viewport.name} ${route.path}: duplicate id(s): ${result.duplicateIds.join(', ')}`)
-        const expectedCanonical = `${canonicalOrigin}${route.path === '/' ? '/' : route.path}`
+        const canonicalPath = route.canonical ?? (route.path === '/' ? '/' : route.path)
+        const expectedCanonical = `${canonicalOrigin}${canonicalPath === '/' ? '/' : canonicalPath}`
         if (route.robots.startsWith('index') && result.canonical !== expectedCanonical) {
           failures.push(`${viewport.name} ${route.path}: canonical is ${result.canonical ?? 'missing'}, expected ${expectedCanonical}`)
         }

@@ -91,7 +91,7 @@ function pageSchema(route, url, image) {
 }
 
 function withHead(html, route) {
-  const url = routeUrl(route.path)
+  const url = routeUrl(route.canonical ?? route.path)
   const image = `${siteOrigin}${route.image ?? defaultImage}`
   let output = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(route.title)}</title>`)
   output = replaceMeta(output, 'name', 'description', route.description)

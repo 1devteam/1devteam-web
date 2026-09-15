@@ -15,7 +15,8 @@
     "audit:browser": "node scripts/check-browser.mjs",
     "audit:prod-deps": "npm audit --omit=dev --audit-level=high",
     "audit:deps": "npm audit --audit-level=moderate",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test --experimental-strip-types src/lib/product/*.test.ts"
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
@@ -33,7 +34,8 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.2",
     "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

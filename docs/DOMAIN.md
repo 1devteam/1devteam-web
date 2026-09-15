@@ -48,6 +48,21 @@ For custom-domain changes, use the Cloudflare dashboard for the `1devteam` Pages
 
 If email is hosted by Northwest or another provider, preserve the required MX, SPF, DKIM, DMARC, and verification records when changing DNS. Website changes must not disturb mail routing.
 
+Public inboxes, both forward to `gabe.n.fat@outlook.com`:
+
+- hello@1devteam.com
+- ajenda-ai@1devteam.com
+
+Repo contract: [`email-routing.json`](../email-routing.json). Inbound worker (if Email Routing is bound to a Worker): [`workers/email-inbound.ts`](../workers/email-inbound.ts).
+
+This site cannot set MX. Cloudflare Email Routing on the `1devteam.com` zone must:
+
+1. Enable Email Routing.
+2. Add destination `gabe.n.fat@outlook.com` and verify it in Outlook.
+3. Add custom addresses `hello@1devteam.com` and `ajenda-ai@1devteam.com`, action **Forward**, destination as above.
+4. Keep Cloudflare MX records for the zone. Do not let a website DNS edit drop mail.
+
+
 ## HTTPS and canonical-host policy
 
 - Cloudflare terminates HTTPS for the site.

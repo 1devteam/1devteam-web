@@ -152,13 +152,15 @@ export type Capability = {
 export type Provenance = {
   kind: "source-backed" | "distilled";
   repo: string;
+  ref?: string;
   sha?: string;
   capturedAt: string;
   note: string;
+  readOnly?: true;
 };
 
 export type SubjectProfile = {
-  id: "ajenda" | "omnipath";
+  id: string;
   name: string;
   dna: string;
   repoHint: string;
