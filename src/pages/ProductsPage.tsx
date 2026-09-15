@@ -86,7 +86,7 @@ export function ProductsPage() {
                   </div>
                   {tool.name === 'G.R.A.F.T.+' ? (
                     <Button asChild variant="outline">
-                      <Link to="/wiki">Open the working prototype</Link>
+                      <Link to="/graft">Map a public repository</Link>
                     </Button>
                   ) : null}
                 </CardContent>

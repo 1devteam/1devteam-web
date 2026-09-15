@@ -375,6 +375,11 @@ export const OMNIPATH: SubjectProfile = {
 
 export const SUBJECTS = [AJENDA, OMNIPATH];
 
+export const SUBJECT_REFRESH = {
+  ajenda: { owner: "1devteam", repo: "ajenda-ai", ref: "main" },
+  omnipath: { owner: "1devteam", repo: "omnipath-v2", ref: "main" },
+} as const;
+
 export function getSubject(id: SubjectProfile["id"]): SubjectProfile {
   return SUBJECTS.find((item) => item.id === id) ?? AJENDA;
 }

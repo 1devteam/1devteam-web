@@ -1,7 +1,7 @@
 [
   {
     "path": "/",
-    "title": "1DevTeam · Software development and applied R&D",
+    "title": "1DevTeam \u00b7 Software development and applied R&D",
     "description": "1DevTeam is a software development and applied R&D company that works alongside AI to solve difficult software and systems problems, build dependable systems and products, and improve the methods and tools used to develop them.",
     "robots": "index, follow",
     "type": "website",
@@ -10,7 +10,7 @@
   },
   {
     "path": "/work",
-    "title": "Software Development Evidence & Technical Artifacts · 1DevTeam",
+    "title": "Software Development Evidence & Technical Artifacts \u00b7 1DevTeam",
     "description": "Software, tooling, architecture artifacts, and development evidence from 1DevTeam, presented according to the state supported by current evidence.",
     "robots": "index, follow",
     "type": "website",
@@ -18,17 +18,27 @@
     "sitemap": true
   },
   {
-    "path": "/wiki",
-    "title": "G.R.A.F.T.+ — Reconstruct Existing Systems · 1DevTeam",
-    "description": "Working G.R.A.F.T.+ prototype and user guide: reconstruct existing software into evidence-linked facts. Residuals stay visible. Not a planner. Not merge authority.",
+    "path": "/graft",
+    "title": "G.R.A.F.T.+ \u2014 Map a Public Repository \u00b7 1DevTeam",
+    "description": "G.R.A.F.T.+ reads a public GitHub repository at one SHA and writes one downloadable reconstruction: inventory, contracts, dependencies, routes, wiring, and recent commits. Not a planner. Not merge authority.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-09-13",
+    "lastmod": "2026-09-14",
     "sitemap": true
   },
   {
+    "path": "/wiki",
+    "title": "G.R.A.F.T.+ \u2014 Reconstruct Existing Systems \u00b7 1DevTeam",
+    "description": "G.R.A.F.T.+ maps a public GitHub repository at one SHA and writes one downloadable reconstruction pack. Canonical URL is /graft. Not a planner. Not merge authority.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-09-14",
+    "sitemap": true,
+    "canonical": "/graft"
+  },
+  {
     "path": "/wiki/pride-protocol",
-    "title": "PRIDE Protocol for AI-Assisted Software Development · 1DevTeam",
+    "title": "PRIDE Protocol for AI-Assisted Software Development \u00b7 1DevTeam",
     "description": "Technical reference for PRIDE Protocol, a development-process discipline for sufficient context, complete implementation, verification, documentation, and review.",
     "robots": "index, follow",
     "type": "article",
@@ -38,7 +48,7 @@
   },
   {
     "path": "/wiki/snapshot",
-    "title": "Snapshot — AI Project Context Transfer · 1DevTeam",
+    "title": "Snapshot \u2014 AI Project Context Transfer \u00b7 1DevTeam",
     "description": "Technical reference for Snapshot, a structured project-context transfer system used during AI-assisted software development.",
     "robots": "index, follow",
     "type": "article",
@@ -48,7 +58,7 @@
   },
   {
     "path": "/wiki/architectural-graph",
-    "title": "Architectural Graph for Software Reasoning · 1DevTeam",
+    "title": "Architectural Graph for Software Reasoning \u00b7 1DevTeam",
     "description": "Technical reference for the Ajenda Architectural Graph and its use in dependency reasoning, decision ownership, change impact, proof selection, and completeness auditing.",
     "robots": "index, follow",
     "type": "article",
@@ -58,7 +68,7 @@
   },
   {
     "path": "/wiki/architectural-blast-radius",
-    "title": "Architectural Blast Radius in Software Changes · 1DevTeam",
+    "title": "Architectural Blast Radius in Software Changes \u00b7 1DevTeam",
     "description": "Technical reference defining architectural blast radius as the system surfaces materially affected by a software change beyond the files directly modified.",
     "robots": "index, follow",
     "type": "article",
@@ -68,7 +78,7 @@
   },
   {
     "path": "/wiki/reasoning-scope",
-    "title": "Reasoning Scope in AI-Assisted Development · 1DevTeam",
+    "title": "Reasoning Scope in AI-Assisted Development \u00b7 1DevTeam",
     "description": "Technical reference for reasoning scope: the portion of a software system included in the analysis used to understand and plan a change.",
     "robots": "index, follow",
     "type": "article",
@@ -78,7 +88,7 @@
   },
   {
     "path": "/wiki/pr-cascade",
-    "title": "Corrective PR Cascades in Software Development · 1DevTeam",
+    "title": "Corrective PR Cascades in Software Development \u00b7 1DevTeam",
     "description": "Technical research reference for corrective PR cascades and the evidence required to distinguish correction, completion, introduced defects, and exposed latent defects.",
     "robots": "index, follow",
     "type": "article",
@@ -88,7 +98,7 @@
   },
   {
     "path": "/wiki/decision-ownership",
-    "title": "Decision Ownership in Software Architecture · 1DevTeam",
+    "title": "Decision Ownership in Software Architecture \u00b7 1DevTeam",
     "description": "Technical reference for identifying the function, component, contract, or invariant that actually owns a software decision rather than merely observing its result.",
     "robots": "index, follow",
     "type": "article",
@@ -98,7 +108,7 @@
   },
   {
     "path": "/wiki/proof-selection",
-    "title": "Graph-Aware Proof Selection for Software Changes · 1DevTeam",
+    "title": "Graph-Aware Proof Selection for Software Changes \u00b7 1DevTeam",
     "description": "Technical reference for selecting tests, invariant checks, semantic checks, and other evidence required by the architecture affected by a software change.",
     "robots": "index, follow",
     "type": "article",
@@ -108,7 +118,7 @@
   },
   {
     "path": "/research",
-    "title": "Architectural Reasoning & PR Cascade Research · 1DevTeam",
+    "title": "Architectural Reasoning & PR Cascade Research \u00b7 1DevTeam",
     "description": "1DevTeam R&D Program #1 studies architectural reasoning scope and corrective PR cascades in AI-assisted software development.",
     "robots": "index, follow",
     "type": "website",
@@ -117,7 +127,7 @@
   },
   {
     "path": "/services",
-    "title": "Software Development & System Remediation · 1DevTeam",
+    "title": "Software Development & System Remediation \u00b7 1DevTeam",
     "description": "Software and systems development from 1DevTeam across new systems, existing architectures, product development, system remediation, integrations, and AI-enabled software.",
     "robots": "index, follow",
     "type": "website",
@@ -126,7 +136,7 @@
   },
   {
     "path": "/enterprise",
-    "title": "Complex Systems & Software Architecture · 1DevTeam",
+    "title": "Complex Systems & Software Architecture \u00b7 1DevTeam",
     "description": "System-level software development for complex architectures where changes can cross state, security, authority, data, integration, runtime, and operational boundaries.",
     "robots": "index, follow",
     "type": "website",
@@ -135,7 +145,7 @@
   },
   {
     "path": "/products",
-    "title": "Software Products & Applied R&D Systems · 1DevTeam",
+    "title": "Software Products & Applied R&D Systems \u00b7 1DevTeam",
     "description": "Software developed by 1DevTeam from recurring system problems, including Ajenda AI, G.R.A.F.T.+, and G.R.A.F.T.1st.",
     "robots": "index, follow",
     "type": "website",
@@ -144,7 +154,7 @@
   },
   {
     "path": "/products/ajenda",
-    "title": "Ajenda AI — Structured AI Execution Software · 1DevTeam",
+    "title": "Ajenda AI \u2014 Structured AI Execution Software \u00b7 1DevTeam",
     "description": "Ajenda AI converts objectives into structured missions, plans, tasks, approvals, and controlled execution.",
     "robots": "index, follow",
     "type": "website",
@@ -154,7 +164,7 @@
   },
   {
     "path": "/method",
-    "title": "AI-Assisted Software Development Method · 1DevTeam",
+    "title": "AI-Assisted Software Development Method \u00b7 1DevTeam",
     "description": "1DevTeam's development method for AI-assisted software engineering: establish sufficient context, identify architectural ownership, implement at the correct layer, and verify the affected system.",
     "robots": "index, follow",
     "type": "website",
@@ -163,7 +173,7 @@
   },
   {
     "path": "/insights",
-    "title": "Software Architecture & AI Development Insights · 1DevTeam",
+    "title": "Software Architecture & AI Development Insights \u00b7 1DevTeam",
     "description": "Technical notes from 1DevTeam on software architecture, AI-assisted development, system control, development tooling, research methods, and product engineering.",
     "robots": "index, follow",
     "type": "website",
@@ -172,7 +182,7 @@
   },
   {
     "path": "/insights/from-goals-to-execution",
-    "title": "From goals to execution · 1DevTeam",
+    "title": "From goals to execution \u00b7 1DevTeam",
     "description": "Why durable execution requires state, ownership, authority, recovery, and proof beyond a conversational interface.",
     "robots": "index, follow",
     "type": "article",
@@ -182,7 +192,7 @@
   },
   {
     "path": "/insights/calibrating-ai-trust",
-    "title": "Calibrating AI trust · 1DevTeam",
+    "title": "Calibrating AI trust \u00b7 1DevTeam",
     "description": "Why controls, evidence, capability boundaries, and known failure modes provide a stronger basis for system trust than confidence language.",
     "robots": "index, follow",
     "type": "article",
@@ -192,7 +202,7 @@
   },
   {
     "path": "/insights/architectural-scope-and-corrective-repair",
-    "title": "Architectural scope and corrective repair · 1DevTeam",
+    "title": "Architectural scope and corrective repair \u00b7 1DevTeam",
     "description": "How a software change can satisfy its immediate test while remaining incomplete at the level of system ownership, contracts, or downstream behavior.",
     "robots": "index, follow",
     "type": "article",
@@ -202,7 +212,7 @@
   },
   {
     "path": "/about",
-    "title": "About 1DevTeam — Software Development & Applied R&D",
+    "title": "About 1DevTeam \u2014 Software Development & Applied R&D",
     "description": "1DevTeam develops software, products, architecture tooling, and development systems while working alongside AI throughout the engineering process.",
     "robots": "index, follow",
     "type": "website",
@@ -211,7 +221,7 @@
   },
   {
     "path": "/brand",
-    "title": "Brand Assets · 1DevTeam",
+    "title": "Brand Assets \u00b7 1DevTeam",
     "description": "Approved 1DevTeam and Ajenda AI brand assets, naming conventions, colors, and usage guidance.",
     "robots": "noindex, follow",
     "type": "website",
@@ -220,7 +230,7 @@
   },
   {
     "path": "/contact",
-    "title": "Contact 1DevTeam — Software Development & R&D",
+    "title": "Contact 1DevTeam \u2014 Software Development & R&D",
     "description": "Discuss software systems, product development, remediation, AI-enabled systems, applied R&D, development tooling, or Ajenda AI with 1DevTeam.",
     "robots": "index, follow",
     "type": "website",
@@ -229,7 +239,7 @@
   },
   {
     "path": "/privacy",
-    "title": "Privacy Policy · 1DevTeam",
+    "title": "Privacy Policy \u00b7 1DevTeam",
     "description": "Privacy policy for 1devteam L.L.C., including website information and data received through LinkedIn integrations.",
     "robots": "index, follow",
     "type": "website",
@@ -238,7 +248,7 @@
   },
   {
     "path": "/terms",
-    "title": "Terms of Use · 1DevTeam",
+    "title": "Terms of Use \u00b7 1DevTeam",
     "description": "Terms of use for the 1devteam website.",
     "robots": "index, follow",
     "type": "website",
@@ -247,7 +257,7 @@
   },
   {
     "path": "/trust",
-    "title": "Trust & Security · 1DevTeam",
+    "title": "Trust & Security \u00b7 1DevTeam",
     "description": "1DevTeam treats security, authority, data access, external actions, state transitions, failure handling, and auditability as architecture concerns.",
     "robots": "index, follow",
     "type": "website",

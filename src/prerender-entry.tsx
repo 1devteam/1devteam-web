@@ -19,6 +19,8 @@ import { TermsPage } from '@/pages/TermsPage'
 import { TrustPage } from '@/pages/TrustPage'
 import { WikiPage } from '@/pages/WikiPage'
 import { WikiEntryPage } from '@/pages/WikiEntryPage'
+import { GraftPage } from '@/pages/GraftPage'
+import { GraftWorkspacePage } from '@/pages/GraftWorkspacePage'
 import { WorkPage } from '@/pages/WorkPage'
 
 export function render(pathname: string) {
@@ -28,6 +30,8 @@ export function render(pathname: string) {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="graft" element={<GraftPage />} />
+          <Route path="graft/:projectId" element={<GraftWorkspacePage />} />
           <Route path="wiki" element={<WikiPage />} />
           <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />

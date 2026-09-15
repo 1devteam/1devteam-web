@@ -7,9 +7,11 @@ operability, and production availability. Ajenda AI is the flagship and remains
 in private development; recovered and archival projects are labeled as such.
 
 **G.R.A.F.T.+** (Graph Reasoning for Architecture, Fidelity & Traceability) is
-the working reconstruction prototype on [`/wiki`](https://1devteam.com/wiki),
-with a user guide on the same page. It is a fact substrate, not a planner and
-not merge authority. See [`docs/GRAFT.md`](docs/GRAFT.md).
+the public reconstruction workbench on [`/graft`](https://1devteam.com/graft).
+Paste a public GitHub repository. It maps that SHA and returns one downloadable
+pack. It is a fact substrate, not a planner and not merge authority.
+See [`docs/GRAFT.md`](docs/GRAFT.md). `/wiki` serves the same workbench and
+canonicalizes to `/graft`. Dedicated `/wiki/:id` references remain.
 
 ## Stack
 
@@ -28,6 +30,7 @@ npm run dev      # local development
 npm run build    # typecheck + production build
 npm run preview  # preview production build
 npm run lint     # oxlint
+npm test         # G.R.A.F.T.+ reconstruction coverage
 ```
 
 The contact form opens a pre-filled message in the visitor's email client. It
@@ -39,7 +42,8 @@ does not display a false server-side delivery confirmation.
 |-------|---------|
 | `/` | Homepage: hero → proof → build areas → Ajenda → work → R&D → method → insights → CTA |
 | `/work` | Evidence & build journals |
-| `/wiki` | Working G.R.A.F.T.+ prototype, user guide, and term index |
+| `/graft` | G.R.A.F.T.+ workbench: paste a public repo, download one pack |
+| `/wiki` | Same workbench (canonical `/graft`) |
 | `/wiki/:id` | Expanded technical references (PRIDE, Snapshot, graph, blast radius, …) |
 | `/research` | First formal R&D program, study framing, G.R.A.F.T.+, and G.R.A.F.T.1st |
 | `/services` | Custom client evaluation |
@@ -60,7 +64,7 @@ The site is intentionally organized so routine changes can be made safely by a c
 - **Company and Ajenda brand files:** `public/brand/`
 - **R&D program and G.R.A.F.T.+ / G.R.A.F.T.1st descriptions:** `src/data/research.ts`
 - **G.R.A.F.T.+ user guide copy:** `src/data/graftGuide.ts` (public page) and `docs/GRAFT.md` (repository)
-- **G.R.A.F.T.+ reconstruction engine:** `src/lib/graft/` and `src/components/graft/`
+- **G.R.A.F.T.+ reconstruction engine:** `src/lib/product/` and `src/lib/graft/`
 - **Page-level copy and layout:** `src/pages/`
 - **Homepage sections:** `src/components/home/`
 - **Header and footer:** `src/components/layout/`
@@ -68,6 +72,15 @@ The site is intentionally organized so routine changes can be made safely by a c
 For a company-logo change, update the company logo files in `public/brand/` or change `siteConfig.brand.companyOnLight` / `companyOnDark` in `src/data/site.ts`. Header and footer both consume those centralized paths.
 
 Official product names are locked: **G.R.A.F.T.+** (package `graft_plus`) and **G.R.A.F.T.1st**. Do not revive “Grafted Plus” / “Grafted First” in public copy.
+
+## Mail
+
+Public inboxes, both forward to `gabe.n.fat@outlook.com`:
+
+- hello@1devteam.com
+- ajenda-ai@1devteam.com
+
+Repo contract: [`email-routing.json`](email-routing.json). Zone steps: [`docs/DOMAIN.md`](docs/DOMAIN.md). This site cannot set MX.
 
 ## Deployment
 
@@ -103,3 +116,18 @@ Current Git-connected production settings:
 - Output directory: `dist`
 - Production branch: `main`
 - Custom domains: `1devteam.com`, `www.1devteam.com`
+
+## LinkedIn
+
+A professional share for the live workbench, after this ships to `1devteam.com/graft`:
+
+> 1DevTeam now publishes G.R.A.F.T.+ at 1devteam.com/graft.
+>
+> Paste a public GitHub repository. It reconstructs that SHA into one downloadable pack: inventory, contracts, dependencies, routes, wiring, and recent commits. Feed the pack to an AI. Unknowns become small follow-up questions.
+>
+> It does not plan. It does not merge. Overlay stays residual until it is evidenced.
+>
+> Contact: hello@1devteam.com · ajenda-ai@1devteam.com
+
+Keep claims to what the page actually does. Do not advertise Ajenda as a hosted product or G.R.A.F.T.+ as a planner.
+

@@ -20,6 +20,8 @@ const TermsPage = lazy(() => import('@/pages/TermsPage').then((module) => ({ def
 const TrustPage = lazy(() => import('@/pages/TrustPage').then((module) => ({ default: module.TrustPage })))
 const WikiPage = lazy(() => import('@/pages/WikiPage').then((module) => ({ default: module.WikiPage })))
 const WikiEntryPage = lazy(() => import('@/pages/WikiEntryPage').then((module) => ({ default: module.WikiEntryPage })))
+const GraftPage = lazy(() => import('@/pages/GraftPage').then((module) => ({ default: module.GraftPage })))
+const GraftWorkspacePage = lazy(() => import('@/pages/GraftWorkspacePage').then((module) => ({ default: module.GraftWorkspacePage })))
 const WorkPage = lazy(() => import('@/pages/WorkPage').then((module) => ({ default: module.WorkPage })))
 
 function RouteLoading() {
@@ -37,6 +39,8 @@ export function AppRoutes() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="graft" element={<GraftPage />} />
+          <Route path="graft/:projectId" element={<GraftWorkspacePage />} />
           <Route path="wiki" element={<WikiPage />} />
           <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />

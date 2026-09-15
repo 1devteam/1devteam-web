@@ -12,11 +12,12 @@
 - Ajenda AI is presented as the flagship product and explicitly described as a
   private, locally operational development system—not a generally available
   hosted service.
-- `/wiki` is the working **G.R.A.F.T.+** reconstruction prototype plus a user
-  guide. The former glossary-first index is replaced. Dedicated `/wiki/:id`
-  references and hash anchors (`#snapshot`, `#architectural-graph`, …) remain.
-  G.R.A.F.T.+ is described as a fact substrate: not a planner, not merge
-  authority. See [`GRAFT.md`](GRAFT.md).
+- `/graft` is the public **G.R.A.F.T.+** workbench: paste a public GitHub
+  repository, reconstruct one SHA, download one pack. `/wiki` serves the same
+  workbench and canonicalizes to `/graft`. Dedicated `/wiki/:id` references
+  remain. G.R.A.F.T.+ is a fact substrate: not a planner, not merge authority.
+  Ajenda and Omnipath are derivation records, not this workbench.
+  See [`GRAFT.md`](GRAFT.md).
 - Official names are locked to G.R.A.F.T.+ and G.R.A.F.T.1st in public copy.
 - OmniPath recovery projects and SweepstacX are described with their recovery or
   maturity limitations rather than implied production claims.
@@ -37,6 +38,8 @@
   privacy handling, and monitoring are configured together.
 - Replace research-style portfolio summaries with dated build journals and
   screenshots as public evidence becomes available.
-- The public G.R.A.F.T.+ page reconstructs prepared subjects (Ajenda, Omnipath
-  v2). Arbitrary-repository ingest is not claimed as shipping on 1devteam.com.
+- The public G.R.A.F.T.+ page maps public GitHub repositories in the browser
+  tab. The reconstruction is session-only. Overlay stays residual.
+  Cloudflare Email Routing for hello@ and ajenda-ai@ is a zone setting, not a
+  Pages build output.
 - Add automated browser accessibility and route tests to CI.

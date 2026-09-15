@@ -61,7 +61,7 @@ export const wikiEntries: readonly WikiEntry[] = [
     detail:
       'G.R.A.F.T.+ (Graph Reasoning for Architecture, Fidelity & Traceability) maps ownership, dependencies, invariants, state, data paths, runtime boundaries, blast radius, and proof obligations so an external language model can reason across the actual system without repeatedly rebuilding architecture from isolated files. Residuals stay visible. It is a fact substrate, not a planner and not merge authority. Repository and package identifier: graft_plus.',
     related: ['G.R.A.F.T.1st', 'Reconstructed architecture', 'Architecture drift'],
-    status: 'Working prototype on this page',
+    status: 'Public workbench on /graft',
   },
   {
     id: 'grafted-first',

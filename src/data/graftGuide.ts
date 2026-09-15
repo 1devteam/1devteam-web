@@ -7,10 +7,10 @@ export type GuideSection = {
 }
 
 export const graftGuideIntro = {
-  eyebrow: 'User guide',
-  title: 'What G.R.A.F.T.+ is, and how to use this prototype',
+  eyebrow: 'How to use it',
+  title: 'What G.R.A.F.T.+ is, and how to read a pack',
   lede:
-    'G.R.A.F.T.+ reconstructs existing software into evidence-linked facts. This page is the working prototype and the public description of that system. It is not a planner, and it is not merge authority.',
+    'G.R.A.F.T.+ reconstructs an existing public repository into evidence-linked facts and one downloadable pack. Feed that pack to an AI. It is not a planner, and it is not merge authority.',
 } as const
 
 export const graftGuideSections: readonly GuideSection[] = [
@@ -18,89 +18,72 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'what-it-is',
     title: 'What it is',
     body: [
-      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — extracts architectural truth from a system that already exists. The reconstruction is a graph plus a fact packet: ownership, dependencies, invariants, state, data paths, runtime boundaries, blast radius, and proof obligations, each tied to evidence.',
-      'An external language model can consume that packet instead of repeatedly rebuilding architecture from isolated files. Residuals stay visible. Incomplete overlay stays incomplete. Schema-valid is not proof of behavioral consumption.',
-      'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This lab is G.R.A.F.T.+ only.',
+      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces.',
+      'The download is one zip: GRAFT-MAP.md, GRAFT-PACK.json, and tree/. Unknowns become small follow-up questions licensed by joints in that pack. Overlay stays residual until a reviewed relationship is attached.',
+      'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This page is G.R.A.F.T.+ only.',
     ],
   },
   {
     id: 'what-it-is-not',
     title: 'What it is not',
     body: [
-      'G.R.A.F.T.+ does not choose a correction, write a plan, or authorize a merge. The packet role is fact-substrate. implementsPlan is always false. mergeAuthorization remains not-determined even when disposition is clear.',
-      'It does not replace repository inspection, tests, runtime traces, or human review. A generated inventory is not an overlay. An acknowledged finding is not a repair.',
+      'G.R.A.F.T.+ does not choose a correction, write a plan, or authorize a merge. The pack role is fact-substrate. implementsPlan is always false. mergeAuthorization remains not-determined.',
+      'It does not replace repository inspection, tests, runtime traces, or human review. A generated inventory is not an overlay. An acknowledged finding is not a repair. Ajenda and Omnipath are derivation records, not this workbench.',
     ],
     facts: [
       { term: 'Fact substrate', meaning: 'Supplies evidence-linked facts a planner may consume. Does not plan.' },
-      { term: 'Disposition', meaning: 'clear, review-required, or blocked — a reconstruction outcome, not a merge decision.' },
-      { term: 'Residual', meaning: 'Unmapped, unmodeled, indeterminate, or acknowledged-violation state that stays visible.' },
+      { term: 'Pack', meaning: 'One zip: map, JSON, and ingested tree for that SHA.' },
+      { term: 'Residual', meaning: 'Unmapped, unmodeled, or overlay state that stays visible.' },
       { term: 'Overlay', meaning: 'Policy, saga, ownership, and runtime-authority facts. Unmodeled overlay remains residual.' },
     ],
   },
   {
     id: 'how-to-use',
-    title: 'How to use the prototype',
+    title: 'How to use this page',
     body: [
-      'The instrument panel above this guide is the working reconstruction. Two subjects are loaded. You do not ingest an arbitrary repository on this public page; the subjects are prepared reconstructions.',
+      'Paste a public GitHub repository. Reconstruct. Download the pack. Feed GRAFT-MAP.md or GRAFT-PACK.json to an AI. The map lives in this tab until you download it or leave. Run the same SHA again for the same facts.',
     ],
     steps: [
       {
-        label: 'Open the prototype',
-        detail: 'Jump to the workbench. The graph is the blast-radius map for the current subject and changed-file slice.',
+        label: 'Paste owner/repo',
+        detail: 'A GitHub URL or git SSH form also works. Public repositories reconstruct without a token.',
       },
       {
-        label: 'Choose a subject',
-        detail: 'Ajenda is a distilled reconstruction. Omnipath v2 is source-backed at a captured commit. Switching subjects re-runs the pipeline.',
+        label: 'Reconstruct',
+        detail: 'The tree is read at one SHA. Every ingested path, contract, and resolved inner dependency is a fact, not a sample.',
       },
       {
-        label: 'Read Run',
-        detail: 'Disposition, residuals, impact, proof, and adjudication for the current slice. Clear does not mean merge.',
+        label: 'Download the pack',
+        detail: 'The zip holds GRAFT-MAP.md, GRAFT-PACK.json, and tree/. If a model truncates the markdown, open the JSON and tree in the same zip. They are the same SHA, complete.',
       },
       {
-        label: 'Read Truth',
-        detail: 'Inventory, negatives, gaps, contracts, and proofs. Filter by kind. Facts that are not in the slice stay out of the planner packet.',
-      },
-      {
-        label: 'Read Schema and Transfer',
-        detail: 'Schema is the packet shape a planner can consume. Transfer checks that facts remain coherent when the subject changes.',
-      },
-      {
-        label: 'Read Records, then export',
-        detail: 'Records are frozen R&D notes, not live conclusions. Export downloads the fact packet and planner input as JSON.',
+        label: 'Read joints first',
+        detail: 'Provenance, commits, README claimed intent, named misses, skip directories, unresolved packages, inventory, contracts, dependencies, routes, wiring. Questions arrive from those joints.',
       },
     ],
   },
   {
     id: 'reading-a-run',
-    title: 'Reading a run',
+    title: 'Reading a pack',
     body: [
-      'Start from changed files. The engine maps those files onto graph nodes, walks consumers and dependencies, selects proof, audits completeness, and adjudicates findings in the slice.',
-      'Unmapped changed files fail closed: they become review-required. Missing test mapping is a review gate, not a silent pass. Overlay edges without evidence are completeness failures.',
-      'Export the packet when you want a planner to consume the reconstruction. The packet repeats the boundary: product G.R.A.F.T.+, role fact-substrate, implementsPlan false, mergeAuthorization not-determined.',
-    ],
-  },
-  {
-    id: 'subjects',
-    title: 'Subjects on this page',
-    body: [
-      'Ajenda is reconstructed from a distilled architectural model used in 1DevTeam development. It demonstrates overlay facts, invariants, and acknowledged residuals without claiming the public graph is the full internal Ajenda graph.',
-      'Omnipath v2 is reconstructed from source-backed evidence at a captured SHA. Marketplace spend, governance, and factory surfaces are represented; risk-tier consumption remains a visible gap rather than a repaired overlay.',
-      'Neither subject is a hosted product on this page. Both are reconstruction inputs so the prototype can be inspected against real systems 1DevTeam actually works on.',
+      'The reader protocol is baked into every map so a downstream AI does not need a second briefing. Honor negatives. Leave overlay residual. Do not invent files that were named as omitted.',
+      'Unresolved imports are facts: the specifier is not in this tree. They are not missing files and not a separate gap lane.',
+      'The packet repeats the boundary: product G.R.A.F.T.+, role fact-substrate, implementsPlan false, mergeAuthorization not-determined.',
     ],
   },
   {
     id: 'production-boundary',
-    title: 'What this prototype demonstrates — and what it does not',
+    title: 'What is proven here — and what is not claimed',
     body: [
-      'This public prototype demonstrates code-graph impact analysis, written facts, task-ready planner input, visible residuals, transfer checks, and frozen project records. Those are the behaviors the instrument presents.',
-      'A production G.R.A.F.T.+ capable of precise planning against an arbitrary repository still needs project ingestion, file/symbol/import/caller/callee indexing, durable plans and tasks, separated Architect/Dispatcher/Coder/Reviewer workflows, real browser evidence, secrets isolation, git/worktree integration, and a dashboard bound to durable state. This page does not claim those internals are shipping here.',
+      'Public GitHub repositories reconstruct without a token. Every ingested path, contract, and resolved inner dependency is a fact. Files GitHub will not return, or that exceed the text size limit, are named on the map. Skip directories such as node_modules and .git are named, not treated as source.',
+      'This page does not store reconstructions across refresh. It does not plan, merge, or host Ajenda or Omnipath. Overlay is residual until evidenced.',
     ],
   },
 ]
 
 export const graftRelatedSystems = [
   { id: 'pride-protocol', href: '/wiki/pride-protocol', label: 'PRIDE Protocol', note: 'Process discipline used alongside reconstruction.' },
-  { id: 'snapshot', href: '/wiki/snapshot', label: 'Snapshot', note: 'Project-context transfer. Complements, does not replace, the graph.' },
+  { id: 'snapshot', href: '/wiki/snapshot', label: 'Snapshot', note: 'Project-context transfer. Complements, does not replace, the map.' },
   { id: 'architectural-graph', href: '/wiki/architectural-graph', label: 'Ajenda Architectural Graph', note: 'Persistent architecture used in Ajenda development and CI.' },
   { id: 'architectural-blast-radius', href: '/wiki/architectural-blast-radius', label: 'Architectural blast radius', note: 'Affected system surfaces beyond the edited files.' },
   { id: 'proof-selection', href: '/wiki/proof-selection', label: 'Proof selection', note: 'Which tests and checks the affected architecture requires.' },

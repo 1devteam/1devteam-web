@@ -101,7 +101,7 @@ export function EnterprisePage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild variant="outline"><Link to="/method">Development method</Link></Button>
               <Button asChild variant="outline"><Link to="/work">Technical evidence</Link></Button>
-              <Button asChild variant="outline"><Link to="/wiki#architectural-blast-radius">Architectural blast radius</Link></Button>
+              <Button asChild variant="outline"><Link to="/wiki/architectural-blast-radius">Architectural blast radius</Link></Button>
             </div>
           </div>
         </div>

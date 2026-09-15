@@ -25,7 +25,7 @@ const developmentHistory = [
     title: 'Snapshot',
     problem: 'Large repositories still had to be reconstructed when a new model context began.',
     response: 'Snapshot was built to transfer structured repository and project state without claiming to replace direct inspection or architectural reasoning.',
-    href: '/wiki#snapshot',
+    href: '/wiki/snapshot',
     cta: 'Read the Snapshot reference',
   },
   {
@@ -129,7 +129,7 @@ export function AboutPage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild><Link to="/method">Development method</Link></Button>
             <Button asChild variant="outline"><Link to="/research">Formal R&amp;D program</Link></Button>
-            <Button asChild variant="outline"><Link to="/wiki">G.R.A.F.T.+</Link></Button>
+            <Button asChild variant="outline"><Link to="/graft">G.R.A.F.T.+</Link></Button>
           </div>
         </div>
       </section>

@@ -130,7 +130,7 @@ export function MethodPage() {
               </p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
                 <a href="/#snapshot" className="text-[var(--brand)] hover:underline">Inspect the Snapshot artifact →</a>
-                <Link to="/wiki#snapshot" className="text-[var(--brand)] hover:underline">Reference definition →</Link>
+                <Link to="/wiki/snapshot" className="text-[var(--brand)] hover:underline">Reference definition →</Link>
               </div>
             </article>
 
@@ -141,7 +141,7 @@ export function MethodPage() {
               </p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
                 <a href="/#architecture-graph" className="text-[var(--brand)] hover:underline">Inspect the interactive graph →</a>
-                <Link to="/wiki#architectural-graph" className="text-[var(--brand)] hover:underline">Reference definition →</Link>
+                <Link to="/wiki/architectural-graph" className="text-[var(--brand)] hover:underline">Reference definition →</Link>
               </div>
             </article>
           </div>

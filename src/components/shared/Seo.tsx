@@ -19,6 +19,7 @@ type RouteMeta = {
   robots: string
   type: 'website' | 'article'
   image?: string
+  canonical?: string
 }
 
 const routes = routeManifest as RouteMeta[]
@@ -61,7 +62,7 @@ export function Seo({
   const resolvedDescription = manifestMeta?.description ?? description
   const resolvedType = manifestMeta?.type ?? type
   const resolvedRobots = manifestMeta?.robots ?? robots
-  const url = `${siteConfig.url}${path}`
+  const url = `${siteConfig.url}${manifestMeta?.canonical ?? path}`
   const image = `${siteConfig.url}${manifestMeta?.image ?? siteConfig.ogImage}`
 
   useEffect(() => {

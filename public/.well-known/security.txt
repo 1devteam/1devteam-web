@@ -1,5 +1,4 @@
 Contact: mailto:hello@1devteam.com
 Canonical: https://1devteam.com/.well-known/security.txt
-Policy: https://1devteam.com/trust
 Preferred-Languages: en
-Expires: 2027-08-29T23:59:59Z
+Expires: 2027-09-14T23:59:59Z

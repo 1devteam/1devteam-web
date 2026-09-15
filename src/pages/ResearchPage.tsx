@@ -120,8 +120,8 @@ export function ResearchPage() {
                 <p className="mt-4 max-w-4xl font-mono text-sm leading-relaxed text-[var(--text)]">{tool.operatingModel}</p>
                 {tool.name === 'G.R.A.F.T.+' ? (
                   <p className="mt-4">
-                    <Link to="/wiki" className="text-sm font-semibold text-[var(--brand)] hover:underline">
-                      Open the working prototype and user guide →
+                    <Link to="/graft" className="text-sm font-semibold text-[var(--brand)] hover:underline">
+                      Map a public repository →
                     </Link>
                   </p>
                 ) : null}

@@ -1,0 +1,17 @@
+{
+  "destination": "gabe.n.fat@outlook.com",
+  "aliases": [
+    {
+      "address": "hello@1devteam.com",
+      "action": "forward",
+      "note": "Public contact for 1devteam."
+    },
+    {
+      "address": "ajenda-ai@1devteam.com",
+      "action": "forward",
+      "note": "Ajenda product inbox. Forwards to the same destination."
+    }
+  ],
+  "provider": "cloudflare-email-routing",
+  "dns": "MX and Email Routing for 1devteam.com must deliver both aliases to the destination. This file is the repo contract."
+}
