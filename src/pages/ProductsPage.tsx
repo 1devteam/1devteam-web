@@ -27,7 +27,7 @@ export function ProductsPage() {
           <div className="max-w-4xl">
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Current portfolio</p>
             <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              Ajenda AI is the current flagship product under active private development. G.R.A.F.T.+ and G.R.A.F.T.1st are applied R&amp;D outputs whose product objectives remain separate from the conclusions of the research program that may inform them.
+              Ajenda AI is the current flagship product under active private development. G.R.A.F.T.+ and G.R.A.F.T.1st are applied R&D outputs whose product objectives remain separate from the conclusions of the research program that may inform them.
             </p>
           </div>
 
@@ -61,10 +61,10 @@ export function ProductsPage() {
           </Card>
 
           <div className="mt-16 max-w-4xl border-t border-[var(--border)] pt-8">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&amp;D outputs</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&D outputs</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ and G.R.A.F.T.1st</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              These systems emerge from architecture and repair problems examined in the formal R&amp;D program. Research can support, narrow, change, or contradict the assumptions behind either system; product direction does not determine the study&apos;s conclusions.
+              These systems emerge from architecture and repair problems examined in the formal R&D program. Research can support, narrow, change, or contradict the assumptions behind either system; product direction does not determine the study's conclusions.
             </p>
           </div>
 
@@ -86,7 +86,7 @@ export function ProductsPage() {
                   </div>
                   {tool.name === 'G.R.A.F.T.+' ? (
                     <Button asChild variant="outline">
-                      <Link to="/wiki">Open the working prototype</Link>
+                      <Link to="/graft">Open the working prototype</Link>
                     </Button>
                   ) : null}
                 </CardContent>
@@ -102,7 +102,7 @@ export function ProductsPage() {
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">
               This remains a development hypothesis, not a completed research finding.
             </p>
-            <Button asChild variant="outline" className="mt-5"><Link to="/research">Read the R&amp;D program</Link></Button>
+            <Button asChild variant="outline" className="mt-5"><Link to="/research">Read the R&D program</Link></Button>
           </div>
         </div>
       </section>
