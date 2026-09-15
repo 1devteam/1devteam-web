@@ -6,6 +6,7 @@ import { BrandPage } from '@/pages/BrandPage'
 import { EnterprisePage } from '@/pages/EnterprisePage'
 import { AjendaPage } from '@/pages/AjendaPage'
 import { ContactPage } from '@/pages/ContactPage'
+import { GraftPage } from '@/pages/GraftPage'
 import { HomePage } from '@/pages/HomePage'
 import { InsightArticlePage } from '@/pages/InsightArticlePage'
 import { InsightsPage } from '@/pages/InsightsPage'
@@ -28,6 +29,7 @@ export function render(pathname: string) {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="graft" element={<GraftPage />} />
           <Route path="wiki" element={<WikiPage />} />
           <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />
