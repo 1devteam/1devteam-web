@@ -68,7 +68,7 @@ function csp(nonce: string) {
 function metadataRewriter(meta: RouteMeta, pageUrl: string, canonical: string | null, nonce: string) {
   const image = `${siteOrigin}${meta.image ?? defaultImage}`
   return new HTMLRewriter()
-    .on('title', {
+    .on('head > title', {
       element(element) {
         element.setInnerContent(meta.title)
       },
@@ -205,6 +205,12 @@ export const onRequest: PagesFunction<AssetEnv> = async (context) => {
     const redirectUrl = new URL(requestUrl)
     redirectUrl.pathname = normalizedPath
     return Response.redirect(redirectUrl.toString(), 308)
+  }
+
+  if (/^\/graft\/[^/]+$/.test(normalizedPath)) {
+    const redirectUrl = new URL(requestUrl)
+    redirectUrl.pathname = '/graft'
+    return Response.redirect(redirectUrl.toString(), 302)
   }
 
   const route = routesByPath.get(normalizedPath)

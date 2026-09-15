@@ -1,11 +1,25 @@
 import { GraftUserGuide } from "@/components/graft/user-guide";
 import { GraftReconstruct } from "@/components/product/home";
 import { GraftSession } from "@/components/product/shell";
+import { Workspace } from "@/components/product/workspace";
 import { PageHero } from "@/components/shared/PageHero";
 import { Seo } from "@/components/shared/Seo";
 import { Button } from "@/components/ui/button";
+import { useProductStore } from "@/lib/product/store";
 
 export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
+  const activeId = useProductStore((s) => s.activeId);
+  const active = useProductStore((s) => (activeId ? s.projects[activeId] : undefined));
+
+  if (active) {
+    return (
+      <GraftSession>
+        <Seo path={seoPath} />
+        <Workspace projectId={active.id} />
+      </GraftSession>
+    );
+  }
+
   return (
     <GraftSession>
       <Seo path={seoPath} />

@@ -77,7 +77,7 @@ function RoundDelta({ delta, slice }: { delta: RefreshDelta; slice: string[] }) 
       ) : null}
       {nodeHidden > 0 ? <p className="font-mono text-xs text-subtle">and {nodeHidden} more nodes</p> : null}
       <p className="mt-3 font-mono text-xs text-subtle">
-        Plan slice · {slice.length} file{slice.length === 1 ? "" : "s"}
+        This round · {slice.length} file{slice.length === 1 ? "" : "s"}
         {slice.length ? ` · ${slice.slice(0, 3).join(", ")}${slice.length > 3 ? "…" : ""}` : ""}
       </p>
       {delta.compareUrl ? (
@@ -142,11 +142,11 @@ export function RefreshGithub({ project }: { project: Project }) {
         setNote(`Still at ${ingest.sha.slice(0, 12)}. Graph rebuilt from that tree.`);
       } else if (compare && previous) {
         setNote(
-          `Now at ${ingest.sha.slice(0, 12)}. Round slice is the GitHub compare from ${previous.slice(0, 12)}.`,
+          `Now at ${ingest.sha.slice(0, 12)}. This round is the GitHub compare from ${previous.slice(0, 12)}.`,
         );
       } else {
         setNote(
-          `Now at ${ingest.sha.slice(0, 12)}${previous ? ` (was ${previous.slice(0, 12)})` : ""}. Round slice is the ingested-tree delta.`,
+          `Now at ${ingest.sha.slice(0, 12)}${previous ? ` (was ${previous.slice(0, 12)})` : ""}. This round is the ingested-tree delta.`,
         );
       }
     } catch (err) {
@@ -163,9 +163,8 @@ export function RefreshGithub({ project }: { project: Project }) {
       <h2 className="mt-2 text-xl font-medium tracking-tight">Rebuild against the latest tree</h2>
       <p className="mt-2 max-w-xl text-sm text-muted">
         After you push, refresh overwrites this reconstruction and records the round delta.
-        When a previous SHA exists, the next plan uses the GitHub compare slice. Optional subtree
-        keeps the reconstruction inside a path when the cap would omit. Overlay is kept.
-        Merge stays not-determined.
+        When a previous SHA exists, that compare is the round. Optional subtree reconstructs
+        only that path. Overlay is kept. Merge stays not-determined.
       </p>
       <p className="mt-3 font-mono text-xs text-subtle">
         {parsed.owner}/{parsed.repo}

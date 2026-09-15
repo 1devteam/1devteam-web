@@ -1,10 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
 import { RepoForm } from "@/components/product/repo-form";
 import { useProductStore } from "@/lib/product/store";
 
 export function GraftReconstruct() {
-  const navigate = useNavigate();
   const projects = useProductStore((s) => s.projects);
+  const openProject = useProductStore((s) => s.openProject);
   const list = Object.values(projects).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
   return (
@@ -15,11 +14,7 @@ export function GraftReconstruct() {
           for the same facts.
         </p>
         <div className="mt-8">
-          <RepoForm
-            onOpened={(id) => {
-              void navigate(`/graft/${id}`);
-            }}
-          />
+          <RepoForm onOpened={(id) => openProject(id)} />
         </div>
         {list.length ? (
           <div className="mt-10">
@@ -27,14 +22,15 @@ export function GraftReconstruct() {
             <ul className="mt-3 space-y-2">
               {list.map((project) => (
                 <li key={project.id}>
-                  <Link
-                    to={`/graft/${project.id}`}
+                  <button
+                    type="button"
+                    onClick={() => openProject(project.id)}
                     className="text-sm font-medium underline-offset-4 hover:underline"
                   >
                     {project.origin?.kind === "github"
                       ? `${project.origin.owner}/${project.origin.repo}`
                       : project.name}
-                  </Link>
+                  </button>
                   <span className="ml-2 font-mono text-xs text-subtle">
                     {project.profile.files.length} files
                     {project.origin?.omitted ? ` · ${project.origin.omitted} not ingested` : ""}

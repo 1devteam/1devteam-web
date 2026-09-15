@@ -23,8 +23,10 @@ export const VIEWS: { id: WorkspaceView; label: string }[] = [
 
 type ProductState = {
   projects: Record<string, Project>;
+  activeId: string | null;
   hydrated: boolean;
   markHydrated: () => void;
+  openProject: (id: string | null) => void;
   ensureSeeds: () => void;
   ingestCustom: (name: string, files: IngestedFile[], origin?: ProjectOrigin) => string;
   refreshProject: (id: string, files: IngestedFile[], origin: ProjectOrigin, compare?: GithubCompare | null) => boolean;
@@ -78,8 +80,10 @@ export function dropStaleProductStorage() {
 
 export const useProductStore = create<ProductState>()((set, get) => ({
   projects: {},
+  activeId: null,
   hydrated: false,
   markHydrated: () => set({ hydrated: true }),
+  openProject: (id) => set({ activeId: id }),
   ensureSeeds: () => {
     const current = get().projects;
     const next: Record<string, Project> = {};
@@ -148,7 +152,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       } Session only — download the map before you leave.`,
       "ingest",
     );
-    set({ projects: { ...get().projects, [id]: ready } });
+    set({ projects: { ...get().projects, [id]: ready }, activeId: id });
     return id;
   },
   refreshProject: (id, files, origin, compare) => {
@@ -374,6 +378,6 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   removeProject: (id) => {
     const next = { ...get().projects };
     delete next[id];
-    set({ projects: next });
+    set({ projects: next, activeId: get().activeId === id ? null : get().activeId });
   },
 }));
