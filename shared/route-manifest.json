@@ -18,12 +18,21 @@
     "sitemap": true
   },
   {
-    "path": "/wiki",
+    "path": "/graft",
     "title": "G.R.A.F.T.+ — Reconstruct Existing Systems · 1DevTeam",
     "description": "Working G.R.A.F.T.+ prototype and user guide: reconstruct existing software into evidence-linked facts. Residuals stay visible. Not a planner. Not merge authority.",
     "robots": "index, follow",
     "type": "website",
-    "lastmod": "2026-09-13",
+    "lastmod": "2026-09-14",
+    "sitemap": true
+  },
+  {
+    "path": "/wiki",
+    "title": "Term Index — Systems, Architecture & Research · 1DevTeam",
+    "description": "Reference terms used across 1DevTeam systems and research, including PRIDE, Snapshot, the Architectural Graph, and G.R.A.F.T.+. Expanded articles are linked where they exist.",
+    "robots": "index, follow",
+    "type": "website",
+    "lastmod": "2026-09-14",
     "sitemap": true
   },
   {
