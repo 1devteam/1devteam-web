@@ -35,7 +35,7 @@ const developmentSystems = [
     name: 'Snapshot',
     role: 'Project-context transfer',
     description: 'Packages structured repository and project state so a new model context can begin with substantially more of the real system available for inspection.',
-    href: '/wiki#snapshot',
+    href: '/wiki/snapshot',
     cta: 'Read the Snapshot reference',
   },
   {
@@ -54,7 +54,7 @@ export function HomePage() {
 
       <section className="relative overflow-hidden border-b border-[var(--border)] bg-[linear-gradient(155deg,#ffffff_0%,var(--bg)_54%,var(--surface)_100%)]">
         <div className="container-site py-20 md:py-28 lg:py-32">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">Software Development · Applied R&amp;D</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">Software Development · Applied R&D</p>
           <h1 className="mt-6 max-w-5xl text-balance text-5xl font-semibold tracking-tight sm:text-6xl lg:text-[4.6rem] lg:leading-[1.02]">{siteConfig.tagline}</h1>
           <p className="mt-7 max-w-3xl text-xl leading-relaxed text-[var(--text-muted)]">{siteConfig.description}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -119,17 +119,17 @@ export function HomePage() {
       <section id="rd-program" className="scroll-mt-24 section-pad border-b border-[var(--border)] bg-white">
         <div className="container-site">
           <div className="max-w-4xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">1DevTeam R&amp;D Program #1</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">1DevTeam R&D Program #1</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">Architectural reasoning scope and corrective PR cascades</h2>
             <p className="mt-5 text-[18px] leading-relaxed text-[var(--text-muted)]">{researchProgram.summary}</p>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">Ajenda AI provides the longitudinal development record. The study preserves graph-absent, graph-construction, and graph-assisted periods as distinct conditions and does not assume graph assistance is superior in advance.</p>
-            <Button asChild variant="outline" className="mt-6"><Link to="/research">Read the formal R&amp;D program</Link></Button>
+            <Button asChild variant="outline" className="mt-6"><Link to="/research">Read the formal R&D program</Link></Button>
           </div>
           <div id="architecture-graph" className="scroll-mt-24 mt-12 border-t border-[var(--border)] pt-10">
             <div className="mb-6 max-w-4xl">
               <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Interactive figure · reviewed public projection</p>
               <h3 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Ajenda Architectural Graph</h3>
-              <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">Inspect selected real nodes and mapped <code>calls_function</code>, <code>tests_function</code>, and <code>defined_in</code> relationships from Ajenda&apos;s canonical development graph.</p>
+              <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">Inspect selected real nodes and mapped <code>calls_function</code>, <code>tests_function</code>, and <code>defined_in</code> relationships from Ajenda's canonical development graph.</p>
             </div>
             <Suspense fallback={<div className="min-h-64 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6" role="status">Loading interactive architecture inspection…</div>}>
               <InteractiveArchitectureGraph compact />
@@ -161,7 +161,7 @@ export function HomePage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Technical reference</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ reconstructs existing systems. The working prototype and user guide live on one page.</h2>
           </div>
-          <Button asChild variant="secondary"><Link to="/wiki">Open G.R.A.F.T.+</Link></Button>
+          <Button asChild variant="secondary"><Link to="/graft">Open G.R.A.F.T.+</Link></Button>
         </div>
       </section>
     </>
