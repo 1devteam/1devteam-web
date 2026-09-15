@@ -7,6 +7,7 @@ const BrandPage = lazy(() => import('@/pages/BrandPage').then((module) => ({ def
 const EnterprisePage = lazy(() => import('@/pages/EnterprisePage').then((module) => ({ default: module.EnterprisePage })))
 const AjendaPage = lazy(() => import('@/pages/AjendaPage').then((module) => ({ default: module.AjendaPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then((module) => ({ default: module.ContactPage })))
+const GraftPage = lazy(() => import('@/pages/GraftPage').then((module) => ({ default: module.GraftPage })))
 const HomePage = lazy(() => import('@/pages/HomePage').then((module) => ({ default: module.HomePage })))
 const InsightArticlePage = lazy(() => import('@/pages/InsightArticlePage').then((module) => ({ default: module.InsightArticlePage })))
 const InsightsPage = lazy(() => import('@/pages/InsightsPage').then((module) => ({ default: module.InsightsPage })))
@@ -37,6 +38,7 @@ export function AppRoutes() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="work" element={<WorkPage />} />
+          <Route path="graft" element={<GraftPage />} />
           <Route path="wiki" element={<WikiPage />} />
           <Route path="wiki/:id" element={<WikiEntryPage />} />
           <Route path="research" element={<ResearchPage />} />
