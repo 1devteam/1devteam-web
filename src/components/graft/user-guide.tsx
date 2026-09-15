@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom'
 import { graftGuideIntro, graftGuideSections, graftRelatedSystems } from '@/data/graftGuide'
-import { wikiEntries } from '@/data/wiki'
-import { featuredWikiIds } from '@/data/wikiFeatured'
 
 export function GraftUserGuide() {
   return (
@@ -102,30 +100,13 @@ export function GraftUserGuide() {
             <section id="term-index" className="scroll-mt-24 border-t border-[var(--border)] py-10">
               <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">Term index</h3>
               <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-                Short definitions kept so existing anchors continue to resolve. Expanded articles exist only where the term has a dedicated reference page.
+                Definitions for PRIDE, Snapshot, blast radius, proof selection, and related study terms live on the term index. They are surrounding development vocabulary, not the G.R.A.F.T.+ prototype.
               </p>
-              <dl className="mt-6">
-                {wikiEntries.map((entry) => (
-                  <div
-                    key={entry.id}
-                    id={entry.id}
-                    className="scroll-mt-24 grid gap-2 border-t border-[var(--border)] py-5 md:grid-cols-[0.32fr_0.68fr]"
-                  >
-                    <dt>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{entry.category}</p>
-                      <p className="mt-1 text-base font-semibold text-[var(--text)]">{entry.title}</p>
-                    </dt>
-                    <dd>
-                      <p className="text-[17px] leading-relaxed text-[var(--text-muted)]">{entry.summary}</p>
-                      {featuredWikiIds.has(entry.id) ? (
-                        <Link to={`/wiki/${entry.id}`} className="mt-2 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">
-                          Read expanded reference →
-                        </Link>
-                      ) : null}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              <p className="mt-4">
+                <Link to="/wiki" className="text-base font-semibold text-[var(--brand)] hover:underline">
+                  Open the term index →
+                </Link>
+              </p>
             </section>
           </div>
         </div>
