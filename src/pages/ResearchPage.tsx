@@ -101,10 +101,10 @@ export function ResearchPage() {
       <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]">
         <div className="container-site">
           <div className="max-w-4xl">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&amp;D relationship</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Applied R&D relationship</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">G.R.A.F.T.+ and G.R.A.F.T.1st</h2>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              The study can inform G.R.A.F.T.+ and G.R.A.F.T.1st, but those systems remain development outputs rather than evidence of the study&apos;s conclusion. Research may support their current design assumptions, narrow them, contradict them, or expose different mechanisms entirely.
+              The study can inform G.R.A.F.T.+ and G.R.A.F.T.1st, but those systems remain development outputs rather than evidence of the study's conclusion. Research may support their current design assumptions, narrow them, contradict them, or expose different mechanisms entirely.
             </p>
           </div>
 
@@ -120,7 +120,7 @@ export function ResearchPage() {
                 <p className="mt-4 max-w-4xl font-mono text-sm leading-relaxed text-[var(--text)]">{tool.operatingModel}</p>
                 {tool.name === 'G.R.A.F.T.+' ? (
                   <p className="mt-4">
-                    <Link to="/wiki" className="text-sm font-semibold text-[var(--brand)] hover:underline">
+                    <Link to="/graft" className="text-sm font-semibold text-[var(--brand)] hover:underline">
                       Open the working prototype and user guide →
                     </Link>
                   </p>
