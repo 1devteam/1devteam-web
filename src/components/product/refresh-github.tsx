@@ -96,6 +96,7 @@ function RoundDelta({ delta, slice }: { delta: RefreshDelta; slice: string[] }) 
 
 export function RefreshGithub({ project }: { project: Project }) {
   const refreshProject = useProductStore((s) => s.refreshProject);
+  const removeProject = useProductStore((s) => s.removeProject);
   const parsed = githubRefFromProject(project);
   const [token, setToken] = useState("");
   const [showToken, setShowToken] = useState(false);
@@ -164,7 +165,8 @@ export function RefreshGithub({ project }: { project: Project }) {
       <p className="mt-2 max-w-xl text-sm text-muted">
         After you push, refresh overwrites this reconstruction and records the round delta.
         When a previous SHA exists, that compare is the round. Optional subtree reconstructs
-        only that path. Overlay is kept. Merge stays not-determined.
+        only that path. Overlay is kept. Merge stays not-determined. Clear drops this run
+        from the tab so you can map another repository.
       </p>
       <p className="mt-3 font-mono text-xs text-subtle">
         {parsed.owner}/{parsed.repo}
@@ -190,6 +192,14 @@ export function RefreshGithub({ project }: { project: Project }) {
         >
           <RefreshCw className={`size-4 ${busy ? "animate-spin" : ""}`} />
           {busy ? "Refreshing…" : "Refresh reconstruction"}
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => removeProject(project.id)}
+          className="min-h-11 rounded-full border border-border px-4 text-sm text-muted hover:text-fg disabled:opacity-50"
+        >
+          Clear
         </button>
         <button
           type="button"
