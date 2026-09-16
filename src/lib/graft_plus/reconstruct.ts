@@ -23,17 +23,10 @@ type Unresolved = { specifier: string; from: string };
 const PY_IMPORT = /^\s*(?:from|import)\s+([A-Za-z0-9_\.]+)/gm;
 const FE_IMPORT = /(?:import|export)\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]/g;
 const SKIP = /(^|\/)(node_modules|dist|build|\.venv|venv|__pycache__|\.git)(\/|$)/;
-const RUNTIME = new Set([
-  "abc", "argparse", "ast", "asyncio", "base64", "collections", "concurrent", "configparser",
-  "contextlib", "copy", "csv", "dataclasses", "datetime", "decimal", "email", "enum", "fnmatch",
-  "functools", "getpass", "glob", "gzip", "hashlib", "hmac", "html", "http", "importlib",
-  "inspect", "io", "itertools", "json", "logging", "math", "mmap", "multiprocessing", "os",
-  "pathlib", "pickle", "pkgutil", "platform", "pprint", "queue", "random", "re", "secrets",
-  "shutil", "signal", "socket", "sqlite3", "ssl", "statistics", "string", "struct", "subprocess",
-  "sys", "tarfile", "tempfile", "textwrap", "threading", "time", "tomllib", "traceback", "types",
-  "typing", "unicodedata", "unittest", "urllib", "uuid", "warnings", "weakref", "webbrowser",
-  "xml", "zipfile", "__future__",
-]);
+const RUNTIME = new Set(
+  `abc argparse array ast asyncio atexit base64 bdb binascii bisect builtins bz2 calendar cmath cmd code codecs collections colorsys compileall concurrent configparser contextlib contextvars copy copyreg csv ctypes dataclasses datetime decimal difflib dis doctest email enum errno faulthandler fcntl filecmp fileinput fnmatch fractions ftplib functools gc getopt getpass gettext glob gzip hashlib heapq hmac html http imaplib importlib inspect io ipaddress itertools json keyword linecache locale logging lzma mailbox marshal math mimetypes mmap multiprocessing netrc numbers operator optparse os pathlib pdb pickle pkgutil platform pprint pstats pty pwd queue random re readline reprlib resource rlcompleter runpy sched secrets select selectors shelve shlex shutil signal site smtplib socket socketserver sqlite3 ssl stat statistics string struct subprocess sys sysconfig syslog tarfile tempfile textwrap threading time timeit token tokenize traceback types typing unicodedata unittest urllib uuid venv warnings wave weakref webbrowser xml xmlrpc zipfile zipimport zlib zoneinfo __future__`
+    .split(/\s+/),
+);
 const SOURCE_SUFFIX = /\.(py|ts|tsx|js|jsx|go|rs|rb|php)$/;
 const NETWORK_LIBS = /\b(?:import|from)\s+(httpx|requests|aiohttp|smtplib)\b/;
 
@@ -46,6 +39,7 @@ function productionPy(path: string): boolean {
 }
 
 function runtime(specifier: string): boolean {
+  if (!specifier) return true;
   const root = specifier.split(".")[0]?.split("/")[0] ?? specifier;
   return RUNTIME.has(root) || specifier.startsWith("node:");
 }
@@ -91,6 +85,7 @@ function pythonGraph(files: FileInput[]): { nodes: Node[]; edges: Edge[]; unreso
     const imported = new Set<string>();
     while ((match = PY_IMPORT.exec(file.content))) {
       const name = match[1];
+      if (!name) continue;
       const target = bestTarget(name, modules);
       if (target && target !== module) imported.add(target);
       else if (!target && !runtime(name)) unresolved.push({ specifier: name, from: file.path });
@@ -205,14 +200,38 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
 
   for (const file of files.filter((f) => productionPy(f.path))) {
     const module = moduleFor(file.path);
-    const routeRe = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)/gi;
     let match: RegExpExecArray | null;
+    const routeRe = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)/gi;
     while ((match = routeRe.exec(file.content))) {
       const method = match[1].toUpperCase();
       const route = match[2];
-      const id = `route:${method}:${route}:${module}`;
+      const id = `route:${method} ${route}`;
       nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method, route });
-      edges.push({ from: id, to: `py:${module}`, type: "handled_by", evidence: file.path, layer: "generated" });
+      edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+    }
+    const flaskRe = /@(?:[A-Za-z0-9_]+)\.route\(\s*["']([^"']+)["'](?:[^)]*methods\s*=\s*\[([^\]]+)\])?/gi;
+    while ((match = flaskRe.exec(file.content))) {
+      const route = match[1];
+      const methods = match[2]
+        ? match[2].split(",").map((m) => m.replace(/['"\s]/g, "")).filter(Boolean)
+        : ["GET"];
+      for (const method of methods) {
+        const id = `route:${method.toUpperCase()} ${route}`;
+        nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: method.toUpperCase(), route });
+        edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+      }
+    }
+    const djangoRe = /\b(?:path|re_path|url)\(\s*["']([^"']+)/g;
+    while ((match = djangoRe.exec(file.content))) {
+      const id = `route:ANY ${match[1]}`;
+      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: "ANY", route: match[1] });
+      edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+    }
+    const tableRe = /__tablename__\s*=\s*["']([A-Za-z0-9_]+)/g;
+    while ((match = tableRe.exec(file.content))) {
+      const id = `db:table:${match[1]}`;
+      nodes.push({ id, type: "database_table", source: file.path, layer: "generated", label: match[1] });
+      edges.push({ from: `py:${module}`, to: id, type: "defines_table", evidence: file.path, layer: "generated" });
     }
     if (NETWORK_LIBS.test(file.content) && /\.(get|post|put|patch|delete|request)\s*\(/.test(file.content)) {
       const sink = `egress:${module}`;
@@ -232,6 +251,16 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
         nodes.push({ id, type: "contract", source: file.path, layer: "generated", name: match[1], kind: "dataclass" });
         edges.push({ from: `py:${module}`, to: id, type: "defines_contract", evidence: file.path, layer: "generated" });
       }
+    }
+  }
+
+  const jsRoute = /\b(?:app|router|api)\.(get|post|put|patch|delete|all)\(\s*['"]([^'"]+)/gi;
+  for (const file of files.filter((f) => /\.(js|mjs|ts)$/.test(f.path) && !skip(f.path))) {
+    let match: RegExpExecArray | null;
+    jsRoute.lastIndex = 0;
+    while ((match = jsRoute.exec(file.content))) {
+      const id = `route:${match[1].toUpperCase()} ${match[2]}`;
+      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: match[1].toUpperCase(), route: match[2] });
     }
   }
 
@@ -320,11 +349,13 @@ export function reconstructPack(input: {
   };
   const residuals = {
     overlay: "residual",
-    unresolved_imports: unresolved,
+    unresolved_import_count: unresolved.length,
     unresolved_package_roots: roots,
     no_git_range: true,
     unmapped_changed_files: [] as string[],
-    unmapped_source_files: cover.unmapped_source_files,
+    unmapped_source_file_count: cover.unmapped_source_files.length,
+    unmapped_source_files: cover.unmapped_source_files.slice(0, 50),
+    stale_graph_source_count: cover.stale_graph_sources.length,
     stale_graph_sources: cover.stale_graph_sources,
     note: "Residuals stay visible. Unresolved imports are facts, not missing files. Overlay stays residual until a reviewed relationship is attached.",
   };
