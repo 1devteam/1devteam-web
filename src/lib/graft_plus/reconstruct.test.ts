@@ -67,6 +67,34 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.engine, "universal-shell");
   });
 
+  it("names Flask/Express routes and SQLAlchemy tables, and does not leak stdlib", () => {
+    const pack = reconstructPack({
+      files: [
+        {
+          path: "app/web.py",
+          content: `import ctypes\nimport stripe\nfrom flask import Flask\napp = Flask(__name__)\n@app.route("/status", methods=["GET", "POST"])\ndef status():\n    return "ok"\nclass Watch:\n    __tablename__ = "watches"\n`,
+        },
+        { path: "server.js", content: `router.post("/pay", charge);\n` },
+      ],
+    });
+    const graph = pack["dependency-graph.v1.json"] as {
+      nodes: { id: string }[];
+      facts: { unresolved_imports: { specifier: string }[]; unresolved_package_roots: string[] };
+    };
+    const ids = new Set(graph.nodes.map((n) => n.id));
+    const specs = new Set(graph.facts.unresolved_imports.map((r) => r.specifier));
+    assert.ok(ids.has("route:GET /status"));
+    assert.ok(ids.has("route:POST /status"));
+    assert.ok(ids.has("route:POST /pay"));
+    assert.ok(ids.has("db:table:watches"));
+    assert.equal(specs.has("ctypes"), false);
+    assert.ok(specs.has("stripe"));
+    assert.equal(graph.facts.unresolved_package_roots.includes(""), false);
+    const completeness = pack["graph-completeness-report.json"] as { residuals: Record<string, unknown> };
+    assert.equal("unresolved_imports" in completeness.residuals, false);
+    assert.ok("unresolved_import_count" in completeness.residuals);
+  });
+
   it("contains no Ajenda domain strings", () => {
     const src = readFileSync(fileURLToPath(new URL("./reconstruct.ts", import.meta.url)), "utf8");
     assert.doesNotMatch(src, /hubspot/i);
