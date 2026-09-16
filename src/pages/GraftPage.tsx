@@ -26,8 +26,8 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
 
       <PageHero
         eyebrow="G.R.A.F.T.+"
-        title="Map a public repository. Download one reconstruction."
-        description="G.R.A.F.T.+ reads a GitHub tree at one SHA and writes a map: inventory, contracts, dependencies, routes, wiring, and recent commits. Unknowns become small follow-up questions. It does not plan. It does not merge. Overlay stays residual until you evidence it."
+        title="Point G.R.A.F.T.+ at a public repository."
+        description="G.R.A.F.T.+ reconstructs what exists: graph, completeness, impact, proof, architecture decision. Hand that pack to an AI. It does not dump source, plan, or merge. Overlay stays residual."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>

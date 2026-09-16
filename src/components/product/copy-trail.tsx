@@ -51,8 +51,8 @@ export function CopyTrail({ project }: { project: Project }) {
           <div className="flex max-h-[90vh] w-full max-w-3xl min-w-0 flex-col rounded-lg border border-border bg-surface p-4">
             <p className="text-sm font-medium">{archive.filename}</p>
             <p className="mt-1 text-sm text-muted">
-              Zip holds GRAFT-MAP.md, GRAFT-PACK.json, and tree/. If the download was blocked, copy the
-              map from here. Leave this tab and the reconstruction is gone.
+              Zip is the reconstruction pack: architecture decision, graph, completeness, impact, proof,
+              receipt. No source dump. Feed the JSON to an AI. Leave this tab and the run is gone.
             </p>
             <textarea
               ref={areaRef}
