@@ -38,6 +38,35 @@ describe("graft_plus reconstruct", () => {
     assert.ok(decision.decision.review_reasons.includes("overlay_residual"));
   });
 
+  it("names tables, routes, contracts, and unclassified egress without Ajenda policy", () => {
+    const pack = reconstructPack({
+      files: [
+        {
+          path: "alembic/versions/0001_init.py",
+          content: `def upgrade():\n    op.create_table("leads")\n    op.execute("ALTER TABLE leads ENABLE ROW LEVEL SECURITY")\n`,
+        },
+        {
+          path: "app/api.py",
+          content: `import httpx\nfrom pydantic import BaseModel\nclass Lead(BaseModel):\n    name: str\n@app.get("/leads")\ndef list_leads():\n    return httpx.get("https://example.com")\n`,
+        },
+      ],
+    });
+    const graph = pack["dependency-graph.v1.json"] as { nodes: { id: string; type: string }[] };
+    const types = new Set(graph.nodes.map((n) => n.type));
+    assert.ok(types.has("database_table"));
+    assert.ok(types.has("http_route"));
+    assert.ok(types.has("contract"));
+    assert.ok(types.has("network_egress_sink"));
+    const decision = pack["graph-architecture-decision.json"] as {
+      decision: { architecture_disposition: string; merge_authorization: string; blocking_reasons: string[] };
+    };
+    assert.equal(decision.decision.merge_authorization, "not-determined");
+    assert.equal(decision.decision.architecture_disposition, "clear");
+    assert.ok(!decision.decision.blocking_reasons.some((r) => r.includes("rls-missing")));
+    const receipt = pack["graft-plus-receipt.json"] as { engine: string };
+    assert.equal(receipt.engine, "universal-shell");
+  });
+
   it("contains no Ajenda domain strings", () => {
     const src = readFileSync(fileURLToPath(new URL("./reconstruct.ts", import.meta.url)), "utf8");
     assert.doesNotMatch(src, /hubspot/i);
