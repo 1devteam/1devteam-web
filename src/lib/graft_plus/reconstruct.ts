@@ -1,5 +1,5 @@
 /**
- * Browser port of 1devteam/graft_plus reconstruct.
+ * Browser port of 1devteam/graft_plus universal shell.
  * Generated structure + completeness + impact + proof + decision.
  * No source dump. No Ajenda domain rules. Never merge authority.
  */
@@ -10,7 +10,13 @@ export const GRANTS_EXECUTION_AUTHORITY = false;
 
 export type FileInput = { path: string; content: string };
 
-type Node = { id: string; type: string; source: string; layer: "generated" | "overlay" };
+type Node = {
+  id: string;
+  type: string;
+  source: string;
+  layer: "generated" | "overlay";
+  [key: string]: unknown;
+};
 type Edge = { from: string; to: string; type: string; evidence: string; layer: "generated" | "overlay" };
 type Unresolved = { specifier: string; from: string };
 
@@ -28,9 +34,15 @@ const RUNTIME = new Set([
   "typing", "unicodedata", "unittest", "urllib", "uuid", "warnings", "weakref", "webbrowser",
   "xml", "zipfile", "__future__",
 ]);
+const SOURCE_SUFFIX = /\.(py|ts|tsx|js|jsx|go|rs|rb|php)$/;
+const NETWORK_LIBS = /\b(?:import|from)\s+(httpx|requests|aiohttp|smtplib)\b/;
 
 function skip(path: string): boolean {
   return SKIP.test(path) || path.includes("/fixtures/");
+}
+
+function productionPy(path: string): boolean {
+  return path.endsWith(".py") && !skip(path) && !path.startsWith("tests/") && !path.includes("/tests/");
 }
 
 function runtime(specifier: string): boolean {
@@ -91,7 +103,7 @@ function pythonGraph(files: FileInput[]): { nodes: Node[]; edges: Edge[]; unreso
 }
 
 function testGraph(files: FileInput[], production: Set<string>): { nodes: Node[]; edges: Edge[]; unresolved: Unresolved[] } {
-  const tests = files.filter((f) => f.path.startsWith("tests/") && f.path.endsWith(".py") && !skip(f.path));
+  const tests = files.filter((f) => (f.path.startsWith("tests/") || f.path.includes("/tests/")) && f.path.endsWith(".py") && !skip(f.path));
   const nodes: Node[] = tests.map((f) => ({ id: `test:${f.path}`, type: "test_module", source: f.path, layer: "generated" }));
   const edges: Edge[] = [];
   const unresolved: Unresolved[] = [];
@@ -150,6 +162,111 @@ function surfaces(files: FileInput[]): Node[] {
   return nodes;
 }
 
+function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
+  const nodes: Node[] = [];
+  const edges: Edge[] = [];
+  const tables = new Map<string, { sources: string[]; rls: boolean }>();
+
+  for (const file of files) {
+    if (!file.path.endsWith(".py") || skip(file.path)) continue;
+    const isMigration = /(?:^|\/)(?:alembic|migrations)\/versions\/.+\.py$/.test(file.path);
+    if (isMigration) {
+      const id = `migration:${file.path.split("/").pop()?.replace(/\.py$/, "")}`;
+      nodes.push({ id, type: "migration", source: file.path, layer: "generated" });
+      const tableRe = /op\.(?:create_table|add_column|drop_table|alter_column)\(\s*["']([A-Za-z0-9_]+)/g;
+      let match: RegExpExecArray | null;
+      const found = new Set<string>();
+      while ((match = tableRe.exec(file.content))) found.add(match[1]);
+      const rlsRe = /ALTER\s+TABLE\s+([A-Za-z0-9_]+)\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY/gi;
+      while ((match = rlsRe.exec(file.content))) {
+        found.add(match[1]);
+        const row = tables.get(match[1]) ?? { sources: [], rls: false };
+        row.rls = true;
+        tables.set(match[1], row);
+      }
+      for (const table of found) {
+        const row = tables.get(table) ?? { sources: [], rls: false };
+        row.sources.push(file.path);
+        tables.set(table, row);
+        edges.push({ from: id, to: `db:table:${table}`, type: "creates_or_alters_table", evidence: file.path, layer: "generated" });
+      }
+    }
+  }
+  for (const [table, row] of [...tables.entries()].sort()) {
+    nodes.push({
+      id: `db:table:${table}`,
+      type: "database_table",
+      source: row.sources.at(-1) ?? "",
+      layer: "generated",
+      label: table,
+      rls_enabled: row.rls,
+    });
+  }
+
+  for (const file of files.filter((f) => productionPy(f.path))) {
+    const module = moduleFor(file.path);
+    const routeRe = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)/gi;
+    let match: RegExpExecArray | null;
+    while ((match = routeRe.exec(file.content))) {
+      const method = match[1].toUpperCase();
+      const route = match[2];
+      const id = `route:${method}:${route}:${module}`;
+      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method, route });
+      edges.push({ from: id, to: `py:${module}`, type: "handled_by", evidence: file.path, layer: "generated" });
+    }
+    if (NETWORK_LIBS.test(file.content) && /\.(get|post|put|patch|delete|request)\s*\(/.test(file.content)) {
+      const sink = `egress:${module}`;
+      nodes.push({ id: sink, type: "network_egress_sink", source: file.path, layer: "generated", classification: "unclassified" });
+      edges.push({ from: `py:${module}`, to: sink, type: "network_call", evidence: file.path, layer: "generated" });
+    }
+    const modelRe = /^class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*(?:BaseModel|Protocol|TypedDict|Enum)/gm;
+    while ((match = modelRe.exec(file.content))) {
+      const id = `contract:${module}:${match[1]}`;
+      nodes.push({ id, type: "contract", source: file.path, layer: "generated", name: match[1], kind: "model" });
+      edges.push({ from: `py:${module}`, to: id, type: "defines_contract", evidence: file.path, layer: "generated" });
+    }
+    if (/@dataclass/.test(file.content)) {
+      const dcRe = /@dataclass[\s\S]{0,80}class\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+      while ((match = dcRe.exec(file.content))) {
+        const id = `contract:${module}:${match[1]}`;
+        nodes.push({ id, type: "contract", source: file.path, layer: "generated", name: match[1], kind: "dataclass" });
+        edges.push({ from: `py:${module}`, to: id, type: "defines_contract", evidence: file.path, layer: "generated" });
+      }
+    }
+  }
+
+  const tsRe = /export\s+(?:interface|type)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+  for (const file of files.filter((f) => /\.(ts|tsx)$/.test(f.path) && !skip(f.path))) {
+    let match: RegExpExecArray | null;
+    tsRe.lastIndex = 0;
+    while ((match = tsRe.exec(file.content))) {
+      nodes.push({
+        id: `contract:${file.path}:${match[1]}`,
+        type: "contract",
+        source: file.path,
+        layer: "generated",
+        name: match[1],
+        kind: "typescript",
+      });
+    }
+  }
+  return { nodes, edges };
+}
+
+function coverage(files: FileInput[], nodes: Node[]): { unmapped_source_files: string[]; stale_graph_sources: { id: string; source: string }[] } {
+  const mapped = new Set(nodes.map((n) => n.source).filter(Boolean));
+  const unmapped = files
+    .filter((f) => SOURCE_SUFFIX.test(f.path) && !skip(f.path) && !mapped.has(f.path))
+    .map((f) => f.path)
+    .sort();
+  const present = new Set(files.map((f) => f.path));
+  const stale = nodes
+    .filter((n) => n.source && !present.has(n.source))
+    .map((n) => ({ id: n.id, source: n.source }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+  return { unmapped_source_files: unmapped, stale_graph_sources: stale };
+}
+
 function sha256sync(text: string): string {
   let h = 0;
   for (let i = 0; i < text.length; i += 1) h = (h * 31 + text.charCodeAt(i)) >>> 0;
@@ -166,8 +283,9 @@ export function reconstructPack(input: {
   const tests = testGraph(files, production);
   const fe = frontendGraph(files);
   const surfaceNodes = surfaces(files);
-  const nodes = [...py.nodes, ...fe.nodes, ...tests.nodes, ...surfaceNodes];
-  const edges = [...py.edges, ...fe.edges, ...tests.edges];
+  const generated = semantic(files);
+  const nodes = [...py.nodes, ...fe.nodes, ...tests.nodes, ...surfaceNodes, ...generated.nodes];
+  const edges = [...py.edges, ...fe.edges, ...tests.edges, ...generated.edges];
   const unresolvedMap = new Map<string, Unresolved>();
   for (const row of [...py.unresolved, ...fe.unresolved, ...tests.unresolved]) {
     unresolvedMap.set(`${row.specifier}|${row.from}`, row);
@@ -175,7 +293,9 @@ export function reconstructPack(input: {
   const unresolved = [...unresolvedMap.values()].sort((a, b) => a.specifier.localeCompare(b.specifier) || a.from.localeCompare(b.from));
   const roots = [...new Set(unresolved.map((r) => packageRoot(r.specifier)))].sort();
   const known = new Set(nodes.map((n) => n.id));
+  const kept = edges.filter((e) => known.has(e.from) && known.has(e.to));
   const missing = [...new Set(edges.flatMap((e) => [e.from, e.to]).filter((id) => !known.has(id)))].sort();
+  const cover = coverage(files, nodes);
   const graph = {
     schema_version: "1.1",
     product: "G.R.A.F.T.+",
@@ -184,15 +304,15 @@ export function reconstructPack(input: {
     implementsPlan: IMPLEMENTS_PLAN,
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
-    edges: edges.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to)),
+    edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to)),
     facts: { unresolved_imports: unresolved, unresolved_package_roots: roots },
     metrics: {
       node_count: nodes.length,
-      edge_count: edges.length,
+      edge_count: kept.length,
       overlay_node_count: 0,
       unresolved_import_count: unresolved.length,
       surface_count: surfaceNodes.length,
-      edge_counts_by_type: edges.reduce<Record<string, number>>((acc, e) => {
+      edge_counts_by_type: kept.reduce<Record<string, number>>((acc, e) => {
         acc[e.type] = (acc[e.type] ?? 0) + 1;
         return acc;
       }, {}),
@@ -204,6 +324,8 @@ export function reconstructPack(input: {
     unresolved_package_roots: roots,
     no_git_range: true,
     unmapped_changed_files: [] as string[],
+    unmapped_source_files: cover.unmapped_source_files,
+    stale_graph_sources: cover.stale_graph_sources,
     note: "Residuals stay visible. Unresolved imports are facts, not missing files. Overlay stays residual until a reviewed relationship is attached.",
   };
   const completeness = {
@@ -212,18 +334,23 @@ export function reconstructPack(input: {
     undefined_edge_endpoints: missing,
     unacknowledged_blocking_findings: [] as string[],
     node_count: nodes.length,
-    edge_count: edges.length,
+    edge_count: kept.length,
     residuals,
-    note: "An acknowledgement is not a repair.",
+    note: "An acknowledgement is not a repair. Missing overlay is residual, not an Ajenda policy failure.",
   };
   const impact = {
-    schema_version: "1.0",
+    schema_version: "1.2",
     changed_files: [] as string[],
     changed_nodes: [] as Node[],
     unmapped_changed_files: [] as string[],
+    upstream_consumers: [] as string[],
+    downstream_dependencies: [] as string[],
     impacted_tests: [] as string[],
+    affected_semantic_nodes: [] as string[],
+    dependency_semantic_nodes: [] as string[],
+    relevant_invariants: [] as string[],
     changed_node_count: 0,
-    note: "no git range requested",
+    note: "no git range requested; blast-radius fields are present and empty",
   };
   const proofs = {
     schema_version: "1.0",
@@ -234,6 +361,8 @@ export function reconstructPack(input: {
     note: "Bundles are overlay-supplied. This package has no product-specific proofs.",
   };
   const review = ["overlay_residual"];
+  if (cover.unmapped_source_files.length) review.push("unmapped_source_files");
+  if (cover.stale_graph_sources.length) review.push("stale_graph_sources");
   const warnings = ["no_git_range"];
   if (roots.length) warnings.push("unresolved_imports");
   const decision = {
@@ -252,6 +381,12 @@ export function reconstructPack(input: {
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
     implementsPlan: IMPLEMENTS_PLAN,
     residuals,
+    impact: {
+      changed_files: [],
+      upstream_consumers: [],
+      downstream_dependencies: [],
+      unmapped_changed_files: [],
+    },
     negatives: [
       "This pack is a map. It is not a plan.",
       "merge_authorization is not-determined even when disposition is clear.",
@@ -265,6 +400,7 @@ export function reconstructPack(input: {
   const receipt = {
     product: "G.R.A.F.T.+",
     package: "graft_plus",
+    engine: "universal-shell",
     subject: input.origin?.url ?? `${input.origin?.owner ?? "local"}/${input.origin?.repo ?? "subject"}`,
     subject_sha: sha,
     status: completeness.integrity_pass ? "passed" : "failed",

@@ -16,7 +16,7 @@ export const rdTools = [
     description:
       'G.R.A.F.T.+ reconstructs a public GitHub repository at one SHA into evidence-linked facts and one downloadable pack so an external language model can reason over inventory, contracts, dependencies, routes, wiring, and intent. Residuals stay visible. It is a fact substrate, not a planner and not merge authority.',
     operatingModel:
-      'Public repository → reconstruct one SHA → download the pack → feed GRAFT-MAP.md or GRAFT-PACK.json to an AI.',
+      'Public repository → reconstruct one SHA → download the pack → feed graph-architecture-decision.json, then the graph, to an AI.',
   },
   {
     name: 'G.R.A.F.T.1st',
