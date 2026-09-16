@@ -16,7 +16,7 @@
     "audit:prod-deps": "npm audit --omit=dev --audit-level=high",
     "audit:deps": "npm audit --audit-level=moderate",
     "preview": "vite preview",
-    "test": "node --test --experimental-strip-types src/lib/product/*.test.ts"
+    "test": "node --test --experimental-strip-types src/lib/product/*.test.ts src/lib/graft_plus/*.test.ts"
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",

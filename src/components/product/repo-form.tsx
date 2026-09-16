@@ -63,8 +63,7 @@ export function RepoForm({
       <p className="font-mono text-xs tracking-[0.18em] text-subtle">PUBLIC REPOSITORY</p>
       <h2 className="mt-2 text-xl font-medium tracking-tight">Paste a GitHub repo</h2>
       <p className="mt-2 max-w-xl text-sm text-muted">
-        Reads the tree at that SHA and builds one downloadable map. Overlay stays residual.
-        Private repos need a session token. It is never stored.
+        Reads a public GitHub tree and runs the G.R.A.F.T.+ reconstruction (graft_plus). The download is the architecture pack, not a source zip. Overlay stays residual.
       </p>
       <label className="mt-4 block">
         <span className="text-xs text-subtle">Paste owner/repo</span>

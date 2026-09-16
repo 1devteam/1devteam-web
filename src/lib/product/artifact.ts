@@ -1,6 +1,7 @@
 import type { PipelinePacket, SubjectProfile } from "../graft/types.ts";
 import type { IngestedFile, ProjectIndex, ProjectOrigin } from "./types.ts";
 import { zipStore } from "./zip.ts";
+import { reconstructPack } from "../graft_plus/reconstruct.ts";
 
 export const PACK_SCHEMA = "graft-pack-1";
 
@@ -299,16 +300,46 @@ export function buildGraftArchive(input: {
   index?: ProjectIndex;
   files?: Pick<IngestedFile, "path" | "content" | "language">[];
 }): { filename: string; markdown: string; json: string; zip: Uint8Array } {
-  const markdown = copyReadyTrail(input);
-  const json = graftPackJson(input);
+  const pack = reconstructPack({
+    files: (input.files ?? []).map((f) => ({ path: f.path, content: f.content })),
+    origin: input.origin,
+  });
+  const decision = pack["graph-architecture-decision.json"] as Record<string, unknown>;
+  const graph = pack["dependency-graph.v1.json"] as { metrics?: { node_count?: number; edge_count?: number } };
   const slug = packSlug(input.origin, input.profile);
-  const entries = [
-    { name: "GRAFT-MAP.md", data: markdown },
-    { name: "GRAFT-PACK.json", data: json },
-  ];
-  for (const file of input.files ?? []) {
-    entries.push({ name: `tree/${file.path}`, data: file.content });
-  }
+  const markdown = [
+    "# G.R.A.F.T.+ reconstruction pack",
+    "",
+    "Product: G.R.A.F.T.+",
+    "Role: fact-substrate",
+    "implementsPlan: false",
+    "mergeAuthorization: not-determined",
+    `Disposition: ${(decision.decision as { architecture_disposition?: string })?.architecture_disposition ?? "unknown"}`,
+    "",
+    "## How to read this",
+    "Decipher graph-architecture-decision.json first. Then dependency-graph.v1.json.",
+    "This is a map of what exists. It is not a plan and not a merge.",
+    "Source is not in this zip. Point an AI at these JSON files.",
+    "",
+    "## Counts",
+    `- Graph nodes: ${graph.metrics?.node_count ?? 0}`,
+    `- Graph edges: ${graph.metrics?.edge_count ?? 0}`,
+    "",
+    "## Files in this pack",
+    "- graph-architecture-decision.json",
+    "- dependency-graph.v1.json",
+    "- graph-completeness-report.json",
+    "- graph-impact-report.json",
+    "- graph-proof-manifest.json",
+    "- graft-plus-receipt.json",
+    "",
+  ].join("\n");
+  const json = JSON.stringify(pack, null, 2);
+  const entries = Object.entries(pack).map(([name, value]) => ({
+    name,
+    data: JSON.stringify(value, null, 2) + "\n",
+  }));
+  entries.unshift({ name: "README.md", data: markdown });
   return {
     filename: `GRAFT-PACK-${slug}.zip`,
     markdown,

@@ -34,7 +34,7 @@ export function OverviewPane({ project }: { project: Project }) {
           </div>
         </dl>
         <p className="mt-4 text-sm text-muted">
-          Download the pack and feed GRAFT-MAP.md or GRAFT-PACK.json to an AI. Source is in the zip.
+          Download the pack and feed graph-architecture-decision.json to an AI. Source is not in the zip.
           Overlay is residual. This tab is not a planner.
         </p>
       </Panel>

@@ -55,28 +55,23 @@ describe("production pack coverage", () => {
     assert.ok(deps.some((c) => /stripe/.test(c) && /not resolved/.test(c)));
     assert.ok(deps.some((c) => /fastapi/.test(c) && /not resolved/.test(c)));
     assert.ok(deps.some((c) => /django\.db/.test(c) && /not resolved/.test(c)));
-    assert.match(archive.markdown, /## Unresolved package roots/);
-    assert.match(archive.markdown, /^- stripe$/m);
-    assert.match(archive.markdown, /^- fastapi$/m);
-    assert.match(archive.markdown, /^- django$/m);
+    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    assert.match(archive.markdown, /not a plan/);
     assert.ok(!prepared.profile.facts.some((f) => f.kind === "gap"));
   });
 
-  it("puts joints before source and includes every file body in map, json, and zip tree", () => {
+  it("reconstruction zip has decision JSON and no source tree", () => {
     const { archive } = ingest([
       {
         path: "src/pay.ts",
         content: `import Stripe from "stripe";\nexport function charge() { return 1; }\n`,
       },
     ]);
-    const joints = archive.markdown.indexOf("## Unresolved package roots");
-    const files = archive.markdown.indexOf("## Files");
-    const source = archive.markdown.indexOf("export function charge");
-    assert.ok(joints >= 0 && files > joints && source > files);
-    const json = JSON.parse(archive.json) as { files: { path: string; content: string }[] };
-    assert.equal(json.files[0]?.content.includes("import Stripe"), true);
+    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    assert.doesNotMatch(archive.markdown, /export function charge/);
     const zipText = new TextDecoder().decode(archive.zip);
-    assert.match(zipText, /tree\/src\/pay\.ts/);
+    assert.match(zipText, /graph-architecture-decision\.json/);
+    assert.doesNotMatch(zipText, /tree\/src\/pay\.ts/);
     assert.equal(archive.zip[0], 0x50);
     assert.equal(archive.zip[1], 0x4b);
   });
@@ -149,9 +144,9 @@ describe("production pack coverage", () => {
   it("names skip directories and binary files instead of hiding them", () => {
     assert.equal(skipRoot("node_modules/stripe/index.js"), "node_modules");
     const { archive } = ingest([{ path: "src/app.ts", content: "export const ok = 1;\n" }]);
-    assert.match(archive.markdown, /## Skipped directories/);
-    assert.match(archive.markdown, /node_modules/);
-    assert.match(archive.markdown, /assets\/logo\.txt \(binary\)/);
+    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    const zipText = new TextDecoder().decode(archive.zip);
+    assert.doesNotMatch(zipText, /tree\/src\/app\.ts/);
   });
 
   it("marks GitHub binary blobs as omitted notes, not silent drops", async () => {

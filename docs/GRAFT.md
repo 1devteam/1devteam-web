@@ -5,7 +5,7 @@
 Human-facing name: **G.R.A.F.T.+**. Package / repo: `graft_plus`.
 Related but distinct: **G.R.A.F.T.1st**.
 
-This document is the reconstruction contract. The public workbench is `/graft`. `/wiki` is the same workbench and canonicalizes to `/graft`. There is no glossary-as-product.
+This document is the reconstruction contract. The public workbench is `/graft`. It runs the G.R.A.F.T.+ reconstruction from `graft_plus` against a public GitHub repository. The download is the architecture pack, not a source zip.
 
 ## Role
 

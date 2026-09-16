@@ -19,7 +19,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     title: 'What it is',
     body: [
       'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces.',
-      'The download is one zip: GRAFT-MAP.md, GRAFT-PACK.json, and tree/. Unknowns become small follow-up questions licensed by joints in that pack. Overlay stays residual until a reviewed relationship is attached.',
+      'The download is the reconstruction pack from graft_plus: architecture decision, dependency graph, completeness, impact, proof, receipt. Source is not in the zip. Overlay stays residual.',
       'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This page is G.R.A.F.T.+ only.',
     ],
   },
@@ -32,7 +32,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     ],
     facts: [
       { term: 'Fact substrate', meaning: 'Supplies evidence-linked facts a planner may consume. Does not plan.' },
-      { term: 'Pack', meaning: 'One zip: map, JSON, and ingested tree for that SHA.' },
+      { term: 'Pack', meaning: 'One zip: architecture decision, graph, completeness, impact, proof, receipt.' },
       { term: 'Residual', meaning: 'Unmapped, unmodeled, or overlay state that stays visible.' },
       { term: 'Overlay', meaning: 'Policy, saga, ownership, and runtime-authority facts. Unmodeled overlay remains residual.' },
     ],
@@ -41,7 +41,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'how-to-use',
     title: 'How to use this page',
     body: [
-      'Paste a public GitHub repository. Reconstruct. Download the pack. Feed GRAFT-MAP.md or GRAFT-PACK.json to an AI. The map lives in this tab until you download it or leave. Run the same SHA again for the same facts.',
+      'Paste a public GitHub repository. Reconstruct. Download the pack. Feed graph-architecture-decision.json to an AI, then the graph. The run lives in this tab until you download it or leave.',
     ],
     steps: [
       {
@@ -54,7 +54,7 @@ export const graftGuideSections: readonly GuideSection[] = [
       },
       {
         label: 'Download the pack',
-        detail: 'The zip holds GRAFT-MAP.md, GRAFT-PACK.json, and tree/. If a model truncates the markdown, open the JSON and tree in the same zip. They are the same SHA, complete.',
+        detail: 'The zip holds graph-architecture-decision.json and the rest of the reconstruction pack. It does not include the source tree.',
       },
       {
         label: 'Read joints first',
