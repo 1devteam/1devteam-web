@@ -1,22 +1,21 @@
 import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { Download } from "lucide-react";
 import { GraphMap } from "@/components/graft/graph-map";
 import { RecordsPane } from "@/components/graft/records-pane";
 import { SchemaPane } from "@/components/graft/schema-pane";
-import { TransferPane } from "@/components/graft/transfer-pane";
 import { TruthPane } from "@/components/graft/truth-pane";
 import { downloadPacket } from "@/lib/graft/export";
 import { runPipeline } from "@/lib/graft/engine";
+import { EMPTY_PUBLIC_SUBJECT, loadPublicRepository } from "@/lib/graft/github";
 import { STAGES } from "@/lib/graft/records";
-import { SUBJECTS, getSubject } from "@/lib/graft/subjects";
-import type { Disposition, ScenarioKind, SubjectProfile } from "@/lib/graft/types";
+import type { Disposition, SubjectProfile } from "@/lib/graft/types";
 import { cn } from "@/lib/utils";
 
 const PANES = [
   ["run", "Run"],
   ["truth", "Truth"],
   ["schema", "Schema"],
-  ["transfer", "Transfer"],
   ["records", "Records"],
 ] as const;
 
@@ -37,16 +36,16 @@ function statusTone(status: string) {
 }
 
 export function Workbench() {
-  const [subjectId, setSubjectId] = useState<SubjectProfile["id"]>("omnipath");
-  const [files, setFiles] = useState<string[]>(["backend/core/saga/saga_orchestrator.py"]);
+  const [subject, setSubject] = useState<SubjectProfile>(EMPTY_PUBLIC_SUBJECT);
+  const [repoUrl, setRepoUrl] = useState("https://github.com/1devteam/ajenda-ai");
+  const [files, setFiles] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [pane, setPane] = useState<Pane>("run");
-  const [kind, setKind] = useState<ScenarioKind>("surface");
   const [inspector, setInspector] = useState<Inspector>("adjudication");
-
-  const subject = getSubject(subjectId);
   const packet = useMemo(
-    () => runPipeline(subject, files.length ? files : [subject.files[0]]),
+    () => runPipeline(subject, files.length ? files : subject.files.slice(0, 1)),
     [subject, files],
   );
 
@@ -59,30 +58,27 @@ export function Workbench() {
     return new Set(ids);
   }, [packet]);
 
-  function applyScenario(nextKind: ScenarioKind, id: SubjectProfile["id"] = subjectId) {
-    const next = getSubject(id);
-    const match = next.scenarios.find((s) => s.kind === nextKind) ?? next.scenarios[0];
-    setSubjectId(id);
-    setKind(match.kind);
-    setFiles(match.files);
-    setSelected(null);
-  }
-
-  function toggleFile(path: string) {
-    setFiles((current) => {
-      const next = current.includes(path) ? current.filter((p) => p !== path) : [...current, path];
-      return next.length ? next : [path];
-    });
+  async function analyzeRepository(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const loaded = await loadPublicRepository(repoUrl);
+      setSubject(loaded.subject);
+      setFiles(loaded.changedFiles);
+      setSelected(null);
+      setInspector("adjudication");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Repository analysis failed.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const selectedNode = packet.graph.nodes.find((n) => n.id === selected);
   const selectedEdges = selected
     ? packet.graph.edges.filter((edge) => edge.from === selected || edge.to === selected)
     : [];
-  const activeScenario = subject.scenarios.find(
-    (s) => s.files.length === files.length && s.files.every((f) => files.includes(f)),
-  );
-
   return (
     <div id="graft-plus" className="graft-workbench bg-bg text-fg">
       <header className="border-b border-border px-4 py-5 sm:px-6">
@@ -122,9 +118,9 @@ export function Workbench() {
       </header>
 
       <div className="border-b border-border bg-surface px-4 py-3 sm:px-6">
-        <p className="mx-auto max-w-7xl text-sm text-muted">
-          Ajenda is distilled. Omnipath v2 is reconstructed from source at cd07968.
-          Merge authorization remains{" "}
+          <p className="mx-auto max-w-7xl text-sm text-muted">
+            Public repositories are analyzed from bounded source reads. Runtime behavior remains
+            explicitly unknown unless runtime evidence is supplied. Merge authorization remains{" "}
           <span className="font-mono text-fg">not-determined</span>. Schema-valid is not proof of
           behavioral consumption. Acknowledgements are not repairs.
         </p>
@@ -133,86 +129,32 @@ export function Workbench() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         {pane === "truth" ? <TruthPane packet={packet} /> : null}
         {pane === "schema" ? <SchemaPane /> : null}
-        {pane === "transfer" ? <TransferPane /> : null}
         {pane === "records" ? <RecordsPane /> : null}
         {pane === "run" ? (
           <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
             <aside className="min-w-0 space-y-4">
               <section className="rounded-lg border border-border bg-surface p-4">
-                <p className="font-mono text-xs tracking-widest text-subtle">SUBJECT</p>
-                <div className="mt-3 grid gap-2">
-                  {SUBJECTS.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => applyScenario(kind, item.id)}
-                      className={cn(
-                        "min-h-11 rounded-md border px-3 py-2 text-left text-sm transition-colors duration-150",
-                        subjectId === item.id ? "border-accent bg-elevated" : "border-border bg-bg",
-                      )}
-                    >
-                      <span className="block font-medium">{item.name}</span>
-                      <span className="mt-1 block font-mono text-xs text-subtle">
-                        {item.repoHint}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                <p className="font-mono text-xs tracking-widest text-subtle">PUBLIC GITHUB REPOSITORY</p>
+                <form className="mt-3 grid gap-3" onSubmit={analyzeRepository}>
+                  <label className="grid gap-1 text-sm">
+                    <span className="text-muted">Repository URL</span>
+                    <input value={repoUrl} onChange={(event) => setRepoUrl(event.target.value)} placeholder="https://github.com/owner/repository" className="min-h-11 rounded-md border border-border bg-bg px-3 font-mono text-xs" type="url" required />
+                  </label>
+                  <button type="submit" disabled={loading} className="min-h-11 rounded-md bg-accent px-3 text-sm font-medium text-accent-fg disabled:opacity-60">
+                    {loading ? "Reading repository…" : "Map repository"}
+                  </button>
+                </form>
+                {error ? <p role="alert" className="mt-3 text-sm text-bad">{error}</p> : null}
                 <p className="mt-3 text-sm text-muted">{subject.dna}</p>
-              </section>
-
-              <section className="rounded-lg border border-border bg-surface p-4">
-                <p className="font-mono text-xs tracking-widest text-subtle">SCENARIO</p>
-                <ul className="mt-3 space-y-2">
-                  {subject.scenarios.map((scenario) => {
-                    const on = activeScenario?.id === scenario.id;
-                    return (
-                      <li key={scenario.id}>
-                        <button
-                          type="button"
-                          onClick={() => applyScenario(scenario.kind)}
-                          className={cn(
-                            "min-h-11 w-full rounded-md border px-3 py-2 text-left",
-                            on ? "border-accent bg-elevated" : "border-border bg-bg",
-                          )}
-                        >
-                          <span className="block text-sm font-medium">{scenario.label}</span>
-                          <span className="mt-1 block text-xs text-subtle">{scenario.intent}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <p className="mt-2 font-mono text-[11px] text-subtle">{subject.provenance.repo} · {subject.provenance.sha ?? "not loaded"}</p>
               </section>
 
               <section className="rounded-lg border border-border bg-surface p-4">
                 <p className="font-mono text-xs tracking-widest text-subtle">CHANGED FILES</p>
                 <ul className="mt-3 space-y-2">
-                  {subject.files.map((path) => {
-                    const on = files.includes(path);
-                    const mapped = subject.nodes.some((n) => n.source === path);
-                    return (
-                      <li key={path}>
-                        <button
-                          type="button"
-                          onClick={() => toggleFile(path)}
-                          className={cn(
-                            "flex min-h-11 w-full items-start gap-2 rounded-md border px-3 py-2 text-left",
-                            on ? "border-accent bg-elevated" : "border-border bg-bg",
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              "mt-1 size-2 shrink-0 rounded-full",
-                              mapped ? "bg-ok" : "bg-warn",
-                            )}
-                          />
-                          <span className="font-mono text-xs leading-snug">{path}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
+                  {subject.files.slice(0, 40).map((path) => <li key={path} className="rounded-md border border-border bg-bg px-3 py-2 font-mono text-xs">{path}</li>)}
                 </ul>
+                {subject.files.length > 40 ? <p className="mt-2 text-xs text-subtle">Showing 40 of {subject.files.length} indexed files.</p> : null}
               </section>
             </aside>
 

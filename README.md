@@ -51,7 +51,8 @@ The site is intentionally organized so routine changes can be made safely by a c
 
 - **Company links, contact addresses, social links, and logo paths:** `src/data/site.ts`
 - **Company and Ajenda brand files:** `public/brand/`
-- **R&D program and Grafted Plus / Grafted First descriptions:** `src/data/research.ts`
+- **R&D program and Grafted First description:** `src/data/research.ts`
+- **Public GRAFT+ workbench:** `src/components/graft/` and `src/lib/graft/`; the workbench accepts a public GitHub repository URL and performs bounded, read-only source mapping in the browser.
 - **Page-level copy and layout:** `src/pages/`
 - **Homepage sections:** `src/components/home/`
 - **Header and footer:** `src/components/layout/`

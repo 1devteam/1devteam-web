@@ -158,7 +158,8 @@ export type Provenance = {
 };
 
 export type SubjectProfile = {
-  id: "ajenda" | "omnipath";
+  /** Stable subject identifier. Preset subjects use short names; public repositories use owner/repo@ref. */
+  id: string;
   name: string;
   dna: string;
   repoHint: string;

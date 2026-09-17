@@ -89,7 +89,7 @@ export function WikiPage() {
       <PageHero
         eyebrow="G.R.A.F.T.+"
         title="Reconstruct existing systems into evidence-linked facts"
-        description="Graph Reasoning for Architecture, Fidelity & Traceability. This page is the working G.R.A.F.T.+ prototype: two reconstruction subjects, visible residuals, and a fact packet a planner can consume. It is not a planner and not merge authority."
+        description="Graph Reasoning for Architecture, Fidelity & Traceability. Enter a public GitHub repository to reconstruct its source-backed graph, facts, blast radius, proof obligations, and visible residuals. It is not a planner and not merge authority."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
