@@ -1,10 +1,31 @@
+import { useEffect, useState } from "react";
 import { RepoForm } from "@/components/product/repo-form";
 import { useProductStore } from "@/lib/product/store";
 
 export function GraftReconstruct() {
   const projects = useProductStore((s) => s.projects);
   const openProject = useProductStore((s) => s.openProject);
+  const [usageCount, setUsageCount] = useState<number | null>(null);
   const list = Object.values(projects).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/graft-usage")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { available?: boolean; count?: number } | null) => {
+        if (
+          !cancelled &&
+          payload?.available &&
+          typeof payload.count === "number"
+        ) {
+          setUsageCount(payload.count);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section id="reconstruct" className="scroll-mt-24 border-b border-border">
@@ -13,8 +34,13 @@ export function GraftReconstruct() {
           The map lives in this tab until you download it or leave. Run it again on the same SHA
           for the same facts.
         </p>
+        {usageCount !== null ? (
+          <p className="mt-4 font-mono text-xs tracking-[0.12em] text-subtle" aria-live="polite">
+            RECONSTRUCTIONS: {usageCount.toLocaleString()}
+          </p>
+        ) : null}
         <div className="mt-8">
-          <RepoForm onOpened={(id) => openProject(id)} />
+          <RepoForm onOpened={(id) => openProject(id)} onCounted={setUsageCount} />
         </div>
         {list.length ? (
           <div className="mt-10">
