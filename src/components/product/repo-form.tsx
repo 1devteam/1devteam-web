@@ -13,10 +13,23 @@ function progressLabel(p: GithubProgress | null): string {
   return `Reading files ${p.done}/${p.total}${p.path ? ` · ${p.path.split("/").pop()}` : ""}`;
 }
 
+async function countSuccessfulReconstruction(): Promise<number | null> {
+  try {
+    const response = await fetch("/api/graft-usage", { method: "POST" });
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { available?: boolean; count?: number };
+    return payload.available && typeof payload.count === "number" ? payload.count : null;
+  } catch {
+    return null;
+  }
+}
+
 export function RepoForm({
   onOpened,
+  onCounted,
 }: {
   onOpened: (projectId: string) => void;
+  onCounted?: (count: number) => void;
 }) {
   const ingestCustom = useProductStore((s) => s.ingestCustom);
   const [input, setInput] = useState("");
@@ -42,6 +55,8 @@ export function RepoForm({
       });
       const origin = originFromGithub(ingest, parsed);
       const id = ingestCustom(ingest.fullName, ingest.files, origin);
+      const count = await countSuccessfulReconstruction();
+      if (count !== null) onCounted?.(count);
       setInput("");
       onOpened(id);
     } catch (err) {
