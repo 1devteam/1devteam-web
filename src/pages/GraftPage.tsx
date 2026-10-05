@@ -25,9 +25,9 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
       <Seo path={seoPath} />
 
       <PageHero
-        eyebrow="G.R.A.F.T.+"
-        title="Point G.R.A.F.T.+ at a public repository."
-        description="G.R.A.F.T.+ reconstructs what exists: graph, completeness, impact, proof, architecture decision. Hand that pack to an AI. It does not dump source, plan, or merge. Overlay stays residual."
+        eyebrow="G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability"
+        title="Reconstruct a public repository into an evidence-linked architecture pack."
+        description="G.R.A.F.T.+ maps what the current workbench can prove at one SHA: inventory, contracts, dependency evidence, routes, wiring, structural surfaces, completeness signals, impact, proof, and decision state. The pack is a fact substrate for downstream reasoning. It does not plan, merge, or grant execution authority."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
@@ -46,12 +46,10 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
         <div className="container-site max-w-4xl">
           <p className="text-xs font-semibold uppercase tracking-wider text-sky-300">Evidence boundary</p>
           <p className="mt-3 text-xl font-semibold leading-relaxed">
-            G.R.A.F.T.+ reconstructs what exists at one SHA. Implemented behavior is described as
-            implemented. Overlay stays residual. An acknowledgement is not a repair.
+            G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — reconstructs what the current engine can support at one SHA. Structural integrity is not the same thing as complete architectural reconstruction.
           </p>
           <p className="mt-4 text-base leading-relaxed text-slate-300">
-            It is a fact substrate, not a planner and not merge authority. The map lives in this tab
-            until you download it or leave. Run the same SHA again for the same facts.
+            Ingestion can succeed farther than semantic interpretation. Language depth, generated-code boundaries, build-system relationships, unresolved-reference classification, and cross-language joins remain explicit reconstruction limits where they are not yet proven. Overlay remains residual. The pack is not a planner and never determines merge or execution authority.
           </p>
         </div>
       </section>
