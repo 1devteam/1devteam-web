@@ -2,121 +2,93 @@
 
 **Graph Reasoning for Architecture, Fidelity & Traceability.**
 
-Human-facing name: **G.R.A.F.T.+**. Package / repo: `graft_plus`.
+Human-facing name: **G.R.A.F.T.+**. Canonical engine / package / repository: `1devteam/graft_plus`.
 Related but distinct: **G.R.A.F.T.1st**.
 
-This document is the reconstruction contract. The public workbench is `/graft`. It runs the G.R.A.F.T.+ reconstruction from `graft_plus` against a public GitHub repository. The download is the architecture pack, not a source zip.
+The public workbench is `/graft`, but the website is no longer a second implementation of G.R.A.F.T.+. It is a delivery client for the canonical `graft_plus` HTTP boundary.
 
-## Role
+## Authority
 
-G.R.A.F.T.+ is a fact substrate for one git revision.
+`1devteam/graft_plus` owns reconstruction semantics, graph schemas, evidence rules, assurance, architecture decision logic, repository materialization, and pack generation.
 
-It reconstructs inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces. It writes one pack. A planner may consume that pack. G.R.A.F.T.+ does not write the plan, choose the correction, or authorize a merge.
+`1devteam/1devteam-web` owns presentation and transport only.
 
 ```text
-product: G.R.A.F.T.+
-role: fact-substrate
-schema: graft-pack-1
-implementsPlan: false
-mergeAuthorization: not-determined
+browser
+  -> POST /api/graft
+  -> 1devteam.com Pages proxy
+  -> canonical graft_plus POST /v1/reconstruct
+  -> canonical G.R.A.F.T.+ ZIP
+  -> browser download
 ```
 
-## How to use the workbench
+The site must not recreate, translate, or independently evolve G.R.A.F.T.+ semantics. If the canonical service is unavailable or unconfigured, `/graft` fails closed instead of substituting the retired browser-side reconstruction path.
 
-1. Paste a public GitHub repository (`owner/repo`, URL, or git SSH).
-2. Reconstruct. The map is session-only: it lives in this tab until download or leave.
-3. Download the pack. Feed `GRAFT-MAP.md` or `GRAFT-PACK.json` to an AI.
-4. If a model truncates the markdown, open `GRAFT-PACK.json` and `tree/` in the same zip. They are the same SHA, complete.
+## Deployment contract
 
-Run the same SHA again for the same facts. Overlay stays residual until a reviewed relationship is attached.
+The Cloudflare Pages runtime requires:
 
-Ajenda and Omnipath are derivation records. They are not subjects on this workbench.
+```text
+GRAFT_API_ORIGIN=https://<canonical-graft-service-host>
+```
 
-## The pack
+`functions/api/graft.ts` accepts only same-site POST traffic, forwards JSON to `${GRAFT_API_ORIGIN}/v1/reconstruct`, and returns the canonical response. It preserves only the artifact and provenance headers needed by the browser:
 
-One zip named `GRAFT-PACK-{owner}-{repo}-{sha8}.zip`.
+- `content-disposition`
+- `x-graft-checksum`
+- `x-graft-subject-sha`
+- `x-graft-node-count`
+- `x-graft-edge-count`
 
-| Entry | What it holds |
-|---|---|
-| `GRAFT-MAP.md` | Reader protocol, joints first, then source for every ingested file |
-| `GRAFT-PACK.json` | Machine record: origin, facts, index, file bodies |
-| `tree/` | Ingested files at that SHA |
+The proxy does not implement reconstruction and does not contain a fallback engine.
 
-Joints in the markdown, in order:
+## Canonical service contract
 
-- Provenance (repo, ref, SHA, captured time)
-- Recent commits
-- README claimed intent
-- Reconstruction counts
-- Named misses (binary, oversize, unreadable)
-- Skipped directories
-- Surfaces (structural intent from the tree)
-- Unresolved package roots (`stripe`, `fastapi`, `django`, …)
-- Unresolved imports (file → specifier, not in this tree)
-- Inventory (every ingested path)
-- Contracts, routes, inner dependencies, wiring
-- Docker and CI paths
-- Overlay (residual unless evidenced)
-- Negatives and honesty
-- Files: each path with its contracts, dependencies, routes, and source
+The service is defined in `1devteam/graft_plus/src/graft_plus/service.py`.
 
-The reader protocol is baked into every map so a downstream AI does not need a second briefing.
+`POST /v1/reconstruct` accepts:
 
-## What becomes a fact
+```json
+{
+  "repository": "owner/repo",
+  "ref": "optional branch, tag, or reachable commit SHA"
+}
+```
 
-- Every ingested path
-- Declared contracts (functions, classes, and language equivalents)
-- Resolved inner imports (`from` → path in this tree)
-- Unresolved imports (`from` → specifier not in this tree). These are facts, not gaps
-- HTTP routes where the indexer can read them
-- Wiring (imports, calls, tests)
-- Docker and CI file paths
-- Named omissions and skip directories
+It runs the same canonical engine used by the CLI and returns a ZIP containing the canonical decipher pack. The current engine explicitly does not grant execution authority or merge authorization.
 
-Languages with contracts and imports: Python, JavaScript/TypeScript, Go, Rust, Java/Kotlin, Ruby, PHP, C#, Swift, C/C++, Scala, Elixir, Lua.
+The service retains its bounded public-materialization envelope. Large study subjects such as Chromium remain local/offline reconstruction subjects rather than a reason to weaken the public-service safety boundary.
 
-## What stays out, and how it is named
+## Update behavior
 
-Skip directories are not source: `node_modules`, `.git`, `dist`, `build`, `.next`, `coverage`, `__pycache__`, `.venv`, `venv`, `vendor`, `.turbo`, `.cache`, `target`. They are listed on the map so they are not a blind spot.
+Once production `GRAFT_API_ORIGIN` points to the deployed canonical service, engine upgrades do **not** require a semantic port into this website. Updating the deployed `graft_plus` service updates what `/graft` executes because the website contains no reconstruction implementation on the active route.
 
-Binary blobs (including a PNG stored as `.txt`) and files over 2 MB of text are omitted with a reason: `path (binary)`, `path (oversize)`, `path (unreadable)`.
+Changes to the HTTP contract itself still require coordinated compatibility work. Contract drift must fail visibly; it must not be hidden by a local fallback.
 
-`.env` files are skipped. `.env.example` is not.
+## Historical embedded implementations
 
-Secrets in ingested text are isolated before the pack is written.
+The repository still contains older browser-side G.R.A.F.T./product modules for historical provenance and other development surfaces. They are **not** the authoritative engine and are not invoked by the public `/graft` reconstruction route after this cutover.
 
-## Overlay
+They must not be described as `graft_plus`, and future G.R.A.F.T.+ algorithm changes belong in `1devteam/graft_plus`, not here.
 
-Generated layer (files, contracts, wiring) is overwritten on reconstruct.
+## Public workbench behavior
 
-Overlay (policy, saga, ownership, runtime authority) is residual until a reviewed relationship is attached. Refresh of the generated layer does not invent overlay and does not drop reviewed overlay.
+1. Enter a public GitHub repository.
+2. Optionally enter a branch, tag, or exact reachable commit SHA.
+3. The site sends the request to the canonical service.
+4. The browser downloads the canonical G.R.A.F.T.+ pack returned by that service.
+5. Provenance headers show the resolved subject SHA, graph node/edge counts, and ZIP checksum when reconstruction succeeds.
 
-## Negatives
+## Failure behavior
 
-Honor these. Do not invent past them.
-
-- Overlay is not modeled for a generated-only ingest
-- `implementsPlan` is false
-- `mergeAuthorization` is not-determined
-- An acknowledgement is not a repair
-- Unresolved imports are not missing files
-
-## Internals
-
-| Area | Where |
-|---|---|
-| GitHub read-only ingest | `src/lib/product/github.ts` |
-| Index (symbols, imports, routes, calls) | `src/lib/product/indexer.ts` |
-| Generated profile | `src/lib/product/ingest.ts` |
-| Pack + reader protocol | `src/lib/product/artifact.ts` |
-| Zip | `src/lib/product/zip.ts` |
-| Core packet | `src/lib/graft/` |
-| Workbench UI | `src/components/product/` |
-
-Coverage for packages, bodies, pack zip, languages, skip dirs, and binary notes: `src/lib/product/coverage.test.ts`.
+- canonical service not configured: HTTP `503`, visible unavailable state
+- service cannot be reached: HTTP `502`, visible unavailable state
+- canonical request/reconstruction/limit failures: upstream status and error are surfaced
+- no stale browser reconstruction fallback
 
 ## Related
 
 - [README](../README.md)
 - [Domain and mail](DOMAIN.md)
+- Canonical engine: `1devteam/graft_plus`
 - Mail contract: [`email-routing.json`](../email-routing.json)
