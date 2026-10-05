@@ -8,9 +8,9 @@ export type GuideSection = {
 
 export const graftGuideIntro = {
   eyebrow: 'How to use it',
-  title: 'What G.R.A.F.T.+ is, and how to read a pack',
+  title: 'What G.R.A.F.T.+ is, what it proves, and how to read a pack',
   lede:
-    'G.R.A.F.T.+ reconstructs an existing public repository into evidence-linked facts and one downloadable pack. Feed that pack to an AI. It is not a planner, and it is not merge authority.',
+    'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — reconstructs an existing public repository into evidence-linked facts and one downloadable pack. The current public workbench is a reconstruction instrument, not a planner, merge authority, or execution authority.',
 } as const
 
 export const graftGuideSections: readonly GuideSection[] = [
@@ -18,30 +18,31 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'what-it-is',
     title: 'What it is',
     body: [
-      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces.',
-      'The download is the reconstruction pack from graft_plus: architecture decision, dependency graph, completeness, impact, proof, receipt. Source is not in the zip. Overlay stays residual.',
-      'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This page is G.R.A.F.T.+ only.',
+      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The workbench records inventory, declared contracts, resolved and unresolved dependency evidence, routes where supported, wiring, recent commits, README-claimed intent, structural surfaces, completeness signals, impact, proof, and decision state.',
+      'The download is the reconstruction pack from graft_plus. It is intended to give an external language model or engineer a durable evidence substrate rather than force them to reconstruct the repository from memory. Overlay remains residual unless it is evidenced.',
+      'G.R.A.F.T.1st — the project-origin Graph Reasoning for Architecture, Fidelity & Traceability research line — is related but distinct. Current R&D is exploring machine-native construction from finished-state product claims, recursive necessity derivation, semantic simulation, and later implementation reconciliation. The public workbench on this page is G.R.A.F.T.+ only.',
     ],
   },
   {
     id: 'what-it-is-not',
     title: 'What it is not',
     body: [
-      'G.R.A.F.T.+ does not choose a correction, write a plan, or authorize a merge. The pack role is fact-substrate. implementsPlan is always false. mergeAuthorization remains not-determined.',
-      'It does not replace repository inspection, tests, runtime traces, or human review. A generated inventory is not an overlay. An acknowledged finding is not a repair. Ajenda and Omnipath are derivation records, not this workbench.',
+      'G.R.A.F.T.+ does not choose a correction, write a plan, authorize a merge, or grant execution authority. The pack role is fact-substrate. implementsPlan remains false and mergeAuthorization remains not-determined.',
+      'A successful reconstruction is not a claim that the complete architecture has been understood. Repository ingestion, graph integrity, semantic reconstruction depth, runtime proof, and change safety are different questions and should remain separate.',
     ],
     facts: [
       { term: 'Fact substrate', meaning: 'Supplies evidence-linked facts a planner may consume. Does not plan.' },
-      { term: 'Pack', meaning: 'One zip: architecture decision, graph, completeness, impact, proof, receipt.' },
-      { term: 'Residual', meaning: 'Unmapped, unmodeled, or overlay state that stays visible.' },
-      { term: 'Overlay', meaning: 'Policy, saga, ownership, and runtime-authority facts. Unmodeled overlay remains residual.' },
+      { term: 'Integrity', meaning: 'Checks internal artifact consistency. It must not be read as architectural completeness.' },
+      { term: 'Semantic depth', meaning: 'How much architectural meaning the current engine can reconstruct from the ingested source and configuration surfaces.' },
+      { term: 'Residual', meaning: 'Unmapped, unmodeled, unresolved, or overlay state that remains visible instead of being guessed away.' },
+      { term: 'Overlay', meaning: 'Policy, saga, ownership, runtime-authority, and other reviewed architectural relationships not safely inferred from source syntax alone.' },
     ],
   },
   {
     id: 'how-to-use',
     title: 'How to use this page',
     body: [
-      'Paste a public GitHub repository. Reconstruct. Download the pack. Feed graph-architecture-decision.json to an AI, then the graph. The run lives in this tab until you download it or leave.',
+      'Paste a public GitHub repository. Reconstruct. Download the pack. Give the pack to an AI or engineer as evidence. The run lives in this tab until you download it or leave.',
     ],
     steps: [
       {
@@ -49,16 +50,16 @@ export const graftGuideSections: readonly GuideSection[] = [
         detail: 'A GitHub URL or git SSH form also works. Public repositories reconstruct without a token.',
       },
       {
-        label: 'Reconstruct',
-        detail: 'The tree is read at one SHA. Every ingested path, contract, and resolved inner dependency is a fact, not a sample.',
+        label: 'Reconstruct one SHA',
+        detail: 'G.R.A.F.T.+ pins the reconstruction to repository evidence at a revision. Read the resulting counts and named residuals before drawing architectural conclusions.',
       },
       {
         label: 'Download the pack',
-        detail: 'The zip holds graph-architecture-decision.json and the rest of the reconstruction pack. It does not include the source tree.',
+        detail: 'The zip contains the architecture decision, dependency graph, completeness, impact, proof, receipt, and reconstruction evidence produced by the current engine.',
       },
       {
-        label: 'Read joints first',
-        detail: 'Provenance, commits, README claimed intent, named misses, skip directories, unresolved packages, inventory, contracts, dependencies, routes, wiring. Questions arrive from those joints.',
+        label: 'Read the boundaries first',
+        detail: 'Start with provenance, named misses, skipped directories, node and edge counts, unresolved references, semantic surfaces, completeness, and warnings. Those boundaries tell you what the pack can and cannot support.',
       },
     ],
   },
@@ -66,17 +67,27 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'reading-a-run',
     title: 'Reading a pack',
     body: [
-      'The reader protocol is baked into every map so a downstream AI does not need a second briefing. Honor negatives. Leave overlay residual. Do not invent files that were named as omitted.',
-      'Unresolved imports are facts: the specifier is not in this tree. They are not missing files and not a separate gap lane.',
-      'The packet repeats the boundary: product G.R.A.F.T.+, role fact-substrate, implementsPlan false, mergeAuthorization not-determined.',
+      'The reader protocol is baked into every map so a downstream AI does not need a second briefing. Honor negative evidence. Do not invent files, relationships, runtime behavior, or authority that the artifact did not prove.',
+      'Unresolved imports are observations, not automatically defects. At larger scale they may represent external packages, generated modules, test or tooling dependencies, optional paths, environment-provided modules, internal resolution gaps, or other classes that require further classification.',
+      'Treat graph integrity, structural coverage, architectural reconstruction confidence, and runtime/change proof as separate dimensions. A graph may be internally consistent while still being semantically incomplete.',
+      'The packet repeats the authority boundary: product G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability; role fact-substrate; implementsPlan false; mergeAuthorization not-determined.',
     ],
   },
   {
     id: 'production-boundary',
     title: 'What is proven here — and what is not claimed',
     body: [
-      'Public GitHub repositories reconstruct without a token. Every ingested path, contract, and resolved inner dependency is a fact. Files GitHub will not return, or that exceed the text size limit, are named on the map. Skip directories such as node_modules and .git are named, not treated as source.',
-      'This page does not store reconstructions across refresh. It does not plan, merge, or host Ajenda or Omnipath. Overlay is residual until evidenced.',
+      'The workbench has demonstrated repository ingestion at substantial scale, including a 2026-10-04 Chromium stress run that read 29,473 files and completed artifact production. That run also exposed the current frontier: semantic reconstruction can lag far behind successful ingestion.',
+      'The Chromium evidence exposed canonical-identity collisions, a Python mocking PATCH versus HTTP PATCH semantic false positive, unresolved-reference classification needs, weak cross-language reconstruction, and a disposition model that was too willing to call an internally valid graph architecturally clear. Those are evidence for hardening the engine, not evidence that the Graph Reasoning for Architecture, Fidelity & Traceability concept has reached its ceiling.',
+      'The Chromium run used the rushed universal-shell implementation rather than the strongest historical Ajenda-specialized G.R.A.F.T. implementation. It should therefore be read as a lower-bound stress result for the current public site engine.',
+    ],
+  },
+  {
+    id: 'current-hardening',
+    title: 'Current hardening direction',
+    body: [
+      'Current Graph Reasoning for Architecture, Fidelity & Traceability hardening is aimed at canonical identity uniqueness, semantic disambiguation, language-aware extraction followed by language-independent normalization, build-system and generated-code relationships, unresolved-reference classification, subsystem hierarchy, ownership and process boundaries, cross-language joins, and separate integrity versus architectural-completeness signals.',
+      'The research question is not merely how many files G.R.A.F.T.+ can read. It is how faithfully repository evidence can be transformed into an architectural representation that remains useful at large scale without hiding uncertainty.',
     ],
   },
 ]
