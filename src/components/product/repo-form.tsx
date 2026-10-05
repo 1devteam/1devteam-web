@@ -6,11 +6,27 @@ import { useProductStore } from "@/lib/product/store";
 
 const EXAMPLES = ["expressjs/express", "pallets/flask"];
 
-function progressLabel(p: GithubProgress | null): string {
+type ReconstructionStage = "fetch" | "index" | "complete";
+
+function progressLabel(p: GithubProgress | null, stage: ReconstructionStage): string {
+  if (stage === "index") return "Indexing and reconstructing architecture…";
+  if (stage === "complete") return "Reconstruction complete. Opening workspace…";
   if (!p) return "Reading repository…";
   if (p.phase === "repo") return "Resolving repository…";
   if (p.phase === "tree") return "Reading git tree…";
-  return `Reading files ${p.done}/${p.total}${p.path ? ` · ${p.path.split("/").pop()}` : ""}`;
+  const percent = p.total > 0 ? Math.min(100, Math.round((p.done / p.total) * 100)) : 0;
+  return `Reading files ${p.done}/${p.total} (${percent}%)${p.path ? ` · ${p.path.split("/").pop()}` : ""}`;
+}
+
+function stageDetail(p: GithubProgress | null, stage: ReconstructionStage): string {
+  if (stage === "fetch") {
+    if (p?.phase === "files") return "GitHub source ingest is active. Large repositories can remain in this phase for a while.";
+    return "Resolving repository identity and source tree.";
+  }
+  if (stage === "index") {
+    return "Source ingest finished. G.R.A.F.T.+ is building contracts, imports, routes, wiring, graph facts, and the session model.";
+  }
+  return "The reconstructed session is ready.";
 }
 
 export function RepoForm({
@@ -24,6 +40,7 @@ export function RepoForm({
   const [showToken, setShowToken] = useState(false);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<GithubProgress | null>(null);
+  const [stage, setStage] = useState<ReconstructionStage>("fetch");
   const [error, setError] = useState<string | null>(null);
 
   async function openRepo(raw: string) {
@@ -34,6 +51,7 @@ export function RepoForm({
     }
     setError(null);
     setBusy(true);
+    setStage("fetch");
     setProgress({ phase: "repo", done: 0, total: 1 });
     try {
       const ingest = await fetchGithubRepo(parsed, {
@@ -41,7 +59,14 @@ export function RepoForm({
         onProgress: setProgress,
       });
       const origin = originFromGithub(ingest, parsed);
+
+      setStage("index");
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
       const id = ingestCustom(ingest.fullName, ingest.files, origin);
+      setStage("complete");
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
       setInput("");
       onOpened(id);
     } catch (err) {
@@ -49,6 +74,7 @@ export function RepoForm({
     } finally {
       setBusy(false);
       setProgress(null);
+      setStage("fetch");
     }
   }
 
@@ -121,7 +147,12 @@ export function RepoForm({
           />
         </label>
       ) : null}
-      {busy ? <p className="mt-3 font-mono text-xs text-subtle">{progressLabel(progress)}</p> : null}
+      {busy ? (
+        <div className="mt-4 rounded-md border border-border bg-bg p-3" aria-live="polite">
+          <p className="font-mono text-xs font-medium text-fg">{progressLabel(progress, stage)}</p>
+          <p className="mt-1 text-xs text-subtle">{stageDetail(progress, stage)}</p>
+        </div>
+      ) : null}
       {error ? <p className="mt-3 text-sm text-bad">{error}</p> : null}
     </form>
   );
