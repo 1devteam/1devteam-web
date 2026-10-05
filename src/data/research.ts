@@ -14,18 +14,18 @@ export const rdTools = [
     scope: 'Existing systems',
     status: 'Applied R&D output · in development',
     description:
-      'G.R.A.F.T.+ reconstructs a public GitHub repository at one SHA into evidence-linked facts and one downloadable pack so an external language model can reason over inventory, contracts, dependencies, routes, wiring, and intent. Residuals stay visible. It is a fact substrate, not a planner and not merge authority.',
+      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — reconstructs an existing repository into evidence-linked facts and a downloadable architecture pack. The public workbench is a fact substrate for downstream reasoning. It does not plan, merge, or grant execution authority, and a successful ingest must not be confused with complete architectural understanding.',
     operatingModel:
-      'Public repository → reconstruct one SHA → download the pack → feed graph-architecture-decision.json, then the graph, to an AI.',
+      'Public repository → reconstruct one SHA → preserve provenance, residuals, completeness signals, impact and proof → hand the evidence pack to an AI or engineer for further reasoning.',
   },
   {
     name: 'G.R.A.F.T.1st',
-    scope: 'Project-origin architecture',
-    status: 'Applied R&D output · in development',
+    scope: 'Project-origin construction research',
+    status: 'Applied R&D output · concept materialization in progress',
     description:
-      'G.R.A.F.T.1st is intended to model the architecture of a software system before implementation begins. The objective is to represent contracts, nodes, models, ownership, dependencies, state, boundaries, and system interactions in a form that can be reasoned over before the first implementation decisions are committed to code. Its relationship to implementation quality remains a research and development question rather than an established conclusion. This lab is G.R.A.F.T.+ only.',
+      'G.R.A.F.T.1st — the project-origin Graph Reasoning for Architecture, Fidelity & Traceability research line — is being explored as a machine-native construction process. Rather than begin with folders, frameworks, or conventional human implementation stages, the current working thesis starts from finished-state product claims and recursively derives the truths, capabilities, relationships, constraints, states, transitions, dependencies, authority, failures, evidence, and semantic runtime behavior that must exist for those claims to hold. Physical implementation is projected only after the model becomes sufficiently closed. This remains active R&D, not a finished protocol.',
     operatingModel:
-      'Intended system → explicitly model the architectural problem → reason across the complete design → build against that model.',
+      'Finished-state product specification → recursively derive necessary truths → propagate relationships and constraints → simulate behavior and failure → revise contradictions → project physical implementation → later reconcile intended, implemented, and observed runtime state.',
   },
 ] as const
 
@@ -55,7 +55,7 @@ export const researchPolicy = [
     description:
       'CI maturity, model and tooling changes, codebase maturity, test coverage, repair-unit type, PR size, and defect class are treated as competing explanations rather than being silently attributed to graph assistance.',
   },
-] as const
+]
 
 export const researchEpochs = [
   {
@@ -73,7 +73,7 @@ export const researchEpochs = [
     description:
       'Graph-derived architectural state, impact analysis, proof selection, completeness checks, and increasingly fine-grained decision ownership became available during active development.',
   },
-] as const
+]
 
 export const researchMeasures = [
   'Reasoning scope and change scope applied to the repair.',
@@ -84,7 +84,8 @@ export const researchMeasures = [
   'Graph state and expected versus observed graph-state movement after repair.',
   'Test coverage, CI maturity, codebase maturity, model and tool capability, PR size, defect class, and related confounders.',
   'Where failures are detected: later corrective work, pre-merge proof, graph governance, or semantic enforcement.',
-] as const
+  'For G.R.A.F.T.1st research, which finished-state truths, reasoning layers, simulation paths, revisions, and physical projections were derived before implementation and which later proved incomplete or unnecessary.',
+]
 
 export const researchNotes = [
   {
@@ -112,9 +113,15 @@ export const researchNotes = [
       'One hypothesis under investigation is that graph-governed workflows may shift some failures from later corrective PRs into earlier semantic detection, proof selection, or governance review. This is distinct from claiming that graph assistance reduces failures overall.',
   },
   {
+    status: 'Current large-repository evidence',
+    title: 'Ingestion can scale farther than semantic reconstruction',
+    description:
+      'A 2026-10-04 Chromium stress run completed after reading 29,473 files but exposed canonical-identity collisions, semantic route misclassification, weak cross-language reconstruction, unresolved-reference classification gaps, and an overly permissive architecture disposition. The result is treated as evidence that interpretation is the present public-workbench frontier, not as a ceiling on the broader Graph Reasoning for Architecture, Fidelity & Traceability research program.',
+  },
+  {
     status: 'Confounder control',
     title: 'Process discipline and CI improvement predate the graph',
     description:
       'PRIDE-style requirements for complete reasoning predate the graph, while CI and proof infrastructure also matured over time. Neither can be credited to graph assistance without separate evidence.',
   },
-] as const
+]
