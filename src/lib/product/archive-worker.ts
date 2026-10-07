@@ -1,3 +1,5 @@
+/// <reference lib="webworker" />
+
 import { buildGraftArchive } from "./artifact.ts";
 import type { IngestedFile, ProjectOrigin } from "./types.ts";
 import type { SubjectProfile } from "../graft/types.ts";
@@ -20,7 +22,9 @@ type ArchiveWorkerResponse =
       error: string;
     };
 
-self.onmessage = (event: MessageEvent<ArchiveWorkerRequest>) => {
+const workerScope: DedicatedWorkerGlobalScope = self;
+
+workerScope.onmessage = (event: MessageEvent<ArchiveWorkerRequest>) => {
   try {
     const archive = buildGraftArchive({
       profile: event.data.profile,
@@ -37,12 +41,12 @@ self.onmessage = (event: MessageEvent<ArchiveWorkerRequest>) => {
       markdown: archive.markdown,
       zip,
     };
-    self.postMessage(response, { transfer: [zip] });
+    workerScope.postMessage(response, [zip]);
   } catch (error) {
     const response: ArchiveWorkerResponse = {
       ok: false,
       error: error instanceof Error ? error.message : "Could not build G.R.A.F.T.+ pack.",
     };
-    self.postMessage(response);
+    workerScope.postMessage(response);
   }
 };
