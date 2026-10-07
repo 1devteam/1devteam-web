@@ -40,9 +40,9 @@ describe("canonical 1.7 browser parity surface", () => {
     assert.equal(node(graph, "governance:engine/PRESUBMIT.py")?.governance_kind, "process");
     assert.equal(node(graph, "governance:engine/SECURITY.md")?.governance_kind, "security");
 
-    assert.equal(node(graph, "file:engine/native/core.cc")?.source_provenance, "authored");
-    assert.equal(node(graph, "file:engine/gen/generated.cc")?.source_provenance, "generated");
-    assert.equal(node(graph, "file:third_party/lib/vendor.cc")?.source_provenance, "vendored");
+    assert.equal(node(graph, "native:engine/native/core.cc")?.source_provenance, "authored");
+    assert.equal(node(graph, "native:engine/gen/generated.cc")?.source_provenance, "generated");
+    assert.equal(node(graph, "native:third_party/lib/vendor.cc")?.source_provenance, "vendored");
 
     const edgeKeys = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
     assert.ok(edgeKeys.has("subsystem:engine/web|subsystem:engine|member_of_subsystem"));
