@@ -1,0 +1,18 @@
+import type { FileInput, GraphEdge, GraphNode } from "./types.ts";
+function moduleFor(path:string){const parts=path.replace(/\.py$/,"").split("/").filter(Boolean);if(parts[0]==="src")parts.shift();if(parts.at(-1)==="__init__")parts.pop();return parts.join(".");}
+function lineAt(text:string,offset:number){return text.slice(0,offset).split("\n").length;}
+type Def={node:GraphNode;body:string;bodyStart:number};
+export function collectFunctionGraph(files:FileInput[], pythonBySource:Map<string,string>){
+  const defs=new Map<string,Def>();const imported=new Map<string,string>();const participants=new Set<string>();const edges:GraphEdge[]=[];
+  for(const f of files.filter((x)=>x.path.endsWith(".py")&&!/(?:^|\/)(?:tests?|fixtures|migrations|alembic)(?:\/|$)/.test(x.path))){
+    const mod=moduleFor(f.path);
+    for(const m of f.content.matchAll(/^from\s+([A-Za-z0-9_.]+)\s+import\s+([A-Za-z_][A-Za-z0-9_]*)/gm))imported.set(`${mod}:${m[2]}`,`${m[1]}:${m[2]}`);
+    const matches=[...f.content.matchAll(/^(?:@[^\n]+\n)*(async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^\n]*\)\s*:\s*\n/gm)];
+    for(let i=0;i<matches.length;i++){const m=matches[i],start=m.index??0,end=i+1<matches.length?(matches[i+1].index??f.content.length):f.content.length;const decorators=f.content.slice(Math.max(0,f.content.lastIndexOf("\n",start-2)+1),start);const routeHandler=/@[^\n]*\.(?:get|post|put|patch|delete|head|options|route|websocket)\s*\(/i.test(decorators);const name=m[2],id=`fn:${mod}:${name}`;defs.set(`${mod}:${name}`,{node:{id,type:"python_function",source:f.path,layer:"generated",name,module:mod,start_line:lineAt(f.content,start),end_line:lineAt(f.content,end),async:Boolean(m[1]),detector:"python_source",route_handler:routeHandler},body:f.content.slice(m.index??0,end),bodyStart:lineAt(f.content,m.index??0)});if(routeHandler||name==="main")participants.add(`${mod}:${name}`);}
+  }
+  for(const [key,d] of defs){const [mod]=key.split(":");for(const call of d.body.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\(/g)){const name=call[1];if(["if","for","while","return","print","len","str","int","dict","list","set","tuple","super"].includes(name))continue;let target=`${mod}:${name}`;if(!defs.has(target))target=imported.get(`${mod}:${name}`)??"";if(target&&defs.has(target)&&target!==key){participants.add(key);participants.add(target);edges.push({from:d.node.id,to:defs.get(target)!.node.id,type:"calls_function",evidence:d.node.source,start_line:d.bodyStart+lineAt(d.body,call.index??0)-1,end_line:d.bodyStart+lineAt(d.body,call.index??0)-1,symbol:name,detector:"python_source",layer:"generated"});}}}
+  for(const f of files.filter((x)=>x.path.endsWith(".py")&&/(?:^|\/)(?:tests?|test)(?:\/|$)/.test(x.path))){for(const m of f.content.matchAll(/^from\s+([A-Za-z0-9_.]+)\s+import\s+([A-Za-z_][A-Za-z0-9_]*)/gm)){const key=`${m[1]}:${m[2]}`;if(defs.has(key)){participants.add(key);edges.push({from:`test:${f.path}`,to:defs.get(key)!.node.id,type:"tests_function",evidence:f.path,start_line:lineAt(f.content,m.index??0),end_line:lineAt(f.content,m.index??0),symbol:m[2],detector:"python_source",layer:"generated"});}}}
+  const nodes=[...participants].sort().map((k)=>defs.get(k)!.node);const emitted=new Set(nodes.map((n)=>n.id));const kept=edges.filter((e)=>emitted.has(e.to)&&(emitted.has(e.from)||e.type==="tests_function"));
+  for(const n of nodes){const parent=pythonBySource.get(n.source);if(parent)kept.push({from:parent,to:n.id,type:"defines_function",evidence:n.source,start_line:n.start_line,end_line:n.end_line,symbol:n.name,detector:"python_source",layer:"generated"});}
+  return {nodes,edges:kept};
+}
