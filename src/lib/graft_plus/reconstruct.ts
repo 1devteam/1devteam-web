@@ -327,6 +327,30 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
   return { nodes, edges };
 }
 
+function annotatePythonRoutes(files: FileInput[], nodes: Node[]) {
+  const routeNodes = new Map(nodes.filter((node) => node.type === "http_route").map((node) => [node.id, node]));
+  for (const file of files.filter((item) => item.path.endsWith(".py"))) {
+    const pattern = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)["'][^\n]*\)\s*\n\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)/gi;
+    for (const match of file.content.matchAll(pattern)) {
+      const method = match[1].toUpperCase();
+      const pathValue = match[2];
+      const handler = match[3];
+      const route = routeNodes.get(`route:${method} ${pathValue}`);
+      if (!route) continue;
+      const start = file.content.slice(0, match.index ?? 0).split("\n").length;
+      const defOffset = (match.index ?? 0) + match[0].lastIndexOf("def ");
+      const rest = file.content.slice(defOffset);
+      const nextDef = rest.slice(1).search(/\n(?:async\s+)?def\s+|\nclass\s+/);
+      const endOffset = nextDef >= 0 ? defOffset + nextDef + 1 : file.content.length;
+      route.start_line = start;
+      route.end_line = file.content.slice(0, endOffset).split("\n").length;
+      route.handler = handler;
+      route.detector = "python_source";
+      route.path = pathValue;
+    }
+  }
+}
+
 function coverage(files: FileInput[], nodes: Node[]): { unmapped_source_files: string[]; stale_graph_sources: { id: string; source: string }[] } {
   const mapped = new Set(nodes.map((n) => n.source).filter(Boolean));
   const unmapped = files
@@ -359,6 +383,7 @@ export function reconstructPack(input: {
   const languages = collectLanguageGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
+  annotatePythonRoutes(files, generated.nodes);
   let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...languages.nodes, ...surfaceNodes, ...generated.nodes];
   let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...languages.edges, ...generated.edges];
 
@@ -371,6 +396,24 @@ export function reconstructPack(input: {
   const functions = collectFunctionGraph(files, pythonBySource);
   nodes.push(...functions.nodes);
   edges.push(...functions.edges);
+  const functionIds = new Set(functions.nodes.map((node) => node.id));
+  for (const route of generated.nodes.filter((node) => node.type === "http_route" && typeof node.handler === "string")) {
+    const module = moduleFor(route.source);
+    const target = `fn:${module}:${route.handler}`;
+    if (functionIds.has(target)) {
+      edges.push({
+        from: route.id,
+        to: target,
+        type: "handled_by",
+        evidence: route.source,
+        start_line: route.start_line,
+        end_line: route.end_line,
+        symbol: route.handler,
+        detector: route.detector ?? "python_source",
+        layer: "generated",
+      });
+    }
+  }
 
   const packages = collectPackageTopology(files, sourceNodeIds);
   nodes.push(...packages.nodes);
