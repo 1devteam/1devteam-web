@@ -8,6 +8,31 @@ export const MERGE_AUTHORIZATION = "not-determined" as const;
 export const IMPLEMENTS_PLAN = false;
 export const GRANTS_EXECUTION_AUTHORITY = false;
 
+export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
+export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
+export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
+export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.1" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "22bbcf95a7d0a0921454d763c400bffd1d847f88" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.7" as const;
+export const GRAFT_SYNC_STATUS = "behind-canonical" as const;
+
+const SEMANTIC_PROVENANCE = {
+  semantic_authority: GRAFT_SEMANTIC_AUTHORITY,
+  execution_authority: GRAFT_EXECUTION_AUTHORITY,
+  synchronization_mode: GRAFT_SYNC_MODE,
+  synchronization_status: GRAFT_SYNC_STATUS,
+  embedded_engine: GRAFT_EMBEDDED_ENGINE,
+  embedded_schema_version: GRAFT_EMBEDDED_SCHEMA_VERSION,
+  canonical_reference: {
+    repo: GRAFT_SEMANTIC_AUTHORITY,
+    sha: GRAFT_CANONICAL_REFERENCE_SHA,
+    schema_version: GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
+    parity_claimed: false,
+  },
+  runtime_dependency: "none",
+} as const;
+
 export type FileInput = { path: string; content: string };
 
 type Node = {
@@ -332,6 +357,7 @@ export function reconstructPack(input: {
     role: "fact-substrate",
     implementsPlan: IMPLEMENTS_PLAN,
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
+    semantic_provenance: SEMANTIC_PROVENANCE,
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
     edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to)),
     facts: { unresolved_imports: unresolved, unresolved_package_roots: roots },
@@ -431,7 +457,8 @@ export function reconstructPack(input: {
   const receipt = {
     product: "G.R.A.F.T.+",
     package: "graft_plus",
-    engine: "universal-shell",
+    engine: GRAFT_EMBEDDED_ENGINE,
+    semantic_provenance: SEMANTIC_PROVENANCE,
     subject: input.origin?.url ?? `${input.origin?.owner ?? "local"}/${input.origin?.repo ?? "subject"}`,
     subject_sha: sha,
     status: completeness.integrity_pass ? "passed" : "failed",
