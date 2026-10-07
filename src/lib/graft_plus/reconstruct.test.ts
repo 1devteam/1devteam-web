@@ -63,8 +63,26 @@ describe("graft_plus reconstruct", () => {
     assert.equal(decision.decision.merge_authorization, "not-determined");
     assert.equal(decision.decision.architecture_disposition, "clear");
     assert.ok(!decision.decision.blocking_reasons.some((r) => r.includes("rls-missing")));
-    const receipt = pack["graft-plus-receipt.json"] as { engine: string };
-    assert.equal(receipt.engine, "universal-shell");
+    const receipt = pack["graft-plus-receipt.json"] as {
+      engine: string;
+      semantic_provenance: {
+        semantic_authority: string;
+        execution_authority: string;
+        synchronization_mode: string;
+        synchronization_status: string;
+        canonical_reference: { sha: string; schema_version: string; parity_claimed: boolean };
+        runtime_dependency: string;
+      };
+    };
+    assert.equal(receipt.engine, "browser-universal-shell");
+    assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
+    assert.equal(receipt.semantic_provenance.execution_authority, "1devteam/1devteam-web");
+    assert.equal(receipt.semantic_provenance.synchronization_mode, "github-reviewed-manual-port");
+    assert.equal(receipt.semantic_provenance.synchronization_status, "behind-canonical");
+    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "22bbcf95a7d0a0921454d763c400bffd1d847f88");
+    assert.equal(receipt.semantic_provenance.canonical_reference.schema_version, "1.7");
+    assert.equal(receipt.semantic_provenance.canonical_reference.parity_claimed, false);
+    assert.equal(receipt.semantic_provenance.runtime_dependency, "none");
   });
 
   it("names Flask/Express routes and SQLAlchemy tables, and does not leak stdlib", () => {
