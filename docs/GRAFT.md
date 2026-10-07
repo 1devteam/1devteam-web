@@ -45,6 +45,8 @@ browser
 
 There is no required G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or `GRAFT_API_ORIGIN` dependency for the public workbench.
 
+The website build also carries no `wrangler` runtime/tooling dependency for G.R.A.F.T.+ execution; Cloudflare Pages hosting is deployment infrastructure only.
+
 ## Update policy
 
 `1devteam/graft_plus` remains the development/reference implementation for newer G.R.A.F.T.+ reconstruction semantics and research work.
