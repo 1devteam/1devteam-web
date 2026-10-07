@@ -21,11 +21,12 @@ describe("graft_plus reconstruct", () => {
       facts: { unresolved_package_roots: string[] };
     };
     const ids = graph.nodes.map((n) => n.id);
-    assert.ok(ids.includes("fe:src/a.ts"));
-    assert.ok(ids.includes("fe:src/b.ts"));
+    assert.equal((pack["dependency-graph.v1.json"] as { schema_version: string }).schema_version, "1.7");
+    assert.ok(ids.includes("js:src/a.ts"));
+    assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
     assert.ok(ids.includes("manifest:package.json"));
-    assert.ok(graph.edges.some((e) => e.from === "fe:src/a.ts" && e.to === "fe:src/b.ts"));
+    assert.ok(graph.edges.some((e) => e.from === "js:src/a.ts" && e.to === "js:src/b.ts"));
     assert.ok(graph.facts.unresolved_package_roots.includes("stripe"));
     const decision = pack["graph-architecture-decision.json"] as {
       decision: { merge_authorization: string; review_reasons: string[]; warnings: string[] };
@@ -35,7 +36,7 @@ describe("graft_plus reconstruct", () => {
     assert.equal(decision.decision.merge_authorization, "not-determined");
     assert.equal(decision.implementsPlan, false);
     assert.equal(decision.residuals.overlay, "residual");
-    assert.ok(decision.decision.review_reasons.includes("overlay_residual"));
+    assert.ok(decision.decision.review_reasons.includes("no_git_range"));
   });
 
   it("names tables, routes, contracts, and unclassified egress without Ajenda policy", () => {
@@ -61,7 +62,7 @@ describe("graft_plus reconstruct", () => {
       decision: { architecture_disposition: string; merge_authorization: string; blocking_reasons: string[] };
     };
     assert.equal(decision.decision.merge_authorization, "not-determined");
-    assert.equal(decision.decision.architecture_disposition, "clear");
+    assert.equal(decision.decision.architecture_disposition, "review-required");
     assert.ok(!decision.decision.blocking_reasons.some((r) => r.includes("rls-missing")));
     const receipt = pack["graft-plus-receipt.json"] as {
       engine: string;
@@ -78,10 +79,10 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
     assert.equal(receipt.semantic_provenance.execution_authority, "1devteam/1devteam-web");
     assert.equal(receipt.semantic_provenance.synchronization_mode, "github-reviewed-manual-port");
-    assert.equal(receipt.semantic_provenance.synchronization_status, "behind-canonical");
-    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "22bbcf95a7d0a0921454d763c400bffd1d847f88");
+    assert.equal(receipt.semantic_provenance.synchronization_status, "synchronized");
+    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "19a0e493be850740eb8d3307a8c3b0686f35eda4");
     assert.equal(receipt.semantic_provenance.canonical_reference.schema_version, "1.7");
-    assert.equal(receipt.semantic_provenance.canonical_reference.parity_claimed, false);
+    assert.equal(receipt.semantic_provenance.canonical_reference.parity_claimed, true);
     assert.equal(receipt.semantic_provenance.runtime_dependency, "none");
   });
 
