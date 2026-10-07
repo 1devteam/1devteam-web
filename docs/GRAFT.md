@@ -20,6 +20,17 @@ implementsPlan: false
 mergeAuthorization: not-determined
 ```
 
+## Authority contract
+
+The public workbench keeps two authorities deliberately separate:
+
+- **Semantic authority:** `1devteam/graft_plus` defines the canonical research and reconstruction semantics.
+- **Execution authority:** `1devteam/1devteam-web` owns the deployed browser execution loop at `/graft`.
+
+The website must not become a thin client of a required G.R.A.F.T.+ backend. Cloudflare may host the static site, but it does not supervise graph execution, proxy reconstruction, or determine graph semantics. No Cloudflare Worker, tunnel, localhost service, or external graph runtime is required for `/graft` to reconstruct a public repository.
+
+Semantic updates move between the repositories through GitHub-reviewed changes. A canonical G.R.A.F.T.+ revision may be proposed for the website, but it becomes deployed website behavior only after the applicable semantics are ported into `1devteam-web`, validated there, and merged there.
+
 ## Website execution model
 
 `1devteam.com/graft` remains self-contained inside `1devteam/1devteam-web`.
@@ -38,7 +49,9 @@ There is no required G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost o
 
 `1devteam/graft_plus` remains the development/reference implementation for newer G.R.A.F.T.+ reconstruction semantics and research work.
 
-The public website does **not** automatically track that repository. When a newer G.R.A.F.T.+ behavior is approved for the site, the applicable semantics are deliberately ported into the existing browser-side implementation and validated in `1devteam-web`.
+The public website does **not** automatically track that repository. Synchronization is a GitHub provenance and review operation, not a runtime service call. When a newer G.R.A.F.T.+ behavior is approved for the site, the applicable semantics are deliberately ported into the existing browser-side implementation, validated in `1devteam-web`, and merged through review.
+
+Every downloadable website pack must identify the embedded engine, embedded schema version, semantic authority repository, execution authority repository, synchronization mode, and the canonical reference revision observed by the port. A reference revision is provenance only; it must never claim semantic parity when the embedded implementation is behind the canonical engine.
 
 Updating G.R.A.F.T.+ must not silently replace the website's execution model or introduce a new hosting dependency. Changes to how `/graft` is hosted or executed are separate architecture decisions.
 
