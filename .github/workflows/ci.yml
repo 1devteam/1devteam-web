@@ -48,6 +48,9 @@ jobs:
       - name: Audit routes and SEO metadata
         run: npm run audit:seo
 
+      - name: Run reconstruction and parity tests
+        run: npm test
+
       - name: Build, prerender, and audit bundle budgets
         run: npm run build
 

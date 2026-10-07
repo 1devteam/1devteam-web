@@ -1,7 +1,12 @@
 import { collectArchitectureTopology } from "./architecture.ts";
+import { auditGraph, decideGraph } from "./assurance.ts";
 import { collectRelationshipBoundaries } from "./boundaries.ts";
+import { collectConfigurationGraph } from "./configuration.ts";
+import { collectContractGraph } from "./contracts.ts";
 import { attachEvidenceAnchors } from "./evidence.ts";
+import { collectFunctionGraph } from "./functions.ts";
 import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
+import { collectLanguageGraph } from "./languages.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
 
@@ -19,10 +24,10 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.1" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "22bbcf95a7d0a0921454d763c400bffd1d847f88" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.7" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "19a0e493be850740eb8d3307a8c3b0686f35eda4" as const;
 export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.7" as const;
-export const GRAFT_SYNC_STATUS = "behind-canonical" as const;
+export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
   semantic_authority: GRAFT_SEMANTIC_AUTHORITY,
@@ -35,7 +40,7 @@ const SEMANTIC_PROVENANCE = {
     repo: GRAFT_SEMANTIC_AUTHORITY,
     sha: GRAFT_CANONICAL_REFERENCE_SHA,
     schema_version: GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
-    parity_claimed: false,
+    parity_claimed: true,
   },
   runtime_dependency: "none",
 } as const;
@@ -45,13 +50,11 @@ type Edge = GraphEdge;
 type Unresolved = UnresolvedReference;
 
 const PY_IMPORT = /^\s*(?:from|import)\s+([A-Za-z0-9_\.]+)/gm;
-const FE_IMPORT = /(?:import|export)\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]/g;
 const SKIP = /(^|\/)(node_modules|dist|build|\.venv|venv|__pycache__|\.git)(\/|$)/;
 const RUNTIME = new Set(
   `abc argparse array ast asyncio atexit base64 bdb binascii bisect builtins bz2 calendar cmath cmd code codecs collections colorsys compileall concurrent configparser contextlib contextvars copy copyreg csv ctypes dataclasses datetime decimal difflib dis doctest email enum errno faulthandler fcntl filecmp fileinput fnmatch fractions ftplib functools gc getopt getpass gettext glob gzip hashlib heapq hmac html http imaplib importlib inspect io ipaddress itertools json keyword linecache locale logging lzma mailbox marshal math mimetypes mmap multiprocessing netrc numbers operator optparse os pathlib pdb pickle pkgutil platform pprint pstats pty pwd queue random re readline reprlib resource rlcompleter runpy sched secrets select selectors shelve shlex shutil signal site smtplib socket socketserver sqlite3 ssl stat statistics string struct subprocess sys sysconfig syslog tarfile tempfile textwrap threading time timeit token tokenize traceback types typing unicodedata unittest urllib uuid venv warnings wave weakref webbrowser xml xmlrpc zipfile zipimport zlib zoneinfo __future__`
     .split(/\s+/),
 );
-const SOURCE_SUFFIX = /\.(py|ts|tsx|js|jsx|go|rs|rb|php)$/;
 const NETWORK_LIBS = /\b(?:import|from)\s+(httpx|requests|aiohttp|smtplib)\b/;
 
 function skip(path: string): boolean {
@@ -140,23 +143,39 @@ function testGraph(files: FileInput[], production: Set<string>): { nodes: Node[]
 }
 
 function frontendGraph(files: FileInput[]): { nodes: Node[]; edges: Edge[]; unresolved: Unresolved[] } {
-  const fe = files.filter((f) => /\.(ts|tsx)$/.test(f.path) && !skip(f.path) && !f.path.endsWith(".d.ts"));
-  const set = new Set(fe.map((f) => f.path));
-  const nodes: Node[] = fe.map((f) => ({ id: `fe:${f.path}`, type: "frontend_module", source: f.path, layer: "generated" }));
+  const js = files.filter((f) => /\.(cjs|cts|js|jsx|mjs|mts|ts|tsx)$/.test(f.path) && !skip(f.path) && !f.path.endsWith(".d.ts"));
+  const set = new Set(js.map((f) => f.path));
+  const isTest = (path: string) => /(?:^|\/)(?:tests?|specs?|__tests__)(?:\/|$)|(?:\.test|\.spec)\.[^.]+$/i.test(path);
+  const id = (path: string) => (isTest(path) ? `test:${path}` : `js:${path}`);
+  const nodes: Node[] = js.map((f) => ({
+    id: id(f.path),
+    type: isTest(f.path) ? "test_module" : "javascript_module",
+    source: f.path,
+    layer: "generated",
+  }));
   const edges: Edge[] = [];
   const unresolved: Unresolved[] = [];
-  for (const file of fe) {
-    FE_IMPORT.lastIndex = 0;
+  const importRe = /(?:import|export)\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]|\brequire\(\s*['"]([^'"]+)['"]\s*\)|\bimport\(\s*['"]([^'"]+)['"]\s*\)/g;
+  for (const file of js) {
     let match: RegExpExecArray | null;
-    while ((match = FE_IMPORT.exec(file.content))) {
-      const spec = match[1];
+    importRe.lastIndex = 0;
+    while ((match = importRe.exec(file.content))) {
+      const spec = match[1] ?? match[2] ?? match[3];
+      if (!spec) continue;
       if (spec.startsWith(".")) {
         const parent = file.path.split("/").slice(0, -1).join("/");
-        const raw = `${parent}/${spec}`.replace(/\/\.\//g, "/");
-        const cands = [raw, `${raw}.ts`, `${raw}.tsx`, `${raw}/index.ts`, `${raw}/index.tsx`];
-        const hit = cands.find((c) => set.has(c));
+        const parts = [...parent.split("/").filter(Boolean), ...spec.split("/")];
+        const normalized: string[] = [];
+        for (const part of parts) {
+          if (!part || part === ".") continue;
+          if (part === "..") normalized.pop();
+          else normalized.push(part);
+        }
+        const raw = normalized.join("/");
+        const cands = [raw, ...[".cjs",".cts",".js",".jsx",".mjs",".mts",".ts",".tsx"].map((s) => raw + s), ...[".cjs",".cts",".js",".jsx",".mjs",".mts",".ts",".tsx"].map((s) => `${raw}/index${s}`)];
+        const hit = cands.find((candidate) => set.has(candidate));
         if (hit && hit !== file.path) {
-          edges.push({ from: `fe:${file.path}`, to: `fe:${hit}`, type: "imports", evidence: file.path, layer: "generated" });
+          edges.push({ from: id(file.path), to: id(hit), type: isTest(file.path) && !isTest(hit) ? "tests" : "imports", evidence: file.path, layer: "generated" });
         } else if (!hit) unresolved.push({ specifier: spec, from: file.path });
       } else if (!runtime(spec)) {
         unresolved.push({ specifier: spec, from: file.path });
@@ -306,18 +325,28 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
   return { nodes, edges };
 }
 
-function coverage(files: FileInput[], nodes: Node[]): { unmapped_source_files: string[]; stale_graph_sources: { id: string; source: string }[] } {
-  const mapped = new Set(nodes.map((n) => n.source).filter(Boolean));
-  const unmapped = files
-    .filter((f) => SOURCE_SUFFIX.test(f.path) && !skip(f.path) && !mapped.has(f.path))
-    .map((f) => f.path)
-    .sort();
-  const present = new Set(files.map((f) => f.path));
-  const stale = nodes
-    .filter((n) => n.source && !present.has(n.source))
-    .map((n) => ({ id: n.id, source: n.source }))
-    .sort((a, b) => a.id.localeCompare(b.id));
-  return { unmapped_source_files: unmapped, stale_graph_sources: stale };
+function annotatePythonRoutes(files: FileInput[], nodes: Node[]) {
+  const routeNodes = new Map(nodes.filter((node) => node.type === "http_route").map((node) => [node.id, node]));
+  for (const file of files.filter((item) => item.path.endsWith(".py"))) {
+    const pattern = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)["'][^\n]*\)\s*\n\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)/gi;
+    for (const match of file.content.matchAll(pattern)) {
+      const method = match[1].toUpperCase();
+      const pathValue = match[2];
+      const handler = match[3];
+      const route = routeNodes.get(`route:${method} ${pathValue}`);
+      if (!route) continue;
+      const start = file.content.slice(0, match.index ?? 0).split("\n").length;
+      const defOffset = (match.index ?? 0) + match[0].lastIndexOf("def ");
+      const rest = file.content.slice(defOffset);
+      const nextDef = rest.slice(1).search(/\n(?:async\s+)?def\s+|\nclass\s+/);
+      const endOffset = nextDef >= 0 ? defOffset + nextDef + 1 : file.content.length;
+      route.start_line = start;
+      route.end_line = file.content.slice(0, endOffset).split("\n").length;
+      route.handler = handler;
+      route.detector = "python_source";
+      route.path = pathValue;
+    }
+  }
 }
 
 function sha256sync(text: string): string {
@@ -335,19 +364,52 @@ export function reconstructPack(input: {
   const production = new Set(py.nodes.map((n) => n.id.slice(3)));
   const tests = testGraph(files, production);
   const fe = frontendGraph(files);
+  const languages = collectLanguageGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
-  let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...surfaceNodes, ...generated.nodes];
-  let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...generated.edges];
+  annotatePythonRoutes(files, generated.nodes);
+  let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...languages.nodes, ...surfaceNodes, ...generated.nodes];
+  let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...languages.edges, ...generated.edges];
 
   const sourceNodeIds = new Map<string, string>();
   for (const node of nodes) {
     if (!sourceNodeIds.has(node.source)) sourceNodeIds.set(node.source, node.id);
   }
+  const pythonBySource = new Map(py.nodes.map((node) => [node.source, node.id]));
+
+  const functions = collectFunctionGraph(files, pythonBySource);
+  nodes.push(...functions.nodes);
+  edges.push(...functions.edges);
+  const functionIds = new Set(functions.nodes.map((node) => node.id));
+  for (const route of generated.nodes.filter((node) => node.type === "http_route" && typeof node.handler === "string")) {
+    const module = moduleFor(route.source);
+    const target = `fn:${module}:${route.handler}`;
+    if (functionIds.has(target)) {
+      edges.push({
+        from: route.id,
+        to: target,
+        type: "handled_by",
+        evidence: route.source,
+        start_line: route.start_line,
+        end_line: route.end_line,
+        symbol: route.handler,
+        detector: route.detector ?? "python_source",
+        layer: "generated",
+      });
+    }
+  }
 
   const packages = collectPackageTopology(files, sourceNodeIds);
   nodes.push(...packages.nodes);
   edges.push(...packages.edges);
+
+  const contracts = collectContractGraph(files, sourceNodeIds);
+  nodes.push(...contracts.nodes);
+  edges.push(...contracts.edges);
+
+  const configuration = collectConfigurationGraph(files, sourceNodeIds);
+  nodes.push(...configuration.nodes);
+  edges.push(...configuration.edges);
 
   const architecture = collectArchitectureTopology(files, nodes);
   for (const node of nodes) {
@@ -364,7 +426,7 @@ export function reconstructPack(input: {
   const boundaryFacts = collectRelationshipBoundaries(files);
 
   const unresolvedMap = new Map<string, Unresolved>();
-  for (const row of [...py.unresolved, ...fe.unresolved, ...tests.unresolved]) {
+  for (const row of [...py.unresolved, ...fe.unresolved, ...tests.unresolved, ...languages.unresolved]) {
     unresolvedMap.set(`${row.specifier}|${row.from}`, row);
   }
 
@@ -411,8 +473,6 @@ export function reconstructPack(input: {
     edgeByKey.set(key, edge);
   }
   const kept = [...edgeByKey.values()];
-  const missing = [...new Set(edges.flatMap((e) => [e.from, e.to]).filter((id) => !known.has(id)))].sort();
-
   attachEvidenceAnchors(files, nodes, kept);
 
   const evidencePrecisionCounts = {
@@ -428,9 +488,8 @@ export function reconstructPack(input: {
     }, {}),
   };
 
-  const cover = coverage(files, nodes);
   const graph = {
-    schema_version: "1.1",
+    schema_version: "1.7",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
@@ -445,6 +504,8 @@ export function reconstructPack(input: {
       declared_external_imports: declaredExternalImports,
       ...inventory.facts,
       ...boundaryFacts,
+      ...contracts.facts,
+      ...configuration.facts,
       ...architecture.facts,
       evidence_precision_counts: evidencePrecisionCounts,
     },
@@ -460,6 +521,12 @@ export function reconstructPack(input: {
       relationship_boundary_count: boundaryFacts.relationship_boundary_count,
       unresolved_relationship_boundary_count: boundaryFacts.unresolved_relationship_boundary_count,
       relationship_boundary_counts_by_kind: boundaryFacts.relationship_boundary_counts_by_kind,
+      contract_source_count: contracts.facts.contract_source_count,
+      contract_declaration_count: contracts.facts.contract_declaration_count,
+      contract_declaration_counts_by_kind: contracts.facts.contract_declaration_counts_by_kind,
+      configuration_key_count: configuration.facts.configuration_key_count,
+      deployment_fact_count: configuration.facts.deployment_fact_count,
+      deployment_fact_counts_by_kind: configuration.facts.deployment_fact_counts_by_kind,
       subsystem_count: architecture.facts.subsystem_count,
       cross_language_subsystem_count: architecture.facts.cross_language_subsystem_count,
       build_definition_count: architecture.facts.build_definition_count,
@@ -473,31 +540,16 @@ export function reconstructPack(input: {
       }, {}),
     },
   };
-  const residuals = {
-    overlay: "residual",
-    unresolved_import_count: unresolved.length,
-    unresolved_package_roots: roots,
-    no_git_range: true,
-    unmapped_changed_files: [] as string[],
-    unmapped_source_file_count: cover.unmapped_source_files.length,
-    unmapped_source_files: cover.unmapped_source_files.slice(0, 50),
-    stale_graph_source_count: cover.stale_graph_sources.length,
-    stale_graph_sources: cover.stale_graph_sources,
-    relationship_boundary_count: boundaryFacts.relationship_boundary_count,
-    unresolved_relationship_boundary_count: boundaryFacts.unresolved_relationship_boundary_count,
-    relationship_boundary_counts_by_kind: boundaryFacts.relationship_boundary_counts_by_kind,
-    note: "Residuals stay visible. Unresolved imports are facts, not missing files. Overlay stays residual until a reviewed relationship is attached.",
-  };
-  const completeness = {
-    schema_version: "1.1",
-    integrity_pass: missing.length === 0,
-    undefined_edge_endpoints: missing,
-    unacknowledged_blocking_findings: [] as string[],
-    node_count: nodes.length,
-    edge_count: kept.length,
-    residuals,
-    note: "An acknowledgement is not a repair. Missing overlay is residual, not an Ajenda policy failure.",
-  };
+  const completeness = auditGraph(
+    {
+      nodes: graph.nodes,
+      edges: graph.edges,
+      facts: graph.facts,
+      metrics: graph.metrics,
+    },
+    new Set(files.map((file) => file.path)),
+  );
+  const decision = decideGraph(graph as unknown as Record<string, unknown>, completeness);
   const impact = {
     schema_version: "1.2",
     changed_files: [] as string[],
@@ -510,6 +562,9 @@ export function reconstructPack(input: {
     dependency_semantic_nodes: [] as string[],
     relevant_invariants: [] as string[],
     changed_node_count: 0,
+    changed_file_count: 0,
+    unmapped_changed_file_count: 0,
+    impacted_test_count: 0,
     note: "no git range requested; blast-radius fields are present and empty",
   };
   const proofs = {
@@ -519,43 +574,6 @@ export function reconstructPack(input: {
     required_gates: [] as string[],
     manual_review: [] as string[],
     note: "Bundles are overlay-supplied. This package has no product-specific proofs.",
-  };
-  const review = ["overlay_residual"];
-  if (cover.unmapped_source_files.length) review.push("unmapped_source_files");
-  if (cover.stale_graph_sources.length) review.push("stale_graph_sources");
-  if (boundaryFacts.unresolved_relationship_boundary_count) review.push("runtime_or_build_context_required");
-  const warnings = ["no_git_range"];
-  if (roots.length) warnings.push("unresolved_imports");
-  const decision = {
-    schema_version: "1.1",
-    product: "G.R.A.F.T.+",
-    package: "graft_plus",
-    role: "fact-substrate",
-    decision: {
-      architecture_disposition: completeness.integrity_pass ? "clear" : "blocked",
-      merge_authorization: MERGE_AUTHORIZATION,
-      full_ci_required: true,
-      blocking_reasons: missing.length ? ["undefined_edge_endpoints"] : [],
-      review_reasons: review,
-      warnings,
-    },
-    grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
-    implementsPlan: IMPLEMENTS_PLAN,
-    residuals,
-    impact: {
-      changed_files: [],
-      upstream_consumers: [],
-      downstream_dependencies: [],
-      unmapped_changed_files: [],
-    },
-    negatives: [
-      "This pack is a map. It is not a plan.",
-      "merge_authorization is not-determined even when disposition is clear.",
-      "An acknowledgement is not a repair.",
-      "Do not invent missing nodes.",
-      "Unresolved imports are facts, not missing files.",
-      "Overlay stays residual until a reviewed relationship is attached.",
-    ],
   };
   const sha = input.origin?.sha ?? "unpinned";
   const receipt = {
