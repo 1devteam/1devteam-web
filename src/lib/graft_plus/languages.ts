@@ -11,7 +11,6 @@ const RUNTIME_PREFIXES: Record<string, string[]> = {
   swift:["Combine","CoreData","CoreFoundation","Darwin","Dispatch","Foundation","Swift","SwiftUI","UIKit"],
 };
 function isTest(path:string){const stem=(path.split("/").pop()??path).replace(/\.[^.]+$/,"");return TEST_RE.test(path)||/^test_|_test$|_spec$|Test$|Tests$|Spec$|Specs$/.test(stem);}
-function ext(path:string){const b=path.split("/").pop()??path;const i=b.lastIndexOf(".");return i>=0?b.slice(i).toLowerCase():"";}
 function norm(path:string){const out:string[]=[];for(const p of path.split("/")){if(!p||p===".")continue;if(p==="..")out.pop();else out.push(p);}return out.join("/");}
 function parent(path:string){const i=path.lastIndexOf("/");return i>=0?path.slice(0,i):"";}
 function nodeId(path:string){const lang=language(path);const prefix=lang==="rust"?"rs":lang==="ruby"?"rb":lang==="php"?"php":["c","cpp"].includes(lang)?"native":["java","kotlin","scala"].includes(lang)?"jvm":lang==="csharp"?"dotnet":lang==="lua"?"lua":lang==="elixir"?"ex":lang==="swift"?"swift":lang==="go"?"go":lang==="shell"?"sh":lang==="javascript"||lang==="typescript"?"js":lang;return isTest(path)?`test:${path}`:`${prefix}:${path}`;}
