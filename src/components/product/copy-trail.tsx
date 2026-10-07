@@ -19,41 +19,6 @@ type ArchiveWorkerResponse =
       error: string;
     };
 
-function buildArchiveInWorker(project: Project): Promise<MaterializedArchive> {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("../../lib/product/archive-worker.ts", import.meta.url), {
-      type: "module",
-    });
-
-    worker.onmessage = (event: MessageEvent<ArchiveWorkerResponse>) => {
-      worker.terminate();
-      if (!event.data.ok) {
-        reject(new Error(event.data.error));
-        return;
-      }
-      resolve({
-        filename: event.data.filename,
-        markdown: event.data.markdown,
-        zip: new Uint8Array(event.data.zip),
-      });
-    };
-
-    worker.onerror = (event) => {
-      worker.terminate();
-      reject(new Error(event.message || "Could not build G.R.A.F.T.+ pack."));
-    };
-
-    worker.postMessage({
-      profile: {
-        name: project.profile.name,
-        provenance: project.profile.provenance,
-      },
-      origin: project.origin,
-      files: project.files.map(({ path, content, language }) => ({ path, content, language })),
-    });
-  });
-}
-
 function triggerDownload(archive: MaterializedArchive) {
   const blob = new Blob([archive.zip], { type: "application/zip" });
   const url = URL.createObjectURL(blob);
@@ -73,6 +38,14 @@ export function CopyTrail({ project }: { project: Project }) {
   const [building, setBuilding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    return () => {
+      workerRef.current?.terminate();
+      workerRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -88,7 +61,41 @@ export function CopyTrail({ project }: { project: Project }) {
     if (!next) {
       setBuilding(true);
       try {
-        next = await buildArchiveInWorker(project);
+        next = await new Promise<MaterializedArchive>((resolve, reject) => {
+          const worker = new Worker(new URL("../../lib/product/archive-worker.ts", import.meta.url), {
+            type: "module",
+          });
+          workerRef.current = worker;
+
+          worker.onmessage = (event: MessageEvent<ArchiveWorkerResponse>) => {
+            worker.terminate();
+            workerRef.current = null;
+            if (!event.data.ok) {
+              reject(new Error(event.data.error));
+              return;
+            }
+            resolve({
+              filename: event.data.filename,
+              markdown: event.data.markdown,
+              zip: new Uint8Array(event.data.zip),
+            });
+          };
+
+          worker.onerror = (event) => {
+            worker.terminate();
+            workerRef.current = null;
+            reject(new Error(event.message || "Could not build G.R.A.F.T.+ pack."));
+          };
+
+          worker.postMessage({
+            profile: {
+              name: project.profile.name,
+              provenance: project.profile.provenance,
+            },
+            origin: project.origin,
+            files: project.files.map(({ path, content, language }) => ({ path, content, language })),
+          });
+        });
         setArchive(next);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Could not build G.R.A.F.T.+ pack.");
