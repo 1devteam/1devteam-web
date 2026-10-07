@@ -7,6 +7,8 @@ import { attachEvidenceAnchors } from "./evidence.ts";
 import { collectFunctionGraph } from "./functions.ts";
 import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
+import { buildMachineIndex } from "./machine-index.ts";
+import { buildUnresolvedLedger, compactGraph } from "./residuals.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
 
@@ -24,9 +26,9 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.7" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "19a0e493be850740eb8d3307a8c3b0686f35eda4" as const;
-export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.7" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.8" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "6fc2ece7f83ddea0796b0ae7621fd8398157fbe2" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.8" as const;
 export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
@@ -489,7 +491,7 @@ export function reconstructPack(input: {
   };
 
   const graph = {
-    schema_version: "1.7",
+    schema_version: "1.8",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
@@ -531,6 +533,9 @@ export function reconstructPack(input: {
       cross_language_subsystem_count: architecture.facts.cross_language_subsystem_count,
       build_definition_count: architecture.facts.build_definition_count,
       build_input_edge_count: architecture.facts.build_input_edge_count,
+      build_target_count: architecture.facts.build_target_count,
+      build_target_input_edge_count: architecture.facts.build_target_input_edge_count,
+      build_target_dependency_edge_count: architecture.facts.build_target_dependency_edge_count,
       governance_boundary_count: architecture.facts.governance_boundary_count,
       source_provenance_counts: architecture.facts.source_provenance_counts,
       evidence_precision_counts: evidencePrecisionCounts,
@@ -549,6 +554,9 @@ export function reconstructPack(input: {
     },
     new Set(files.map((file) => file.path)),
   );
+  const unresolvedLedger = buildUnresolvedLedger(unresolved);
+  const machineIndex = buildMachineIndex(graph, unresolvedLedger);
+  const artifactGraph = compactGraph(graph, unresolvedLedger);
   const decision = decideGraph(graph as unknown as Record<string, unknown>, completeness);
   const impact = {
     schema_version: "1.2",
@@ -585,6 +593,8 @@ export function reconstructPack(input: {
     subject_sha: sha,
     status: completeness.integrity_pass ? "passed" : "failed",
     decipher: "graph-architecture-decision.json",
+    machine_index: "graph-machine-index.v1.json",
+    residual_ledger: "graph-unresolved-ledger.v1.json",
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
     implementsPlan: IMPLEMENTS_PLAN,
     merge_authorization: MERGE_AUTHORIZATION,
@@ -592,7 +602,9 @@ export function reconstructPack(input: {
   };
   return {
     "graph-architecture-decision.json": decision,
-    "dependency-graph.v1.json": graph,
+    "graph-machine-index.v1.json": machineIndex,
+    "dependency-graph.v1.json": artifactGraph,
+    "graph-unresolved-ledger.v1.json": unresolvedLedger,
     "graph-completeness-report.json": completeness,
     "graph-impact-report.json": impact,
     "graph-proof-manifest.json": proofs,
