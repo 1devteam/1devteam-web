@@ -294,8 +294,8 @@ export function graftPackJson(input: {
 }
 
 export function buildGraftArchive(input: {
-  packet: PipelinePacket;
-  profile: SubjectProfile;
+  packet?: PipelinePacket;
+  profile: Pick<SubjectProfile, "name" | "provenance">;
   origin?: ProjectOrigin;
   index?: ProjectIndex;
   files?: Pick<IngestedFile, "path" | "content" | "language">[];
