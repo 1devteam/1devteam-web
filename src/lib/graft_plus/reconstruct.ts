@@ -488,7 +488,6 @@ export function reconstructPack(input: {
     }, {}),
   };
 
-  const cover = coverage(files, nodes);
   const graph = {
     schema_version: "1.7",
     product: "G.R.A.F.T.+",
