@@ -20,7 +20,11 @@ type ArchiveWorkerResponse =
     };
 
 function triggerDownload(archive: MaterializedArchive) {
-  const blob = new Blob([archive.zip], { type: "application/zip" });
+  const zipBuffer = archive.zip.buffer.slice(
+    archive.zip.byteOffset,
+    archive.zip.byteOffset + archive.zip.byteLength,
+  ) as ArrayBuffer;
+  const blob = new Blob([zipBuffer], { type: "application/zip" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
