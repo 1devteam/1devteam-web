@@ -2,6 +2,7 @@ import type { PipelinePacket, SubjectProfile } from "../graft/types.ts";
 import type { IngestedFile, ProjectIndex, ProjectOrigin } from "./types.ts";
 import { zipStore } from "./zip.ts";
 import { reconstructPack } from "../graft_plus/reconstruct.ts";
+import { canonicalJson } from "../graft_plus/residuals.ts";
 
 export const PACK_SCHEMA = "graft-pack-1";
 
@@ -320,7 +321,7 @@ export function buildGraftArchive(input: {
     `Disposition: ${(decision.decision as { architecture_disposition?: string })?.architecture_disposition ?? "unknown"}`,
     "",
     "## How to read this",
-    "Decipher graph-architecture-decision.json first. Then dependency-graph.v1.json.",
+    "Read graft-plus-receipt.json, then graph-machine-index.v1.json, then completeness/decision, then dependency-graph.v1.json.",
     "This is a map of what exists. It is not a plan and not a merge.",
     "Source is not in this zip. Point an AI at these JSON files.",
     "",
@@ -330,7 +331,9 @@ export function buildGraftArchive(input: {
     "",
     "## Files in this pack",
     "- graph-architecture-decision.json",
+    "- graph-machine-index.v1.json",
     "- dependency-graph.v1.json",
+    "- graph-unresolved-ledger.v1.json",
     "- graph-completeness-report.json",
     "- graph-impact-report.json",
     "- graph-proof-manifest.json",
@@ -338,9 +341,14 @@ export function buildGraftArchive(input: {
     "",
   ].join("\n");
   const json = JSON.stringify(pack, null, 2);
+  const machineFiles = new Set([
+    "graph-machine-index.v1.json",
+    "dependency-graph.v1.json",
+    "graph-unresolved-ledger.v1.json",
+  ]);
   const entries = Object.entries(pack).map(([name, value]) => ({
     name,
-    data: JSON.stringify(value, null, 2) + "\n",
+    data: machineFiles.has(name) ? canonicalJson(value) : JSON.stringify(value, null, 2) + "\n",
   }));
   entries.unshift({ name: "README.md", data: markdown });
   return {

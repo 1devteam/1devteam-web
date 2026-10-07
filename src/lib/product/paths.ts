@@ -64,6 +64,19 @@ const TEXT_EXT = new Set([
   "graphql",
   "env",
   "example",
+  "gn",
+  "gni",
+  "bzl",
+  "bazel",
+  "cmake",
+  "ninja",
+  "gradle",
+  "kts",
+  "csproj",
+  "fsproj",
+  "vbproj",
+  "avsc",
+  "gql",
 ]);
 
 const BOOST_DIR =
@@ -71,7 +84,7 @@ const BOOST_DIR =
 const PENALTY =
   /(?:^|\/)(dist|build|vendor|generated|__snapshots__|testdata|fixtures|node_modules)\/|(?:^|\/)[^/]*\.(min|map|lock)$|package-lock|pnpm-lock|yarn\.lock|Cargo\.lock|go\.sum|poetry\.lock|composer\.lock/;
 const MANIFEST =
-  /(?:^|\/)(README(?:\.\w+)?|package\.json|pyproject\.toml|setup\.py|go\.mod|Cargo\.toml|Gemfile|composer\.json|pom\.xml|build\.gradle(?:\.kts)?|Makefile|Dockerfile)$/i;
+  /(?:^|\/)(README(?:\.\w+)?|package\.json|pyproject\.toml|setup\.py|go\.mod|go\.sum|Cargo\.toml|Cargo\.lock|Gemfile|composer\.json|pom\.xml|build\.gradle(?:\.kts)?|settings\.gradle(?:\.kts)?|Makefile|GNUmakefile|Dockerfile(?:\..+)?|BUILD|BUILD\.bazel|BUILD\.gn|WORKSPACE|WORKSPACE\.bazel|MODULE\.bazel|CMakeLists\.txt|meson\.build|meson_options\.txt|SConstruct|SConscript|Package\.swift|DEPS|\.gn|OWNERS|CODEOWNERS|PRESUBMIT\.py|SECURITY\.md)$/i;
 const SOURCE_EXT = /\.(py|ts|tsx|js|jsx|mjs|cjs|go|rs|java|kt|rb|php|cs|swift|c|h|cc|cpp|hpp|scala|ex|exs|lua)$/i;
 
 export function languageOf(path: string): Language {
@@ -98,7 +111,31 @@ export function languageOf(path: string): Language {
 
 export function isTextPath(path: string): boolean {
   const base = path.split("/").pop() ?? path;
-  if (base === "Dockerfile" || base === "Makefile" || base.startsWith(".env")) return true;
+  if (
+    base === "Dockerfile" ||
+    base.startsWith("Dockerfile.") ||
+    base === "Makefile" ||
+    base === "GNUmakefile" ||
+    base === "BUILD" ||
+    base === "BUILD.bazel" ||
+    base === "BUILD.gn" ||
+    base === "WORKSPACE" ||
+    base === "WORKSPACE.bazel" ||
+    base === "MODULE.bazel" ||
+    base === "CMakeLists.txt" ||
+    base === "meson.build" ||
+    base === "meson_options.txt" ||
+    base === "SConstruct" ||
+    base === "SConscript" ||
+    base === "Package.swift" ||
+    base === "DEPS" ||
+    base === ".gn" ||
+    base === "OWNERS" ||
+    base === "CODEOWNERS" ||
+    base === "PRESUBMIT.py" ||
+    base === "SECURITY.md" ||
+    base.startsWith(".env")
+  ) return true;
   const ext = path.split(".").pop()?.toLowerCase() ?? "";
   return TEXT_EXT.has(ext);
 }
