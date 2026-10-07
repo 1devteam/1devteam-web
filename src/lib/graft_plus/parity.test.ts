@@ -47,7 +47,7 @@ describe("canonical 1.7 browser parity surface", () => {
     const edgeKeys = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
     assert.ok(edgeKeys.has("subsystem:engine/web|subsystem:engine|member_of_subsystem"));
     assert.ok(edgeKeys.has("build:engine/BUILD.gn|file:engine/native/core.cc|declares_build_input"));
-    assert.ok(edgeKeys.has("build:engine/BUILD.gn|fe:engine/web/app.ts|declares_build_input"));
+    assert.ok(edgeKeys.has("build:engine/BUILD.gn|js:engine/web/app.ts|declares_build_input"));
 
     const buildCounts = graph.facts.build_definition_counts_by_system as Record<string, number>;
     assert.equal(buildCounts.gn, 2);
