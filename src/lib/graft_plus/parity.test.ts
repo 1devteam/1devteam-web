@@ -16,7 +16,7 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
-describe("canonical 1.7 browser parity surface", () => {
+describe("canonical 1.8 browser parity surface", () => {
   it("projects Chromium-style hierarchy, build topology, provenance, and governance", () => {
     const graph = graphOf([
       { path: "engine/BUILD.gn", content: 'sources = ["native/core.cc", "web/app.ts", "gen/generated.cc"]\n' },
@@ -190,6 +190,80 @@ describe("canonical 1.7 browser parity surface", () => {
     assert.equal(decision.decision.dimensions.identity_integrity, "passed");
     assert.equal(decision.decision.dimensions.structural_coverage, "gaps-visible");
     assert.equal(decision.decision.architecture_disposition, "review-required");
+  });
+
+
+  it("models GN targets and resolves repository-root native includes", () => {
+    const pack = reconstructPack({
+      files: [
+        { path: "base/memory/raw_ptr.h", content: "struct RawPtr {};\n" },
+        { path: "app/main.cc", content: '#include "base/memory/raw_ptr.h"\nint main() { return 0; }\n' },
+        { path: "app/util.cc", content: "int util() { return 1; }\n" },
+        {
+          path: "app/BUILD.gn",
+          content:
+            'source_set("util") {\n  sources = ["util.cc"]\n}\n' +
+            'executable("app") {\n  sources = ["main.cc"]\n  deps = [":util"]\n}\n',
+        },
+      ],
+    });
+    const graph = pack["dependency-graph.v1.json"] as {
+      schema_version: string;
+      nodes: Array<Record<string, unknown>>;
+      edges: Array<Record<string, unknown>>;
+      metrics: Record<string, number>;
+      facts: Record<string, unknown>;
+    };
+    assert.equal(graph.schema_version, "1.8");
+    const ids = new Set(graph.nodes.map((row) => String(row.id)));
+    assert.ok(ids.has("build-target://app:util"));
+    assert.ok(ids.has("build-target://app:app"));
+    const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
+    assert.ok(edges.has("build-target://app:app|build-target://app:util|depends_on_build_target"));
+    assert.ok(edges.has("build-target://app:app|native:app/main.cc|declares_build_input"));
+    assert.ok(edges.has("native:app/main.cc|native:base/memory/raw_ptr.h|imports"));
+    assert.equal(graph.metrics.build_target_count, 2);
+    assert.equal(graph.metrics.build_target_dependency_edge_count, 1);
+    const ledger = pack["graph-unresolved-ledger.v1.json"] as { specifier_table: string[] };
+    assert.equal(ledger.specifier_table.includes("base/memory/raw_ptr.h"), false);
+  });
+
+  it("ships compact graph, lossless residual ledger, and machine topology index", () => {
+    const pack = reconstructPack({
+      files: [
+        { path: "a.py", content: "import mystery_package\n" },
+        { path: "b.py", content: "import mystery_package\n" },
+      ],
+    });
+    const graph = pack["dependency-graph.v1.json"] as {
+      facts: Record<string, unknown>;
+    };
+    assert.equal("unresolved_imports" in graph.facts, false);
+    const pointer = graph.facts.unresolved_reference_ledger as {
+      reference_count: number;
+      sha256: string;
+      encoding: string;
+    };
+    const ledger = pack["graph-unresolved-ledger.v1.json"] as {
+      reference_count: number;
+      unique_specifier_count: number;
+      references: Array<[number, number]>;
+      specifier_table: string[];
+      source_table: string[];
+    };
+    const index = pack["graph-machine-index.v1.json"] as {
+      role: string;
+      unresolved: { reference_count: number; unique_specifier_count: number };
+    };
+    assert.equal(pointer.encoding, "dictionary-pairs-v1");
+    assert.equal(pointer.reference_count, 2);
+    assert.equal(pointer.sha256.length, 64);
+    assert.equal(ledger.reference_count, 2);
+    assert.equal(ledger.unique_specifier_count, 1);
+    assert.equal(ledger.references.length, 2);
+    assert.equal(index.role, "machine-topology-index");
+    assert.equal(index.unresolved.reference_count, 2);
+    assert.equal(index.unresolved.unique_specifier_count, 1);
   });
 
 });
