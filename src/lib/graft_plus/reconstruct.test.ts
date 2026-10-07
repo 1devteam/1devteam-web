@@ -21,7 +21,7 @@ describe("graft_plus reconstruct", () => {
       facts: { unresolved_package_roots: string[] };
     };
     const ids = graph.nodes.map((n) => n.id);
-    assert.equal((pack["dependency-graph.v1.json"] as { schema_version: string }).schema_version, "1.7");
+    assert.equal((pack["dependency-graph.v1.json"] as { schema_version: string }).schema_version, "1.8");
     assert.ok(ids.includes("js:src/a.ts"));
     assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
@@ -80,8 +80,8 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.semantic_provenance.execution_authority, "1devteam/1devteam-web");
     assert.equal(receipt.semantic_provenance.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.semantic_provenance.synchronization_status, "synchronized");
-    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "19a0e493be850740eb8d3307a8c3b0686f35eda4");
-    assert.equal(receipt.semantic_provenance.canonical_reference.schema_version, "1.7");
+    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "6fc2ece7f83ddea0796b0ae7621fd8398157fbe2");
+    assert.equal(receipt.semantic_provenance.canonical_reference.schema_version, "1.8");
     assert.equal(receipt.semantic_provenance.canonical_reference.parity_claimed, true);
     assert.equal(receipt.semantic_provenance.runtime_dependency, "none");
   });
@@ -98,10 +98,14 @@ describe("graft_plus reconstruct", () => {
     });
     const graph = pack["dependency-graph.v1.json"] as {
       nodes: { id: string }[];
-      facts: { unresolved_imports: { specifier: string }[]; unresolved_package_roots: string[] };
+      facts: { unresolved_package_roots: string[]; unresolved_reference_ledger: { reference_count: number } };
+    };
+    const ledger = pack["graph-unresolved-ledger.v1.json"] as {
+      specifier_table: string[];
+      references: Array<[number, number]>;
     };
     const ids = new Set(graph.nodes.map((n) => n.id));
-    const specs = new Set(graph.facts.unresolved_imports.map((r) => r.specifier));
+    const specs = new Set(ledger.specifier_table);
     assert.ok(ids.has("route:GET /status"));
     assert.ok(ids.has("route:POST /status"));
     assert.ok(ids.has("route:POST /pay"));
@@ -109,6 +113,7 @@ describe("graft_plus reconstruct", () => {
     assert.equal(specs.has("ctypes"), false);
     assert.ok(specs.has("stripe"));
     assert.equal(graph.facts.unresolved_package_roots.includes(""), false);
+    assert.equal(graph.facts.unresolved_reference_ledger.reference_count, ledger.references.length);
     const completeness = pack["graph-completeness-report.json"] as { residuals: Record<string, unknown> };
     assert.equal("unresolved_imports" in completeness.residuals, false);
     assert.ok("unresolved_import_count" in completeness.residuals);
