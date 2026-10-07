@@ -50,13 +50,11 @@ type Edge = GraphEdge;
 type Unresolved = UnresolvedReference;
 
 const PY_IMPORT = /^\s*(?:from|import)\s+([A-Za-z0-9_\.]+)/gm;
-const FE_IMPORT = /(?:import|export)\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]/g;
 const SKIP = /(^|\/)(node_modules|dist|build|\.venv|venv|__pycache__|\.git)(\/|$)/;
 const RUNTIME = new Set(
   `abc argparse array ast asyncio atexit base64 bdb binascii bisect builtins bz2 calendar cmath cmd code codecs collections colorsys compileall concurrent configparser contextlib contextvars copy copyreg csv ctypes dataclasses datetime decimal difflib dis doctest email enum errno faulthandler fcntl filecmp fileinput fnmatch fractions ftplib functools gc getopt getpass gettext glob gzip hashlib heapq hmac html http imaplib importlib inspect io ipaddress itertools json keyword linecache locale logging lzma mailbox marshal math mimetypes mmap multiprocessing netrc numbers operator optparse os pathlib pdb pickle pkgutil platform pprint pstats pty pwd queue random re readline reprlib resource rlcompleter runpy sched secrets select selectors shelve shlex shutil signal site smtplib socket socketserver sqlite3 ssl stat statistics string struct subprocess sys sysconfig syslog tarfile tempfile textwrap threading time timeit token tokenize traceback types typing unicodedata unittest urllib uuid venv warnings wave weakref webbrowser xml xmlrpc zipfile zipimport zlib zoneinfo __future__`
     .split(/\s+/),
 );
-const SOURCE_SUFFIX = /\.(py|ts|tsx|js|jsx|go|rs|rb|php)$/;
 const NETWORK_LIBS = /\b(?:import|from)\s+(httpx|requests|aiohttp|smtplib)\b/;
 
 function skip(path: string): boolean {
@@ -351,20 +349,6 @@ function annotatePythonRoutes(files: FileInput[], nodes: Node[]) {
   }
 }
 
-function coverage(files: FileInput[], nodes: Node[]): { unmapped_source_files: string[]; stale_graph_sources: { id: string; source: string }[] } {
-  const mapped = new Set(nodes.map((n) => n.source).filter(Boolean));
-  const unmapped = files
-    .filter((f) => SOURCE_SUFFIX.test(f.path) && !skip(f.path) && !mapped.has(f.path))
-    .map((f) => f.path)
-    .sort();
-  const present = new Set(files.map((f) => f.path));
-  const stale = nodes
-    .filter((n) => n.source && !present.has(n.source))
-    .map((n) => ({ id: n.id, source: n.source }))
-    .sort((a, b) => a.id.localeCompare(b.id));
-  return { unmapped_source_files: unmapped, stale_graph_sources: stale };
-}
-
 function sha256sync(text: string): string {
   let h = 0;
   for (let i = 0; i < text.length; i += 1) h = (h * 31 + text.charCodeAt(i)) >>> 0;
@@ -489,8 +473,6 @@ export function reconstructPack(input: {
     edgeByKey.set(key, edge);
   }
   const kept = [...edgeByKey.values()];
-  const missing = [...new Set(edges.flatMap((e) => [e.from, e.to]).filter((id) => !known.has(id)))].sort();
-
   attachEvidenceAnchors(files, nodes, kept);
 
   const evidencePrecisionCounts = {
