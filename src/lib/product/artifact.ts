@@ -59,7 +59,10 @@ function unresolvedBySpecifier(index?: ProjectIndex): { specifier: string; from:
     .map(([specifier, from]) => ({ specifier, from: [...new Set(from)].sort() }));
 }
 
-export function packSlug(origin: ProjectOrigin | undefined, profile: SubjectProfile): string {
+export function packSlug(
+  origin: ProjectOrigin | undefined,
+  profile: Pick<SubjectProfile, "name" | "provenance">,
+): string {
   const repo =
     origin?.kind === "github" ? `${origin.owner}-${origin.repo}` : (profile.provenance.repo ?? profile.name);
   const sha = (origin?.sha ?? profile.provenance.sha ?? "HEAD").slice(0, 8);
