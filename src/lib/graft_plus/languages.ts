@@ -70,7 +70,13 @@ export function collectLanguageGraph(files:FileInput[]){
     }
     for(const [kind,value] of refs){
       let target:string|undefined;
-      if(kind==="relative") target=resolveRelative(f.path,value,fileSet,[".rb",".php",".h",".hpp",".c",".cc",".cpp",".sh",".bash",".zsh"]);
+      if(kind==="relative"){
+        target=resolveRelative(f.path,value,fileSet,[".rb",".php",".h",".hpp",".c",".cc",".cpp",".sh",".bash",".zsh"]);
+        if(!target&&["c","cpp"].includes(lang)){
+          const root=norm(value.replace(/^\/+/, ""));
+          if(fileSet.has(root)) target=root;
+        }
+      }
       else if(kind==="rust_mod") target=[norm(`${parent(f.path)}/${value}.rs`),norm(`${parent(f.path)}/${value}/mod.rs`)].find((p)=>fileSet.has(p));
       else if(kind==="rust_crate"){const first=value.split("::")[0];target=[...fileSet].find((p)=>p.endsWith(`/${first}.rs`)||p.endsWith(`/${first}/mod.rs`));}
       else if(kind==="module"&&lang==="lua"){const p=value.replace(/\./g,"/");target=[...fileSet].find((x)=>x.endsWith(`/${p}.lua`)||x.endsWith(`/${p}/init.lua`)||x===`${p}.lua`);}
