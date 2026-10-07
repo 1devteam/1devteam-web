@@ -1,5 +1,4 @@
 import type { FileInput, GraphEdge, GraphNode } from "./types.ts";
-const ENV=/\b[A-Z][A-Z0-9_]{1,127}\b/g;
 function ext(path:string){const b=path.split("/").pop()??path;const i=b.lastIndexOf(".");return i>=0?b.slice(i).toLowerCase():"";}
 function base(path:string){return path.split("/").pop()??path;}
 function line(text:string,offset:number){return text.slice(0,offset).split("\n").length;}
