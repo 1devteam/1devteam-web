@@ -22,7 +22,7 @@ type ArchiveWorkerResponse =
       error: string;
     };
 
-const workerScope: DedicatedWorkerGlobalScope = self;
+const workerScope = globalThis as unknown as DedicatedWorkerGlobalScope;
 
 workerScope.onmessage = (event: MessageEvent<ArchiveWorkerRequest>) => {
   try {
