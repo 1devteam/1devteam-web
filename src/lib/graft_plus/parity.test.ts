@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { reconstructPack } from "./reconstruct.ts";
+import { canonicalJson, sha256Hex } from "./residuals.ts";
 
 function graphOf(files: Array<{ path: string; content: string }>) {
   return reconstructPack({ files })["dependency-graph.v1.json"] as {
@@ -257,7 +258,8 @@ describe("canonical 1.8 browser parity surface", () => {
     };
     assert.equal(pointer.encoding, "dictionary-pairs-v1");
     assert.equal(pointer.reference_count, 2);
-    assert.equal(pointer.sha256.length, 64);
+    assert.equal(sha256Hex("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    assert.equal(pointer.sha256, sha256Hex(canonicalJson(ledger)));
     assert.equal(ledger.reference_count, 2);
     assert.equal(ledger.unique_specifier_count, 1);
     assert.equal(ledger.references.length, 2);
