@@ -26,6 +26,7 @@ type ProductState = {
   activeId: string | null;
   hydrated: boolean;
   markHydrated: () => void;
+  resetSession: () => void;
   openProject: (id: string | null) => void;
   ensureSeeds: () => void;
   ingestCustom: (name: string, files: IngestedFile[], origin?: ProjectOrigin) => string;
@@ -83,6 +84,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   activeId: null,
   hydrated: false,
   markHydrated: () => set({ hydrated: true }),
+  resetSession: () => set({ projects: {}, activeId: null, hydrated: false }),
   openProject: (id) => set({ activeId: id }),
   ensureSeeds: () => {
     const current = get().projects;

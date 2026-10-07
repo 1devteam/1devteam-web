@@ -5,6 +5,7 @@ import { Workspace } from "@/components/product/workspace";
 import { PageHero } from "@/components/shared/PageHero";
 import { Seo } from "@/components/shared/Seo";
 import { Button } from "@/components/ui/button";
+import { GRAFT_EMBEDDED_SCHEMA_VERSION } from "@/lib/graft_plus/reconstruct";
 import { useProductStore } from "@/lib/product/store";
 
 export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
@@ -25,7 +26,7 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
       <Seo path={seoPath} />
 
       <PageHero
-        eyebrow="G.R.A.F.T.+"
+        eyebrow={`G.R.A.F.T.+ · v${GRAFT_EMBEDDED_SCHEMA_VERSION}`}
         title="Point G.R.A.F.T.+ at a public repository."
         description="G.R.A.F.T.+ reconstructs what exists: graph, completeness, impact, proof, architecture decision. Hand that pack to an AI. It does not dump source, plan, or merge. Overlay stays residual."
       >
