@@ -1,52 +1,121 @@
 import { useEffect, useRef, useState } from "react";
-import { buildGraftArchive } from "@/lib/product/artifact";
-import { packetOf } from "@/lib/product/store";
 import type { Project } from "@/lib/product/types";
+
+type MaterializedArchive = {
+  filename: string;
+  markdown: string;
+  zip: Uint8Array;
+};
+
+type ArchiveWorkerResponse =
+  | {
+      ok: true;
+      filename: string;
+      markdown: string;
+      zip: ArrayBuffer;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+function buildArchiveInWorker(project: Project): Promise<MaterializedArchive> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL("../../lib/product/archive-worker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    worker.onmessage = (event: MessageEvent<ArchiveWorkerResponse>) => {
+      worker.terminate();
+      if (!event.data.ok) {
+        reject(new Error(event.data.error));
+        return;
+      }
+      resolve({
+        filename: event.data.filename,
+        markdown: event.data.markdown,
+        zip: new Uint8Array(event.data.zip),
+      });
+    };
+
+    worker.onerror = (event) => {
+      worker.terminate();
+      reject(new Error(event.message || "Could not build G.R.A.F.T.+ pack."));
+    };
+
+    worker.postMessage({
+      profile: {
+        name: project.profile.name,
+        provenance: project.profile.provenance,
+      },
+      origin: project.origin,
+      files: project.files.map(({ path, content, language }) => ({ path, content, language })),
+    });
+  });
+}
+
+function triggerDownload(archive: MaterializedArchive) {
+  const blob = new Blob([archive.zip], { type: "application/zip" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = archive.filename;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
 
 export function CopyTrail({ project }: { project: Project }) {
   const [open, setOpen] = useState(false);
+  const [archive, setArchive] = useState<MaterializedArchive | null>(null);
+  const [building, setBuilding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const areaRef = useRef<HTMLTextAreaElement>(null);
-  const packet = packetOf(project);
-  const archive = buildGraftArchive({
-    packet,
-    profile: project.profile,
-    origin: project.origin,
-    index: project.index,
-    files: project.files,
-  });
 
   useEffect(() => {
     if (!open) return;
     areaRef.current?.focus();
     areaRef.current?.select();
-  }, [open, archive.markdown]);
+  }, [open, archive?.markdown]);
 
-  function download() {
-    const copy = new Uint8Array(archive.zip.byteLength);
-    copy.set(archive.zip);
-    const blob = new Blob([copy], { type: "application/zip" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = archive.filename;
-    link.rel = "noopener";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+  async function download() {
+    if (building) return;
+    setError(null);
+
+    let next = archive;
+    if (!next) {
+      setBuilding(true);
+      try {
+        next = await buildArchiveInWorker(project);
+        setArchive(next);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not build G.R.A.F.T.+ pack.");
+        return;
+      } finally {
+        setBuilding(false);
+      }
+    }
+
+    triggerDownload(next);
     setOpen(true);
   }
 
   return (
     <>
-      <button
-        type="button"
-        onClick={download}
-        className="min-h-11 rounded-full bg-accent px-4 text-sm font-medium text-accent-fg"
-      >
-        Download pack
-      </button>
-      {open ? (
+      <div className="flex flex-col items-end gap-1">
+        <button
+          type="button"
+          onClick={() => void download()}
+          disabled={building}
+          className="min-h-11 rounded-full bg-accent px-4 text-sm font-medium text-accent-fg disabled:opacity-60"
+        >
+          {building ? "Building pack…" : "Download pack"}
+        </button>
+        {error ? <span className="max-w-xs text-right text-xs text-bad">{error}</span> : null}
+      </div>
+      {open && archive ? (
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-bg/80 p-4 sm:items-center">
           <div className="flex max-h-[90vh] w-full max-w-3xl min-w-0 flex-col rounded-lg border border-border bg-surface p-4">
             <p className="text-sm font-medium">{archive.filename}</p>
@@ -64,8 +133,9 @@ export function CopyTrail({ project }: { project: Project }) {
             <div className="mt-3 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={download}
-                className="min-h-11 rounded-full bg-accent px-4 text-sm font-medium text-accent-fg"
+                onClick={() => void download()}
+                disabled={building}
+                className="min-h-11 rounded-full bg-accent px-4 text-sm font-medium text-accent-fg disabled:opacity-60"
               >
                 Download again
               </button>
