@@ -1,3 +1,10 @@
+import { collectArchitectureTopology } from "./architecture.ts";
+import { collectRelationshipBoundaries } from "./boundaries.ts";
+import { attachEvidenceAnchors } from "./evidence.ts";
+import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
+import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
+export type { FileInput } from "./types.ts";
+
 /**
  * Browser port of 1devteam/graft_plus universal shell.
  * Generated structure + completeness + impact + proof + decision.
@@ -33,17 +40,9 @@ const SEMANTIC_PROVENANCE = {
   runtime_dependency: "none",
 } as const;
 
-export type FileInput = { path: string; content: string };
-
-type Node = {
-  id: string;
-  type: string;
-  source: string;
-  layer: "generated" | "overlay";
-  [key: string]: unknown;
-};
-type Edge = { from: string; to: string; type: string; evidence: string; layer: "generated" | "overlay" };
-type Unresolved = { specifier: string; from: string };
+type Node = GraphNode;
+type Edge = GraphEdge;
+type Unresolved = UnresolvedReference;
 
 const PY_IMPORT = /^\s*(?:from|import)\s+([A-Za-z0-9_\.]+)/gm;
 const FE_IMPORT = /(?:import|export)\s+(?:[^'"]+?\s+from\s+)?['"]([^'"]+)['"]/g;
@@ -338,17 +337,97 @@ export function reconstructPack(input: {
   const fe = frontendGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
-  const nodes = [...py.nodes, ...fe.nodes, ...tests.nodes, ...surfaceNodes, ...generated.nodes];
-  const edges = [...py.edges, ...fe.edges, ...tests.edges, ...generated.edges];
+  let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...surfaceNodes, ...generated.nodes];
+  let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...generated.edges];
+
+  const sourceNodeIds = new Map<string, string>();
+  for (const node of nodes) {
+    if (!sourceNodeIds.has(node.source)) sourceNodeIds.set(node.source, node.id);
+  }
+
+  const packages = collectPackageTopology(files, sourceNodeIds);
+  nodes.push(...packages.nodes);
+  edges.push(...packages.edges);
+
+  const architecture = collectArchitectureTopology(files, nodes);
+  for (const node of nodes) {
+    const annotation = architecture.annotations.get(node.id);
+    if (annotation) Object.assign(node, annotation);
+  }
+  nodes.push(...architecture.nodes);
+  edges.push(...architecture.edges);
+
+  const mappedSources = new Set(nodes.map((node) => node.source).filter(Boolean));
+  const inventory = inventoryNodes(files, mappedSources);
+  nodes.push(...inventory.nodes);
+
+  const boundaryFacts = collectRelationshipBoundaries(files);
+
   const unresolvedMap = new Map<string, Unresolved>();
   for (const row of [...py.unresolved, ...fe.unresolved, ...tests.unresolved]) {
     unresolvedMap.set(`${row.specifier}|${row.from}`, row);
   }
-  const unresolved = [...unresolvedMap.values()].sort((a, b) => a.specifier.localeCompare(b.specifier) || a.from.localeCompare(b.from));
+
+  const dependencyIds = new Map(
+    packages.nodes
+      .filter((node) => node.type === "external_dependency" && typeof node.name === "string")
+      .map((node) => [String(node.name), node.id]),
+  );
+  const declaredExternalImports: Array<Unresolved & { package: string }> = [];
+  const unresolved: Unresolved[] = [];
+  for (const row of [...unresolvedMap.values()].sort(
+    (a, b) => a.specifier.localeCompare(b.specifier) || a.from.localeCompare(b.from),
+  )) {
+    const packageName = packageRoot(row.specifier);
+    const target = dependencyIds.get(packageName);
+    const source = sourceNodeIds.get(row.from);
+    if (target && source) {
+      edges.push({
+        from: source,
+        to: target,
+        type: "imports_package",
+        evidence: row.from,
+        layer: "generated",
+      });
+      declaredExternalImports.push({ ...row, package: packageName });
+    } else {
+      unresolved.push(row);
+    }
+  }
+
+  const nodeById = new Map<string, Node>();
+  for (const node of nodes) {
+    const existing = nodeById.get(node.id);
+    nodeById.set(node.id, existing ? { ...existing, ...node } : node);
+  }
+  nodes = [...nodeById.values()];
+
   const roots = [...new Set(unresolved.map((r) => packageRoot(r.specifier)))].sort();
   const known = new Set(nodes.map((n) => n.id));
-  const kept = edges.filter((e) => known.has(e.from) && known.has(e.to));
+  const edgeByKey = new Map<string, Edge>();
+  for (const edge of edges) {
+    if (!known.has(edge.from) || !known.has(edge.to)) continue;
+    const key = JSON.stringify(edge, Object.keys(edge).sort());
+    edgeByKey.set(key, edge);
+  }
+  const kept = [...edgeByKey.values()];
   const missing = [...new Set(edges.flatMap((e) => [e.from, e.to]).filter((id) => !known.has(id)))].sort();
+
+  attachEvidenceAnchors(files, nodes, kept);
+
+  const evidencePrecisionCounts = {
+    nodes: nodes.reduce<Record<string, number>>((acc, node) => {
+      const precision = String((node.evidence_anchor as { precision?: string } | undefined)?.precision ?? "none");
+      acc[precision] = (acc[precision] ?? 0) + 1;
+      return acc;
+    }, {}),
+    edges: kept.reduce<Record<string, number>>((acc, edge) => {
+      const precision = String((edge.evidence_anchor as { precision?: string } | undefined)?.precision ?? "none");
+      acc[precision] = (acc[precision] ?? 0) + 1;
+      return acc;
+    }, {}),
+  };
+
   const cover = coverage(files, nodes);
   const graph = {
     schema_version: "1.1",
@@ -360,13 +439,34 @@ export function reconstructPack(input: {
     semantic_provenance: SEMANTIC_PROVENANCE,
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
     edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to)),
-    facts: { unresolved_imports: unresolved, unresolved_package_roots: roots },
+    facts: {
+      unresolved_imports: unresolved,
+      unresolved_package_roots: roots,
+      declared_external_imports: declaredExternalImports,
+      ...inventory.facts,
+      ...boundaryFacts,
+      ...architecture.facts,
+      evidence_precision_counts: evidencePrecisionCounts,
+    },
     metrics: {
       node_count: nodes.length,
       edge_count: kept.length,
       overlay_node_count: 0,
       unresolved_import_count: unresolved.length,
       surface_count: surfaceNodes.length,
+      inventory_file_count: inventory.facts.file_count,
+      relationship_parsed_file_count: inventory.facts.relationship_parsed_file_count,
+      relationship_unparsed_file_count: inventory.facts.relationship_unparsed_file_count,
+      relationship_boundary_count: boundaryFacts.relationship_boundary_count,
+      unresolved_relationship_boundary_count: boundaryFacts.unresolved_relationship_boundary_count,
+      relationship_boundary_counts_by_kind: boundaryFacts.relationship_boundary_counts_by_kind,
+      subsystem_count: architecture.facts.subsystem_count,
+      cross_language_subsystem_count: architecture.facts.cross_language_subsystem_count,
+      build_definition_count: architecture.facts.build_definition_count,
+      build_input_edge_count: architecture.facts.build_input_edge_count,
+      governance_boundary_count: architecture.facts.governance_boundary_count,
+      source_provenance_counts: architecture.facts.source_provenance_counts,
+      evidence_precision_counts: evidencePrecisionCounts,
       edge_counts_by_type: kept.reduce<Record<string, number>>((acc, e) => {
         acc[e.type] = (acc[e.type] ?? 0) + 1;
         return acc;
@@ -383,6 +483,9 @@ export function reconstructPack(input: {
     unmapped_source_files: cover.unmapped_source_files.slice(0, 50),
     stale_graph_source_count: cover.stale_graph_sources.length,
     stale_graph_sources: cover.stale_graph_sources,
+    relationship_boundary_count: boundaryFacts.relationship_boundary_count,
+    unresolved_relationship_boundary_count: boundaryFacts.unresolved_relationship_boundary_count,
+    relationship_boundary_counts_by_kind: boundaryFacts.relationship_boundary_counts_by_kind,
     note: "Residuals stay visible. Unresolved imports are facts, not missing files. Overlay stays residual until a reviewed relationship is attached.",
   };
   const completeness = {
@@ -420,6 +523,7 @@ export function reconstructPack(input: {
   const review = ["overlay_residual"];
   if (cover.unmapped_source_files.length) review.push("unmapped_source_files");
   if (cover.stale_graph_sources.length) review.push("stale_graph_sources");
+  if (boundaryFacts.unresolved_relationship_boundary_count) review.push("runtime_or_build_context_required");
   const warnings = ["no_git_range"];
   if (roots.length) warnings.push("unresolved_imports");
   const decision = {
