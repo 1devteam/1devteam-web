@@ -82,5 +82,68 @@ export function collectLanguageGraph(files:FileInput[]){
       else if(["relative","rust_mod","module"].includes(kind))unresolved.push({specifier:value,from:f.path});
     }
   }
+  const goMod = files.find((f) => f.path === "go.mod");
+  const moduleName = goMod?.content.match(/^module\s+([^\s]+)$/m)?.[1];
+  if (moduleName) {
+    const goFiles = sourceFiles.filter((f) => language(f.path) === "go");
+    const packageIds = new Map<string, string>();
+    const packageFor = (path: string) => {
+      const dir = parent(path);
+      const suffix = dir ? `/${dir}` : "";
+      const name = moduleName + suffix;
+      const id = `go:package:${name}`;
+      if (!packageIds.has(name)) {
+        packageIds.set(name, id);
+        nodes.push({ id, type: "go_package", source: "go.mod", layer: "generated", name });
+      }
+      return id;
+    };
+    for (const file of goFiles) packageFor(file.path);
+    for (const file of goFiles) {
+      const sourceId = nodeId(file.path);
+      const text = stripComments(file.content, "go");
+      for (const m of text.matchAll(/["']([^"']+)["']/g)) {
+        const imported = m[1];
+        const target = packageIds.get(imported);
+        if (target) {
+          edges.push({
+            from: sourceId,
+            to: target,
+            type: isTest(file.path) ? "tests" : "imports",
+            evidence: file.path,
+            layer: "generated",
+          });
+        }
+      }
+    }
+  }
+
+  const pythonByPath = new Map(
+    files.filter((f) => f.path.endsWith(".py")).map((f) => [f.path, `py:${moduleForPython(f.path)}`]),
+  );
+  for (const file of sourceFiles.filter((f) => language(f.path) === "shell")) {
+    const sourceId = nodeId(file.path);
+    for (const m of file.content.matchAll(/\bpython(?:3(?:\.\d+)?)?\s+["']?([^'"\s;]+\.py)/g)) {
+      const cleaned = m[1].replace(/^\$\{?[A-Za-z_]\w*\}?\/?/, "");
+      const candidates = [norm([parent(file.path), cleaned].filter(Boolean).join("/")), norm(cleaned)];
+      const hit = candidates.find((candidate) => pythonByPath.has(candidate));
+      if (hit) {
+        edges.push({
+          from: sourceId,
+          to: pythonByPath.get(hit)!,
+          type: "invokes",
+          evidence: file.path,
+          layer: "generated",
+        });
+      }
+    }
+  }
+
   return {nodes,edges,unresolved};
+}
+function moduleForPython(path: string) {
+  const parts = path.replace(/\.py$/, "").split("/").filter(Boolean);
+  if (parts[0] === "src") parts.shift();
+  if (parts.at(-1) === "__init__") parts.pop();
+  return parts.join(".");
 }
