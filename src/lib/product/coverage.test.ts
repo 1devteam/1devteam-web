@@ -55,22 +55,26 @@ describe("production pack coverage", () => {
     assert.ok(deps.some((c) => /stripe/.test(c) && /not resolved/.test(c)));
     assert.ok(deps.some((c) => /fastapi/.test(c) && /not resolved/.test(c)));
     assert.ok(deps.some((c) => /django\.db/.test(c) && /not resolved/.test(c)));
-    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    assert.match(archive.markdown, /dependency-graph\.ascii\.v1\.txt/);
     assert.match(archive.markdown, /not a plan/);
     assert.ok(!prepared.profile.facts.some((f) => f.kind === "gap"));
   });
 
-  it("reconstruction zip has decision JSON and no source tree", () => {
+  it("reconstruction zip has the canonical fact pack and no source tree", () => {
     const { archive } = ingest([
       {
         path: "src/pay.ts",
         content: `import Stripe from "stripe";\nexport function charge() { return 1; }\n`,
       },
     ]);
-    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    assert.match(archive.markdown, /dependency-graph\.ascii\.v1\.txt/);
+    assert.doesNotMatch(archive.markdown, /graph-architecture-decision\.json/);
     assert.doesNotMatch(archive.markdown, /export function charge/);
     const zipText = new TextDecoder().decode(archive.zip);
-    assert.match(zipText, /graph-architecture-decision\.json/);
+    assert.match(zipText, /dependency-graph\.ascii\.v1\.txt/);
+    assert.match(zipText, /graph-change-set\.v1\.json/);
+    assert.match(zipText, /graft-plus-receipt\.json/);
+    assert.doesNotMatch(zipText, /graph-architecture-decision\.json/);
     assert.doesNotMatch(zipText, /tree\/src\/pay\.ts/);
     assert.equal(archive.zip[0], 0x50);
     assert.equal(archive.zip[1], 0x4b);
@@ -144,7 +148,7 @@ describe("production pack coverage", () => {
   it("names skip directories and binary files instead of hiding them", () => {
     assert.equal(skipRoot("node_modules/stripe/index.js"), "node_modules");
     const { archive } = ingest([{ path: "src/app.ts", content: "export const ok = 1;\n" }]);
-    assert.match(archive.markdown, /graph-architecture-decision.json/);
+    assert.match(archive.markdown, /dependency-graph\.ascii\.v1\.txt/);
     const zipText = new TextDecoder().decode(archive.zip);
     assert.doesNotMatch(zipText, /tree\/src\/app\.ts/);
   });
