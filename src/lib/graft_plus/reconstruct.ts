@@ -1,5 +1,7 @@
 import { collectArchitectureTopology } from "./architecture.ts";
-import { auditGraph, decideGraph } from "./assurance.ts";
+import { auditGraph } from "./assurance.ts";
+import { ASCII_GRAPH_FILE, encodeGraphAscii } from "./ascii-ir.ts";
+import { CHANGE_SET_FILE, buildNoRangeChangeSet } from "./change-set.ts";
 import { collectRelationshipBoundaries } from "./boundaries.ts";
 import { collectConfigurationGraph } from "./configuration.ts";
 import { collectContractGraph } from "./contracts.ts";
@@ -7,15 +9,15 @@ import { attachEvidenceAnchors } from "./evidence.ts";
 import { collectFunctionGraph } from "./functions.ts";
 import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
-import { buildMachineIndex } from "./machine-index.ts";
-import { buildUnresolvedLedger, compactGraph } from "./residuals.ts";
+import { buildUnresolvedLedger, compactGraph, UNRESOLVED_LEDGER_FILE } from "./residuals.ts";
+import { AI_RECEIVER_GUIDE } from "./receiver-guide.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
 
 /**
  * Browser port of 1devteam/graft_plus universal shell.
- * Generated structure + completeness + impact + proof + decision.
- * No source dump. No Ajenda domain rules. Never merge authority.
+ * Observes and encodes source-backed facts plus instrument integrity.
+ * Reasoning, blast radius, proof selection, risk, architecture, and merge judgment belong to the receiving AI.
  */
 
 export const MERGE_AUTHORIZATION = "not-determined" as const;
@@ -26,25 +28,28 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.8" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "6fc2ece7f83ddea0796b0ae7621fd8398157fbe2" as const;
-export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.8" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.11" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "42e0b4208ec4eb815943ae0dfcba5605dee223f2" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.11" as const;
 export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
   semantic_authority: GRAFT_SEMANTIC_AUTHORITY,
-  execution_authority: GRAFT_EXECUTION_AUTHORITY,
-  synchronization_mode: GRAFT_SYNC_MODE,
-  synchronization_status: GRAFT_SYNC_STATUS,
+  canonical_engine: "python-universal-shell",
+  canonical_schema_version: GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
+  website_execution_authority: GRAFT_EXECUTION_AUTHORITY,
+  website_synchronization_mode: GRAFT_SYNC_MODE,
+  website_runtime_dependency: "none",
+} as const;
+
+const WEBSITE_SYNC_PROVENANCE = {
+  canonical_reference_sha: GRAFT_CANONICAL_REFERENCE_SHA,
+  canonical_reference_schema_version: GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
   embedded_engine: GRAFT_EMBEDDED_ENGINE,
   embedded_schema_version: GRAFT_EMBEDDED_SCHEMA_VERSION,
-  canonical_reference: {
-    repo: GRAFT_SEMANTIC_AUTHORITY,
-    sha: GRAFT_CANONICAL_REFERENCE_SHA,
-    schema_version: GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
-    parity_claimed: true,
-  },
-  runtime_dependency: "none",
+  synchronization_mode: GRAFT_SYNC_MODE,
+  synchronization_status: GRAFT_SYNC_STATUS,
+  parity_claimed: true,
 } as const;
 
 type Node = GraphNode;
@@ -491,15 +496,46 @@ export function reconstructPack(input: {
   };
 
   const graph = {
-    schema_version: "1.8",
+    schema_version: "1.11",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
     implementsPlan: IMPLEMENTS_PLAN,
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
     semantic_provenance: SEMANTIC_PROVENANCE,
+    generated_from: {
+      python_roots: files.some((file) => file.path.endsWith(".py")) ? ["."] : [],
+      adapters: [
+        "python",
+        "javascript-typescript",
+        "shell-bats",
+        "go",
+        "rust",
+        "ruby",
+        "php",
+        "c-cpp",
+        "java-kotlin-scala",
+        "csharp",
+        "lua",
+        "elixir",
+        "swift",
+        "package-manifests",
+        "relationship-boundary-ledger",
+        "contract-declarations",
+        "configuration-deployment",
+        "subsystem-hierarchy",
+        "build-system-topology",
+        "source-provenance",
+        "cross-language-subsystem-joins",
+        "governance-boundaries",
+        "evidence-anchors",
+      ],
+      function_roots: [] as string[],
+      overlay: null,
+    },
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
-    edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to)),
+    edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to) || a.type.localeCompare(b.type)),
+    invariants: [] as unknown[],
     facts: {
       unresolved_imports: unresolved,
       unresolved_package_roots: roots,
@@ -511,103 +547,65 @@ export function reconstructPack(input: {
       ...architecture.facts,
       evidence_precision_counts: evidencePrecisionCounts,
     },
-    metrics: {
-      node_count: nodes.length,
-      edge_count: kept.length,
-      overlay_node_count: 0,
-      unresolved_import_count: unresolved.length,
-      surface_count: surfaceNodes.length,
-      inventory_file_count: inventory.facts.file_count,
-      relationship_parsed_file_count: inventory.facts.relationship_parsed_file_count,
-      relationship_unparsed_file_count: inventory.facts.relationship_unparsed_file_count,
-      relationship_boundary_count: boundaryFacts.relationship_boundary_count,
-      unresolved_relationship_boundary_count: boundaryFacts.unresolved_relationship_boundary_count,
-      relationship_boundary_counts_by_kind: boundaryFacts.relationship_boundary_counts_by_kind,
-      contract_source_count: contracts.facts.contract_source_count,
-      contract_declaration_count: contracts.facts.contract_declaration_count,
-      contract_declaration_counts_by_kind: contracts.facts.contract_declaration_counts_by_kind,
-      configuration_key_count: configuration.facts.configuration_key_count,
-      deployment_fact_count: configuration.facts.deployment_fact_count,
-      deployment_fact_counts_by_kind: configuration.facts.deployment_fact_counts_by_kind,
-      subsystem_count: architecture.facts.subsystem_count,
-      cross_language_subsystem_count: architecture.facts.cross_language_subsystem_count,
-      build_definition_count: architecture.facts.build_definition_count,
-      build_input_edge_count: architecture.facts.build_input_edge_count,
-      build_target_count: architecture.facts.build_target_count,
-      build_target_input_edge_count: architecture.facts.build_target_input_edge_count,
-      build_target_dependency_edge_count: architecture.facts.build_target_dependency_edge_count,
-      governance_boundary_count: architecture.facts.governance_boundary_count,
-      source_provenance_counts: architecture.facts.source_provenance_counts,
-      evidence_precision_counts: evidencePrecisionCounts,
-      edge_counts_by_type: kept.reduce<Record<string, number>>((acc, e) => {
-        acc[e.type] = (acc[e.type] ?? 0) + 1;
-        return acc;
-      }, {}),
-    },
   };
+
   const completeness = auditGraph(
     {
       nodes: graph.nodes,
       edges: graph.edges,
       facts: graph.facts,
-      metrics: graph.metrics,
     },
     new Set(files.map((file) => file.path)),
   );
   const unresolvedLedger = buildUnresolvedLedger(unresolved);
-  const machineIndex = buildMachineIndex(graph, unresolvedLedger);
   const artifactGraph = compactGraph(graph, unresolvedLedger);
-  const decision = decideGraph(graph as unknown as Record<string, unknown>, completeness);
-  const impact = {
-    schema_version: "1.2",
-    changed_files: [] as string[],
-    changed_nodes: [] as Node[],
-    unmapped_changed_files: [] as string[],
-    upstream_consumers: [] as string[],
-    downstream_dependencies: [] as string[],
-    impacted_tests: [] as string[],
-    affected_semantic_nodes: [] as string[],
-    dependency_semantic_nodes: [] as string[],
-    relevant_invariants: [] as string[],
-    changed_node_count: 0,
-    changed_file_count: 0,
-    unmapped_changed_file_count: 0,
-    impacted_test_count: 0,
-    note: "no git range requested; blast-radius fields are present and empty",
-  };
-  const proofs = {
-    schema_version: "1.0",
-    selected_bundles: [] as unknown[],
-    required_tests: [] as string[],
-    required_gates: [] as string[],
-    manual_review: [] as string[],
-    note: "Bundles are overlay-supplied. This package has no product-specific proofs.",
-  };
+  const asciiGraph = encodeGraphAscii(artifactGraph);
+  const changeSet = buildNoRangeChangeSet();
   const sha = input.origin?.sha ?? "unpinned";
+
   const receipt = {
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     engine: GRAFT_EMBEDDED_ENGINE,
+    role: "fact-substrate",
     semantic_provenance: SEMANTIC_PROVENANCE,
+    website_sync: WEBSITE_SYNC_PROVENANCE,
     subject: input.origin?.url ?? `${input.origin?.owner ?? "local"}/${input.origin?.repo ?? "subject"}`,
     subject_sha: sha,
     status: completeness.integrity_pass ? "passed" : "failed",
-    decipher: "graph-architecture-decision.json",
-    machine_index: "graph-machine-index.v1.json",
-    residual_ledger: "graph-unresolved-ledger.v1.json",
+    status_scope: "instrument-integrity-only",
+    machine_graph: ASCII_GRAPH_FILE,
+    change_set: CHANGE_SET_FILE,
+    graph_json_compatibility: "dependency-graph.v1.json",
+    residual_ledger: UNRESOLVED_LEDGER_FILE,
+    files: [
+      "00-AI-READ-FIRST.md",
+      ASCII_GRAPH_FILE,
+      "dependency-graph.v1.json",
+      CHANGE_SET_FILE,
+      UNRESOLVED_LEDGER_FILE,
+      "graph-completeness-report.json",
+      "graft-plus-receipt.json",
+    ],
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
     implementsPlan: IMPLEMENTS_PLAN,
     merge_authorization: MERGE_AUTHORIZATION,
-    fingerprint: sha256sync(JSON.stringify({ nodes: graph.nodes.map((n) => n.id), sha })),
+    does_not_compute: [
+      "blast_radius",
+      "proof_selection",
+      "risk_classification",
+      "architecture_disposition",
+      "change_recommendation",
+    ],
   };
+
   return {
-    "graph-architecture-decision.json": decision,
-    "graph-machine-index.v1.json": machineIndex,
+    "00-AI-READ-FIRST.md": AI_RECEIVER_GUIDE,
+    [ASCII_GRAPH_FILE]: asciiGraph,
     "dependency-graph.v1.json": artifactGraph,
-    "graph-unresolved-ledger.v1.json": unresolvedLedger,
+    [CHANGE_SET_FILE]: changeSet,
+    [UNRESOLVED_LEDGER_FILE]: unresolvedLedger,
     "graph-completeness-report.json": completeness,
-    "graph-impact-report.json": impact,
-    "graph-proof-manifest.json": proofs,
     "graft-plus-receipt.json": receipt,
   };
 }
