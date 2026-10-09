@@ -2,10 +2,13 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
-import { reconstructPack } from "./reconstruct.ts";
+import {
+  GRAFT_CANONICAL_REFERENCE_SHA,
+  reconstructPack,
+} from "./reconstruct.ts";
 
 describe("graft_plus reconstruct", () => {
-  it("names frontend modules and never grants merge", () => {
+  it("names frontend modules and never grants merge or architectural authority", () => {
     const pack = reconstructPack({
       files: [
         { path: "src/a.ts", content: `import { b } from "./b";\nimport stripe from "stripe";\nexport function a() { return b; }\n` },
@@ -15,28 +18,36 @@ describe("graft_plus reconstruct", () => {
       ],
       origin: { owner: "acme", repo: "app", sha: "abc12345" },
     });
+
     const graph = pack["dependency-graph.v1.json"] as {
+      schema_version: string;
       nodes: { id: string }[];
       edges: { from: string; to: string }[];
       facts: { unresolved_package_roots: string[] };
     };
-    const ids = graph.nodes.map((n) => n.id);
-    assert.equal((pack["dependency-graph.v1.json"] as { schema_version: string }).schema_version, "1.8");
+    const ids = graph.nodes.map((node) => node.id);
+
+    assert.equal(graph.schema_version, "1.11");
     assert.ok(ids.includes("js:src/a.ts"));
     assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
     assert.ok(ids.includes("manifest:package.json"));
-    assert.ok(graph.edges.some((e) => e.from === "js:src/a.ts" && e.to === "js:src/b.ts"));
+    assert.ok(graph.edges.some((edge) => edge.from === "js:src/a.ts" && edge.to === "js:src/b.ts"));
     assert.ok(graph.facts.unresolved_package_roots.includes("stripe"));
-    const decision = pack["graph-architecture-decision.json"] as {
-      decision: { merge_authorization: string; review_reasons: string[]; warnings: string[] };
+
+    const receipt = pack["graft-plus-receipt.json"] as {
+      merge_authorization: string;
       implementsPlan: boolean;
-      residuals: { overlay: string };
+      grants_execution_authority: boolean;
+      status_scope: string;
+      does_not_compute: string[];
     };
-    assert.equal(decision.decision.merge_authorization, "not-determined");
-    assert.equal(decision.implementsPlan, false);
-    assert.equal(decision.residuals.overlay, "residual");
-    assert.ok(decision.decision.review_reasons.includes("no_git_range"));
+    assert.equal(receipt.merge_authorization, "not-determined");
+    assert.equal(receipt.implementsPlan, false);
+    assert.equal(receipt.grants_execution_authority, false);
+    assert.equal(receipt.status_scope, "instrument-integrity-only");
+    assert.ok(receipt.does_not_compute.includes("architecture_disposition"));
+    assert.equal("graph-architecture-decision.json" in pack, false);
   });
 
   it("names tables, routes, contracts, and unclassified egress without Ajenda policy", () => {
@@ -52,38 +63,48 @@ describe("graft_plus reconstruct", () => {
         },
       ],
     });
-    const graph = pack["dependency-graph.v1.json"] as { nodes: { id: string; type: string }[] };
-    const types = new Set(graph.nodes.map((n) => n.type));
+
+    const graph = pack["dependency-graph.v1.json"] as {
+      nodes: { id: string; type: string }[];
+      semantic_provenance: {
+        semantic_authority: string;
+        canonical_engine: string;
+        canonical_schema_version: string;
+        website_execution_authority: string;
+        website_synchronization_mode: string;
+        website_runtime_dependency: string;
+      };
+    };
+    const types = new Set(graph.nodes.map((node) => node.type));
     assert.ok(types.has("database_table"));
     assert.ok(types.has("http_route"));
     assert.ok(types.has("contract"));
     assert.ok(types.has("network_egress_sink"));
-    const decision = pack["graph-architecture-decision.json"] as {
-      decision: { architecture_disposition: string; merge_authorization: string; blocking_reasons: string[] };
-    };
-    assert.equal(decision.decision.merge_authorization, "not-determined");
-    assert.equal(decision.decision.architecture_disposition, "review-required");
-    assert.ok(!decision.decision.blocking_reasons.some((r) => r.includes("rls-missing")));
+
     const receipt = pack["graft-plus-receipt.json"] as {
       engine: string;
-      semantic_provenance: {
-        semantic_authority: string;
-        execution_authority: string;
+      semantic_provenance: typeof graph.semantic_provenance;
+      website_sync: {
+        canonical_reference_sha: string;
+        canonical_reference_schema_version: string;
         synchronization_mode: string;
         synchronization_status: string;
-        canonical_reference: { sha: string; schema_version: string; parity_claimed: boolean };
-        runtime_dependency: string;
+        parity_claimed: boolean;
       };
     };
+
     assert.equal(receipt.engine, "browser-universal-shell");
     assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
-    assert.equal(receipt.semantic_provenance.execution_authority, "1devteam/1devteam-web");
-    assert.equal(receipt.semantic_provenance.synchronization_mode, "github-reviewed-manual-port");
-    assert.equal(receipt.semantic_provenance.synchronization_status, "synchronized");
-    assert.equal(receipt.semantic_provenance.canonical_reference.sha, "6fc2ece7f83ddea0796b0ae7621fd8398157fbe2");
-    assert.equal(receipt.semantic_provenance.canonical_reference.schema_version, "1.8");
-    assert.equal(receipt.semantic_provenance.canonical_reference.parity_claimed, true);
-    assert.equal(receipt.semantic_provenance.runtime_dependency, "none");
+    assert.equal(receipt.semantic_provenance.canonical_engine, "python-universal-shell");
+    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.11");
+    assert.equal(receipt.semantic_provenance.website_execution_authority, "1devteam/1devteam-web");
+    assert.equal(receipt.semantic_provenance.website_synchronization_mode, "github-reviewed-manual-port");
+    assert.equal(receipt.semantic_provenance.website_runtime_dependency, "none");
+    assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.11");
+    assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
+    assert.equal(receipt.website_sync.synchronization_status, "synchronized");
+    assert.equal(receipt.website_sync.parity_claimed, true);
   });
 
   it("names Flask/Express routes and SQLAlchemy tables, and does not leak stdlib", () => {
@@ -104,8 +125,9 @@ describe("graft_plus reconstruct", () => {
       specifier_table: string[];
       references: Array<[number, number]>;
     };
-    const ids = new Set(graph.nodes.map((n) => n.id));
+    const ids = new Set(graph.nodes.map((node) => node.id));
     const specs = new Set(ledger.specifier_table);
+
     assert.ok(ids.has("route:GET /status"));
     assert.ok(ids.has("route:POST /status"));
     assert.ok(ids.has("route:POST /pay"));
@@ -114,7 +136,12 @@ describe("graft_plus reconstruct", () => {
     assert.ok(specs.has("stripe"));
     assert.equal(graph.facts.unresolved_package_roots.includes(""), false);
     assert.equal(graph.facts.unresolved_reference_ledger.reference_count, ledger.references.length);
-    const completeness = pack["graph-completeness-report.json"] as { residuals: Record<string, unknown> };
+
+    const completeness = pack["graph-completeness-report.json"] as {
+      role: string;
+      residuals: Record<string, unknown>;
+    };
+    assert.equal(completeness.role, "instrument-integrity");
     assert.equal("unresolved_imports" in completeness.residuals, false);
     assert.ok("unresolved_import_count" in completeness.residuals);
   });
