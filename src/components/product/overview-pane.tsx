@@ -34,8 +34,9 @@ export function OverviewPane({ project }: { project: Project }) {
           </div>
         </dl>
         <p className="mt-4 text-sm text-muted">
-          Download the pack and feed graph-architecture-decision.json to an AI. Source is not in the zip.
-          Overlay is residual. This tab is not a planner.
+          Download the pack and give the AI graft-plus-receipt.json plus dependency-graph.ascii.v1.txt first;
+          use dependency-graph.v1.json for exact evidence fields. Source is not in the zip. G.R.A.F.T.+ observes;
+          the receiving AI reasons.
         </p>
       </Panel>
     </div>
