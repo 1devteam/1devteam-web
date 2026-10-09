@@ -9,7 +9,13 @@ in private development; recovered and archival projects are labeled as such.
 **G.R.A.F.T.+** (Graph Reasoning for Architecture, Fidelity & Traceability) is
 the public reconstruction workbench on [`/graft`](https://1devteam.com/graft).
 Paste a public GitHub repository. It maps that SHA and returns one downloadable
-pack. It is a fact substrate, not a planner and not merge authority.
+pack. It is a fact instrument, not a planner and not merge authority. The receiving
+AI owns blast radius, proof selection, risk, architecture, and recommendations.
+
+The embedded browser engine is a **manual GitHub-reviewed port** of the semantic
+authority in `1devteam/graft_plus`; it is not a runtime dependency or automatic
+sync. The current website promotion checkpoint is
+`42e0b4208ec4eb815943ae0dfcba5605dee223f2` at canonical schema `1.11`.
 See [`docs/GRAFT.md`](docs/GRAFT.md). `/wiki` serves the same workbench and
 canonicalizes to `/graft`. Dedicated `/wiki/:id` references remain.
 
@@ -64,7 +70,7 @@ The site is intentionally organized so routine changes can be made safely by a c
 - **Company and Ajenda brand files:** `public/brand/`
 - **R&D program and G.R.A.F.T.+ / G.R.A.F.T.1st descriptions:** `src/data/research.ts`
 - **G.R.A.F.T.+ user guide copy:** `src/data/graftGuide.ts` (public page) and `docs/GRAFT.md` (repository)
-- **G.R.A.F.T.+ reconstruction engine:** `src/lib/product/` and `src/lib/graft/`
+- **G.R.A.F.T.+ browser reconstruction engine:** `src/lib/graft_plus/` with product ingest/archive flow in `src/lib/product/`
 - **Page-level copy and layout:** `src/pages/`
 - **Homepage sections:** `src/components/home/`
 - **Header and footer:** `src/components/layout/`

@@ -131,8 +131,9 @@ export function CopyTrail({ project }: { project: Project }) {
           <div className="flex max-h-[90vh] w-full max-w-3xl min-w-0 flex-col rounded-lg border border-border bg-surface p-4">
             <p className="text-sm font-medium">{archive.filename}</p>
             <p className="mt-1 text-sm text-muted">
-              Zip is the reconstruction pack: architecture decision, graph, completeness, impact, proof,
-              receipt. No source dump. Feed the JSON to an AI. Leave this tab and the run is gone.
+              Zip is the fact pack: AI receiver guide, ASCII topology, JSON evidence graph, factual change set,
+              completeness, unresolved ledger, and receipt. No source dump. Give the pack to an AI;
+              G.R.A.F.T.+ does not make the architecture decision.
             </p>
             <textarea
               ref={areaRef}

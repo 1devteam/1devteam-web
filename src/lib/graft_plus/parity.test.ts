@@ -1,15 +1,27 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { reconstructPack } from "./reconstruct.ts";
+import { decodeGraphAscii } from "./ascii-ir.ts";
+import {
+  GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION,
+  GRAFT_CANONICAL_REFERENCE_SHA,
+  GRAFT_EMBEDDED_SCHEMA_VERSION,
+  GRAFT_SYNC_MODE,
+  GRAFT_SYNC_STATUS,
+  reconstructPack,
+} from "./reconstruct.ts";
 import { canonicalJson, sha256Hex } from "./residuals.ts";
 
+function packOf(files: Array<{ path: string; content: string }>) {
+  return reconstructPack({ files });
+}
+
 function graphOf(files: Array<{ path: string; content: string }>) {
-  return reconstructPack({ files })["dependency-graph.v1.json"] as {
+  return packOf(files)["dependency-graph.v1.json"] as {
     schema_version: string;
     nodes: Array<Record<string, unknown>>;
     edges: Array<Record<string, unknown>>;
     facts: Record<string, unknown>;
-    metrics: Record<string, unknown>;
+    semantic_provenance: Record<string, unknown>;
   };
 }
 
@@ -17,7 +29,53 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
-describe("canonical 1.8 browser parity surface", () => {
+describe("canonical 1.11 browser parity surface", () => {
+  it("pins the manually promoted canonical revision and authority boundary", () => {
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "42e0b4208ec4eb815943ae0dfcba5605dee223f2");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.11");
+    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.11");
+    assert.equal(GRAFT_SYNC_MODE, "github-reviewed-manual-port");
+    assert.equal(GRAFT_SYNC_STATUS, "synchronized");
+
+    const pack = packOf([{ path: "main.py", content: "VALUE = 1\n" }]);
+    const graph = pack["dependency-graph.v1.json"] as {
+      semantic_provenance: Record<string, unknown>;
+    };
+    const receipt = pack["graft-plus-receipt.json"] as {
+      status_scope: string;
+      merge_authorization: string;
+      implementsPlan: boolean;
+      grants_execution_authority: boolean;
+      does_not_compute: string[];
+      website_sync: Record<string, unknown>;
+    };
+
+    assert.deepEqual(graph.semantic_provenance, {
+      semantic_authority: "1devteam/graft_plus",
+      canonical_engine: "python-universal-shell",
+      canonical_schema_version: "1.11",
+      website_execution_authority: "1devteam/1devteam-web",
+      website_synchronization_mode: "github-reviewed-manual-port",
+      website_runtime_dependency: "none",
+    });
+    assert.equal(receipt.status_scope, "instrument-integrity-only");
+    assert.equal(receipt.merge_authorization, "not-determined");
+    assert.equal(receipt.implementsPlan, false);
+    assert.equal(receipt.grants_execution_authority, false);
+    assert.deepEqual(receipt.does_not_compute, [
+      "blast_radius",
+      "proof_selection",
+      "risk_classification",
+      "architecture_disposition",
+      "change_recommendation",
+    ]);
+    assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.11");
+    assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
+    assert.equal(receipt.website_sync.synchronization_status, "synchronized");
+    assert.equal(receipt.website_sync.parity_claimed, true);
+  });
+
   it("projects Chromium-style hierarchy, build topology, provenance, and governance", () => {
     const graph = graphOf([
       { path: "engine/BUILD.gn", content: 'sources = ["native/core.cc", "web/app.ts", "gen/generated.cc"]\n' },
@@ -40,7 +98,6 @@ describe("canonical 1.8 browser parity surface", () => {
     assert.equal(node(graph, "governance:engine/OWNERS")?.governance_kind, "ownership");
     assert.equal(node(graph, "governance:engine/PRESUBMIT.py")?.governance_kind, "process");
     assert.equal(node(graph, "governance:engine/SECURITY.md")?.governance_kind, "security");
-
     assert.equal(node(graph, "native:engine/native/core.cc")?.source_provenance, "authored");
     assert.equal(node(graph, "native:engine/gen/generated.cc")?.source_provenance, "generated");
     assert.equal(node(graph, "native:third_party/lib/vendor.cc")?.source_provenance, "vendored");
@@ -87,23 +144,27 @@ describe("canonical 1.8 browser parity surface", () => {
     ]);
 
     const boundaries = graph.facts.relationship_boundaries as Array<Record<string, unknown>>;
-    const find = (kind: string, source: string) => boundaries.filter((r) => r.kind === kind && r.source === source);
-    assert.deepEqual(find("wildcard_import", "app.py").map((r) => r.line), [1]);
-    assert.deepEqual(find("dynamic_load", "app.py").map((r) => r.line), [3]);
-    assert.deepEqual(find("dependency_injection", "app.py").map((r) => r.line), [4]);
-    assert.deepEqual(find("route_composition", "app.py").map((r) => r.line), [5]);
-    assert.deepEqual(find("dynamic_load", "app.js").map((r) => r.line), [1]);
-    assert.deepEqual(find("dependency_injection", "app.js").map((r) => r.line), [2]);
-    assert.deepEqual(find("route_composition", "app.js").map((r) => r.line), [3]);
-    assert.deepEqual(find("wildcard_import", "App.java").map((r) => r.line), [1]);
+    const find = (kind: string, source: string) => boundaries.filter((row) => row.kind === kind && row.source === source);
+    assert.deepEqual(find("wildcard_import", "app.py").map((row) => row.line), [1]);
+    assert.deepEqual(find("dynamic_load", "app.py").map((row) => row.line), [3]);
+    assert.deepEqual(find("dependency_injection", "app.py").map((row) => row.line), [4]);
+    assert.deepEqual(find("route_composition", "app.py").map((row) => row.line), [5]);
+    assert.deepEqual(find("dynamic_load", "app.js").map((row) => row.line), [1]);
+    assert.deepEqual(find("dependency_injection", "app.js").map((row) => row.line), [2]);
+    assert.deepEqual(find("route_composition", "app.js").map((row) => row.line), [3]);
+    assert.deepEqual(find("wildcard_import", "App.java").map((row) => row.line), [1]);
     assert.ok(find("code_generation", "package.json").length);
     assert.ok(find("build_module_mapping", "tsconfig.json").length);
-    assert.ok(graph.metrics.unresolved_relationship_boundary_count);
+    assert.ok(Number(graph.facts.unresolved_relationship_boundary_count));
   });
 
   it("attaches source evidence anchors to generated facts", () => {
     const graph = graphOf([
-      { path: "pkg/main.py", content: "from fastapi import APIRouter\nrouter = APIRouter()\n@router.get('/health')\ndef health():\n    return {'ok': True}\n" },
+      {
+        path: "pkg/main.py",
+        content:
+          "from fastapi import APIRouter\nrouter = APIRouter()\n@router.get('/health')\ndef health():\n    return {'ok': True}\n",
+      },
     ]);
     const route = node(graph, "route:GET /health");
     assert.ok(route?.evidence_anchor);
@@ -160,8 +221,8 @@ describe("canonical 1.8 browser parity surface", () => {
     const serialized = JSON.stringify(graph);
     assert.equal(serialized.includes("postgres://secret.example/db"), false);
     assert.equal(serialized.includes("DATABASE_URL: hidden"), false);
-    assert.equal(graph.metrics.contract_source_count, 5);
-    assert.equal(graph.metrics.configuration_key_count, 4);
+    assert.equal(Number(graph.facts.contract_source_count), 5);
+    assert.equal(Number(graph.facts.configuration_key_count), 4);
   });
 
   it("emits participating Python functions and route handlers", () => {
@@ -180,42 +241,41 @@ describe("canonical 1.8 browser parity surface", () => {
     assert.ok(edges.has("route:GET /value|fn:app.api:value|handled_by"));
   });
 
-  it("reports canonical assurance dimensions", () => {
-    const pack = reconstructPack({ files: [{ path: "pkg/main.py", content: "import unknown_package\n" }] });
-    const completeness = pack["graph-completeness-report.json"] as Record<string, unknown>;
-    const decision = pack["graph-architecture-decision.json"] as {
-      decision: { dimensions: Record<string, string>; architecture_disposition: string };
+  it("reports instrument integrity without emitting architectural judgment", () => {
+    const pack = packOf([{ path: "pkg/main.py", content: "import unknown_package\n" }]);
+    const completeness = pack["graph-completeness-report.json"] as {
+      role: string;
+      integrity_pass: boolean;
+      residuals: { unresolved_import_count: number };
     };
-    assert.equal(completeness.identity_integrity_pass, true);
-    assert.equal(decision.decision.dimensions.artifact_integrity, "passed");
-    assert.equal(decision.decision.dimensions.identity_integrity, "passed");
-    assert.equal(decision.decision.dimensions.structural_coverage, "gaps-visible");
-    assert.equal(decision.decision.architecture_disposition, "review-required");
+    assert.equal(completeness.role, "instrument-integrity");
+    assert.equal(completeness.integrity_pass, true);
+    assert.equal(completeness.residuals.unresolved_import_count, 1);
+
+    for (const retired of [
+      "graph-architecture-decision.json",
+      "graph-impact-report.json",
+      "graph-proof-manifest.json",
+      "graph-machine-index.v1.json",
+    ]) {
+      assert.equal(retired in pack, false, retired);
+    }
   });
 
-
   it("models GN targets and resolves repository-root native includes", () => {
-    const pack = reconstructPack({
-      files: [
-        { path: "base/memory/raw_ptr.h", content: "struct RawPtr {};\n" },
-        { path: "app/main.cc", content: '#include "base/memory/raw_ptr.h"\nint main() { return 0; }\n' },
-        { path: "app/util.cc", content: "int util() { return 1; }\n" },
-        {
-          path: "app/BUILD.gn",
-          content:
-            'source_set("util") {\n  sources = ["util.cc"]\n}\n' +
-            'executable("app") {\n  sources = ["main.cc"]\n  deps = [":util"]\n}\n',
-        },
-      ],
-    });
-    const graph = pack["dependency-graph.v1.json"] as {
-      schema_version: string;
-      nodes: Array<Record<string, unknown>>;
-      edges: Array<Record<string, unknown>>;
-      metrics: Record<string, number>;
-      facts: Record<string, unknown>;
-    };
-    assert.equal(graph.schema_version, "1.8");
+    const pack = packOf([
+      { path: "base/memory/raw_ptr.h", content: "struct RawPtr {};\n" },
+      { path: "app/main.cc", content: '#include "base/memory/raw_ptr.h"\nint main() { return 0; }\n' },
+      { path: "app/util.cc", content: "int util() { return 1; }\n" },
+      {
+        path: "app/BUILD.gn",
+        content:
+          'source_set("util") {\n  sources = ["util.cc"]\n}\n' +
+          'executable("app") {\n  sources = ["main.cc"]\n  deps = [":util"]\n}\n',
+      },
+    ]);
+    const graph = pack["dependency-graph.v1.json"] as ReturnType<typeof graphOf>;
+    assert.equal(graph.schema_version, "1.11");
     const ids = new Set(graph.nodes.map((row) => String(row.id)));
     assert.ok(ids.has("build-target://app:util"));
     assert.ok(ids.has("build-target://app:app"));
@@ -223,23 +283,43 @@ describe("canonical 1.8 browser parity surface", () => {
     assert.ok(edges.has("build-target://app:app|build-target://app:util|depends_on_build_target"));
     assert.ok(edges.has("build-target://app:app|native:app/main.cc|declares_build_input"));
     assert.ok(edges.has("native:app/main.cc|native:base/memory/raw_ptr.h|imports"));
-    assert.equal(graph.metrics.build_target_count, 2);
-    assert.equal(graph.metrics.build_target_dependency_edge_count, 1);
+    assert.equal(Number(graph.facts.build_target_count), 2);
+    assert.equal(Number(graph.facts.build_target_dependency_edge_count), 1);
     const ledger = pack["graph-unresolved-ledger.v1.json"] as { specifier_table: string[] };
     assert.equal(ledger.specifier_table.includes("base/memory/raw_ptr.h"), false);
   });
 
-  it("ships compact graph, lossless residual ledger, and machine topology index", () => {
-    const pack = reconstructPack({
-      files: [
-        { path: "a.py", content: "import mystery_package\n" },
-        { path: "b.py", content: "import mystery_package\n" },
-      ],
-    });
+  it("ships ASCII topology, factual change set, compact graph, and lossless residual ledger", () => {
+    const pack = packOf([
+      { path: "a.py", content: "import mystery_package\n" },
+      { path: "b.py", content: "import mystery_package\n" },
+    ]);
     const graph = pack["dependency-graph.v1.json"] as {
+      nodes: Array<Record<string, unknown>>;
+      edges: Array<Record<string, unknown>>;
       facts: Record<string, unknown>;
+      [key: string]: unknown;
     };
+    assert.equal("metrics" in graph, false);
     assert.equal("unresolved_imports" in graph.facts, false);
+
+    const ascii = pack["dependency-graph.ascii.v1.txt"] as string;
+    const decoded = decodeGraphAscii(ascii);
+    assert.equal(decoded.direction, "c>d");
+    assert.equal(decoded.nodes.length, graph.nodes.length);
+    assert.equal(decoded.edges.length, graph.edges.length);
+
+    const changeSet = pack["graph-change-set.v1.json"] as {
+      role: string;
+      requested: boolean;
+      changed_files: unknown[];
+      changed_node_ids: unknown[];
+    };
+    assert.equal(changeSet.role, "factual-change-set");
+    assert.equal(changeSet.requested, false);
+    assert.deepEqual(changeSet.changed_files, []);
+    assert.deepEqual(changeSet.changed_node_ids, []);
+
     const pointer = graph.facts.unresolved_reference_ledger as {
       reference_count: number;
       sha256: string;
@@ -249,12 +329,6 @@ describe("canonical 1.8 browser parity surface", () => {
       reference_count: number;
       unique_specifier_count: number;
       references: Array<[number, number]>;
-      specifier_table: string[];
-      source_table: string[];
-    };
-    const index = pack["graph-machine-index.v1.json"] as {
-      role: string;
-      unresolved: { reference_count: number; unique_specifier_count: number };
     };
     assert.equal(pointer.encoding, "dictionary-pairs-v1");
     assert.equal(pointer.reference_count, 2);
@@ -263,9 +337,7 @@ describe("canonical 1.8 browser parity surface", () => {
     assert.equal(ledger.reference_count, 2);
     assert.equal(ledger.unique_specifier_count, 1);
     assert.equal(ledger.references.length, 2);
-    assert.equal(index.role, "machine-topology-index");
-    assert.equal(index.unresolved.reference_count, 2);
-    assert.equal(index.unresolved.unique_specifier_count, 1);
-  });
 
+    assert.equal(typeof pack["00-AI-READ-FIRST.md"], "string");
+  });
 });

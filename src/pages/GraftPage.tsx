@@ -28,7 +28,7 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
       <PageHero
         eyebrow={`G.R.A.F.T.+ · v${GRAFT_EMBEDDED_SCHEMA_VERSION}`}
         title="Point G.R.A.F.T.+ at a public repository."
-        description="G.R.A.F.T.+ reconstructs what exists: graph, completeness, impact, proof, architecture decision. Hand that pack to an AI. It does not dump source, plan, or merge. Overlay stays residual."
+        description="G.R.A.F.T.+ reconstructs what exists into a compact machine topology, evidence graph, factual change set, completeness report, and residual ledger. Hand that pack to an AI; the AI owns blast radius, proof, risk, architecture, and recommendations."
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild>
@@ -51,7 +51,7 @@ export function GraftPage({ seoPath = "/graft" }: { seoPath?: string }) {
             implemented. Overlay stays residual. An acknowledgement is not a repair.
           </p>
           <p className="mt-4 text-base leading-relaxed text-slate-300">
-            It is a fact substrate, not a planner and not merge authority. The map lives in this tab
+            It is a fact instrument, not a planner and not merge authority. It does not calculate blast radius, select proof, classify risk, make architecture decisions, or recommend changes. The map lives in this tab
             until you download it or leave. Run the same SHA again for the same facts.
           </p>
         </div>

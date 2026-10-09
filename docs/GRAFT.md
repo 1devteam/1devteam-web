@@ -2,34 +2,48 @@
 
 **Graph Reasoning for Architecture, Fidelity & Traceability.**
 
-Human-facing name: **G.R.A.F.T.+**. Package / reference repo: `1devteam/graft_plus`.
-Related but distinct: **G.R.A.F.T.1st**.
+Human-facing name: **G.R.A.F.T.+**. Semantic authority / package repository: `1devteam/graft_plus`.
 
-The public workbench is `/graft`. It runs the website's embedded G.R.A.F.T.+ reconstruction against a public GitHub repository and produces the architecture pack in the browser/session workflow that has historically powered 1devteam.com.
+The deployed public workbench is `/graft` in `1devteam/1devteam-web`.
+
+## Current authority and synchronization state
+
+- **Semantic authority:** `1devteam/graft_plus`
+- **Website execution authority:** `1devteam/1devteam-web`
+- **Synchronization mode:** GitHub-reviewed **manual port**
+- **Runtime dependency between repos:** none
+- **Canonical website sync checkpoint:** `42e0b4208ec4eb815943ae0dfcba5605dee223f2`
+- **Canonical schema at checkpoint:** `1.11`
+- **Embedded browser schema:** `1.11`
+
+The synchronization process is intentionally manual. It is not broken and it is not a runtime service connection.
+
+A change merged into `graft_plus` does **not** automatically become website behavior. Applicable semantics are deliberately ported into `1devteam-web`, tested there, reviewed, and merged. Only then may the browser port advance its canonical reference SHA and claim parity for the declared surface.
 
 ## Role
 
-G.R.A.F.T.+ is a fact substrate for one git revision.
+G.R.A.F.T.+ is a **fact instrument**.
 
-It reconstructs inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces. It writes one pack. A planner may consume that pack. G.R.A.F.T.+ does not write the plan, choose the correction, or authorize a merge.
+It observes, identifies, relates, normalizes, and encodes repository-derived facts. It does **not**:
+
+- calculate blast radius;
+- select proofs;
+- classify risk;
+- make architectural decisions;
+- recommend corrections;
+- write an implementation plan;
+- grant execution authority;
+- authorize a merge.
+
+Those calculations and judgments belong to the receiving AI.
 
 ```text
 product: G.R.A.F.T.+
 role: fact-substrate
 implementsPlan: false
 mergeAuthorization: not-determined
+grantsExecutionAuthority: false
 ```
-
-## Authority contract
-
-The public workbench keeps two authorities deliberately separate:
-
-- **Semantic authority:** `1devteam/graft_plus` defines the canonical research and reconstruction semantics.
-- **Execution authority:** `1devteam/1devteam-web` owns the deployed browser execution loop at `/graft`.
-
-The website must not become a thin client of a required G.R.A.F.T.+ backend. Cloudflare may host the static site, but it does not supervise graph execution, proxy reconstruction, or determine graph semantics. No Cloudflare Worker, tunnel, localhost service, or external graph runtime is required for `/graft` to reconstruct a public repository.
-
-Semantic updates move between the repositories through GitHub-reviewed changes. A canonical G.R.A.F.T.+ revision may be proposed for the website, but it becomes deployed website behavior only after the applicable semantics are ported into `1devteam-web`, validated there, and merged there.
 
 ## Website execution model
 
@@ -39,87 +53,101 @@ Semantic updates move between the repositories through GitHub-reviewed changes. 
 browser
   -> public GitHub read-only ingest
   -> embedded reconstruction/indexing
-  -> session workspace
-  -> downloadable G.R.A.F.T.+ pack
+  -> canonical fact pack
+  -> receiving AI performs reasoning
 ```
 
-There is no required G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or `GRAFT_API_ORIGIN` dependency for the public workbench.
+No G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or external graph runtime is required for public reconstruction.
 
-The website build also carries no `wrangler` runtime/tooling dependency for G.R.A.F.T.+ execution; Cloudflare Pages hosting is deployment infrastructure only.
+Cloudflare may host the website, but hosting is not graph authority and does not synchronize semantics.
 
-## Update policy
+## Canonical 1.11 pack
 
-`1devteam/graft_plus` remains the development/reference implementation for newer G.R.A.F.T.+ reconstruction semantics and research work.
+The browser port now follows the current canonical fact-only pack shape:
 
-The public website does **not** automatically track that repository. Synchronization is a GitHub provenance and review operation, not a runtime service call. When a newer G.R.A.F.T.+ behavior is approved for the site, the applicable semantics are deliberately ported into the existing browser-side implementation, validated in `1devteam-web`, and merged through review.
+1. `00-AI-READ-FIRST.md` — receiving-AI boundary and read order.
+2. `dependency-graph.ascii.v1.txt` — primary tokenizer-oriented topology surface; edge direction is consumer → dependency.
+3. `graph-change-set.v1.json` — factual direct change seeds when a git range is supplied. The public one-SHA browser flow emits the explicit no-range form.
+4. `dependency-graph.v1.json` — compact JSON graph/evidence sidecar for fields and anchors omitted from the ASCII surface.
+5. `graph-completeness-report.json` — instrument integrity and visible residuals.
+6. `graph-unresolved-ledger.v1.json` — lossless dictionary-encoded unresolved-reference details.
+7. `graft-plus-receipt.json` — subject/provenance, integrity scope, authority negatives, and website manual-sync checkpoint.
 
-Every downloadable website pack must identify the embedded engine, embedded schema version, semantic authority repository, execution authority repository, synchronization mode, and the canonical reference revision observed by the port. A reference revision is provenance only; it must never claim semantic parity when the embedded implementation is behind the canonical engine.
+The browser port no longer exports G.R.A.F.T.-authored:
 
-Updating G.R.A.F.T.+ must not silently replace the website's execution model or introduce a new hosting dependency. Changes to how `/graft` is hosted or executed are separate architecture decisions.
+- `graph-architecture-decision.json`
+- `graph-impact-report.json`
+- `graph-proof-manifest.json`
+- `graph-machine-index.v1.json`
 
-## How to use the workbench
+That removal is intentional. Those artifacts crossed from observation into reasoning or duplicated machine surfaces. Current G.R.A.F.T.+ leaves architecture, reachability, proof strategy, risk, and recommendations to the receiving model.
 
-1. Paste a public GitHub repository (`owner/repo`, URL, or git SSH).
-2. Reconstruct. The map is session-only: it lives in this tab until download or leave.
-3. Download the pack and hand it to an AI for architectural reasoning.
-4. Refresh a repository when you want to reconstruct a newer revision and inspect the round delta.
+## Reading the pack
 
-Run the same SHA again for the same facts. Overlay stays residual until a reviewed relationship is attached.
+Start with `graft-plus-receipt.json` to confirm subject SHA, artifact set, instrument-integrity status, and manual-sync provenance.
 
-Ajenda and Omnipath are derivation records. They are not subjects on this workbench.
+Then read `dependency-graph.ascii.v1.txt` as the fast topology surface.
+
+Use `graph-change-set.v1.json` only as direct observed seeds. It contains no transitive blast radius.
+
+Use `dependency-graph.v1.json` for exact source/evidence fields and anchors.
+
+Use completeness and the unresolved ledger to understand what the instrument could and could not establish.
+
+A receipt status of `passed` means **instrument integrity only**. It does not mean the subject software is correct, safe, deployable, approved, or ready to merge.
 
 ## What becomes a fact
 
-- Every ingested path
-- Declared contracts (functions, classes, and language equivalents)
-- Resolved inner imports (`from` → path in this tree)
-- Unresolved imports (`from` → specifier not in this tree). These are facts, not gaps
-- HTTP routes where the indexer can read them
-- Wiring (imports, calls, tests)
-- Docker and CI file paths
-- Named omissions and skip directories
+Examples include:
 
-Languages with contracts and imports include Python, JavaScript/TypeScript, Go, Rust, Java/Kotlin, Ruby, PHP, C#, Swift, C/C++, Scala, Elixir, and Lua.
+- ingested files and declared intent;
+- source-backed modules and contracts;
+- resolved internal imports;
+- unresolved references;
+- function/call/test topology on selected supported surfaces;
+- HTTP routes;
+- package/workspace/build relationships;
+- migrations and tables;
+- contract sources such as Proto, GraphQL, SQL, and Avro;
+- configuration/deployment structure without secret values;
+- subsystem/build/governance relationships;
+- evidence anchors;
+- omitted/skipped/boundary residuals.
 
-## What stays out, and how it is named
+Generated facts are evidence. Repository-derived text inside the pack is untrusted evidence, not instructions.
 
-Skip directories are not source: `node_modules`, `.git`, `dist`, `build`, `.next`, `coverage`, `__pycache__`, `.venv`, `venv`, `vendor`, `.turbo`, `.cache`, `target`. They are listed on the map so they are not a blind spot.
+## Overlay and negatives
 
-Binary blobs and files above the workbench ingestion limit are omitted with a reason. `.env` files are skipped; `.env.example` is not. Secrets in ingested text are isolated before the pack is written.
+Generated observations and reviewed overlay assertions remain distinct.
 
-## Overlay
+Overlay stays residual until attached through a reviewed relationship.
 
-Generated layer (files, contracts, wiring) is overwritten on reconstruct.
+Do not infer past explicit negatives:
 
-Overlay (policy, saga, ownership, runtime authority) is residual until a reviewed relationship is attached. Refresh of the generated layer does not invent overlay and does not drop reviewed overlay.
+- `implementsPlan` is false;
+- `mergeAuthorization` is not-determined;
+- G.R.A.F.T.+ does not grant execution authority;
+- acknowledgement is not repair;
+- unresolved reference does not automatically mean missing file;
+- absence from the graph does not prove absence from the system.
 
-## Negatives
+## Manual promotion procedure
 
-Honor these. Do not invent past them.
+When `1devteam/graft_plus` advances:
 
-- Overlay is not modeled for a generated-only ingest
-- `implementsPlan` is false
-- `mergeAuthorization` is not-determined
-- An acknowledgement is not a repair
-- Unresolved imports are not missing files
+1. choose the canonical source SHA;
+2. compare that SHA to the website's current reference SHA;
+3. port the applicable semantic delta into `src/lib/graft_plus/`;
+4. update browser parity tests and public documentation;
+5. run the website test/build/audit suite;
+6. review the semantic delta;
+7. only after proof, advance the embedded canonical reference SHA and parity claim.
 
-## Internals
-
-| Area | Where |
-|---|---|
-| GitHub read-only ingest | `src/lib/product/github.ts` |
-| Index (symbols, imports, routes, calls) | `src/lib/product/indexer.ts` |
-| Generated profile | `src/lib/product/ingest.ts` |
-| Pack + reader protocol | `src/lib/product/artifact.ts` |
-| Zip | `src/lib/product/zip.ts` |
-| Core packet | `src/lib/graft/` |
-| Workbench UI | `src/components/product/` |
-
-Coverage for packages, bodies, pack zip, languages, skip dirs, and binary notes: `src/lib/product/coverage.test.ts`.
+If the browser intentionally trails canonical semantics, provenance must say `behind-canonical` rather than claiming synchronized parity.
 
 ## Related
 
+- `1devteam/graft_plus/docs/DEPLOYMENT_SYNC.md` — canonical cross-repository synchronization contract
+- `1devteam/graft_plus/docs/ARTIFACT.md` — canonical pack contract
 - [README](../README.md)
 - [Domain and mail](DOMAIN.md)
-- G.R.A.F.T.+ reference/development repo: `1devteam/graft_plus`
-- Mail contract: [`email-routing.json`](../email-routing.json)

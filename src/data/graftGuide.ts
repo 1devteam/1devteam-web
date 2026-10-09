@@ -19,7 +19,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     title: 'What it is',
     body: [
       'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces.',
-      'The download is the reconstruction pack from graft_plus: architecture decision, dependency graph, completeness, impact, proof, receipt. Source is not in the zip. Overlay stays residual.',
+      'The download mirrors the current graft_plus fact pack: AI receiver guide, compact ASCII topology, JSON evidence graph, factual change set, completeness report, unresolved-reference ledger, and receipt. Source is not in the zip. Overlay stays residual.',
       'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This page is G.R.A.F.T.+ only.',
     ],
   },
@@ -27,12 +27,12 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'what-it-is-not',
     title: 'What it is not',
     body: [
-      'G.R.A.F.T.+ does not choose a correction, write a plan, or authorize a merge. The pack role is fact-substrate. implementsPlan is always false. mergeAuthorization remains not-determined.',
+      'G.R.A.F.T.+ does not calculate blast radius, select proofs, classify risk, make architectural decisions, recommend changes, write a plan, or authorize a merge. The receiving AI owns those calculations and judgments. implementsPlan is always false. mergeAuthorization remains not-determined.',
       'It does not replace repository inspection, tests, runtime traces, or human review. A generated inventory is not an overlay. An acknowledged finding is not a repair. Ajenda and Omnipath are derivation records, not this workbench.',
     ],
     facts: [
       { term: 'Fact substrate', meaning: 'Supplies evidence-linked facts a planner may consume. Does not plan.' },
-      { term: 'Pack', meaning: 'One zip: architecture decision, graph, completeness, impact, proof, receipt.' },
+      { term: 'Pack', meaning: 'One zip: receiver guide, ASCII topology, JSON evidence graph, factual change set, completeness, unresolved ledger, receipt.' },
       { term: 'Residual', meaning: 'Unmapped, unmodeled, or overlay state that stays visible.' },
       { term: 'Overlay', meaning: 'Policy, saga, ownership, and runtime-authority facts. Unmodeled overlay remains residual.' },
     ],
@@ -41,7 +41,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'how-to-use',
     title: 'How to use this page',
     body: [
-      'Paste a public GitHub repository. Reconstruct. Download the pack. Feed graph-architecture-decision.json to an AI, then the graph. The run lives in this tab until you download it or leave.',
+      'Paste a public GitHub repository. Reconstruct. Download the pack. Give the AI graft-plus-receipt.json and dependency-graph.ascii.v1.txt first, then use the JSON graph for exact evidence anchors. The run lives in this tab until you download it or leave.',
     ],
     steps: [
       {
@@ -54,7 +54,7 @@ export const graftGuideSections: readonly GuideSection[] = [
       },
       {
         label: 'Download the pack',
-        detail: 'The zip holds graph-architecture-decision.json and the rest of the reconstruction pack. It does not include the source tree.',
+        detail: 'The zip holds the receiver guide, ASCII topology, JSON evidence graph, factual change set, completeness report, unresolved ledger, and receipt. It does not include the source tree.',
       },
       {
         label: 'Read joints first',
@@ -66,7 +66,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'reading-a-run',
     title: 'Reading a pack',
     body: [
-      'The reader protocol is baked into every map so a downstream AI does not need a second briefing. Honor negatives. Leave overlay residual. Do not invent files that were named as omitted.',
+      'The receiver protocol is baked into every pack so a downstream AI does not need a second briefing. Read the ASCII topology as consumer → dependency, honor negatives, leave overlay residual, and do not invent files that were named as omitted.',
       'Unresolved imports are facts: the specifier is not in this tree. They are not missing files and not a separate gap lane.',
       'The packet repeats the boundary: product G.R.A.F.T.+, role fact-substrate, implementsPlan false, mergeAuthorization not-determined.',
     ],
