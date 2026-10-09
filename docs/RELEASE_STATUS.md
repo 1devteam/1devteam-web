@@ -1,6 +1,6 @@
 # Public release status
 
-**Reviewed:** September 13, 2026
+**Reviewed:** October 9, 2026
 
 ## What is live
 
@@ -15,7 +15,11 @@
 - `/graft` is the public **G.R.A.F.T.+** workbench: paste a public GitHub
   repository, reconstruct one SHA, download one pack. `/wiki` serves the same
   workbench and canonicalizes to `/graft`. Dedicated `/wiki/:id` references
-  remain. G.R.A.F.T.+ is a fact substrate: not a planner, not merge authority.
+  remain. G.R.A.F.T.+ is a fact instrument: it observes and encodes; the
+  receiving AI owns blast radius, proof selection, risk, architecture, and
+  recommendations. It is not merge authority. The browser engine is manually
+  synchronized from semantic authority `1devteam/graft_plus`; current promoted
+  checkpoint is `42e0b4208ec4eb815943ae0dfcba5605dee223f2`, schema `1.11`.
   Ajenda and Omnipath are derivation records, not this workbench.
   See [`GRAFT.md`](GRAFT.md).
 - Official names are locked to G.R.A.F.T.+ and G.R.A.F.T.1st in public copy.
