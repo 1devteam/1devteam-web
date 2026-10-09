@@ -356,12 +356,6 @@ function annotatePythonRoutes(files: FileInput[], nodes: Node[]) {
   }
 }
 
-function sha256sync(text: string): string {
-  let h = 0;
-  for (let i = 0; i < text.length; i += 1) h = (h * 31 + text.charCodeAt(i)) >>> 0;
-  return h.toString(16).padStart(8, "0");
-}
-
 export function reconstructPack(input: {
   files: FileInput[];
   origin?: { owner?: string; repo?: string; ref?: string; sha?: string; url?: string };
