@@ -1,16 +1,141 @@
-import type { GraphEdge, GraphNode } from "./types.ts";
 import { classifyUnresolvedReference } from "./residuals.ts";
-export function auditGraph(graph:{nodes:GraphNode[];edges:GraphEdge[];facts:Record<string,unknown>;metrics:Record<string,unknown>}, files:Set<string>){
-  const ids=graph.nodes.map((n)=>n.id);const counts=new Map<string,number>();for(const id of ids)counts.set(id,(counts.get(id)??0)+1);const dup=[...counts].filter(([,c])=>c>1).map(([id])=>id).sort();
-  const known=new Set(ids);const missing=[...new Set(graph.edges.flatMap((e)=>[e.from,e.to]).filter((id)=>!known.has(id)))].sort();
-  const stale=graph.nodes.filter((n)=>n.source&&!files.has(n.source)).map((n)=>({id:n.id,source:n.source})).sort((a,b)=>a.id.localeCompare(b.id));
-  const unresolved=(graph.facts.unresolved_imports as Array<{specifier:string;from:string}>|undefined)??[];const classes:Record<string,number>={};for(const r of unresolved){const k=classifyUnresolvedReference(r.specifier,r.from);classes[k]=(classes[k]??0)+1;}
-  const facts=graph.facts;const residuals={overlay:"residual",unresolved_import_count:unresolved.length,unresolved_import_classes:Object.fromEntries(Object.entries(classes).sort()),unresolved_package_roots:facts.unresolved_package_roots??[],unmapped_source_file_count:0,unmapped_source_files:[] as string[],relationship_unparsed_file_count:facts.relationship_unparsed_file_count??0,relationship_unparsed_files:facts.relationship_unparsed_files??[],relationship_boundary_count:facts.relationship_boundary_count??0,unresolved_relationship_boundary_count:facts.unresolved_relationship_boundary_count??0,relationship_boundary_counts_by_kind:facts.relationship_boundary_counts_by_kind??{},stale_graph_source_count:stale.length,stale_graph_sources:stale,evidence_precision_counts:facts.evidence_precision_counts??{},contract_source_count:facts.contract_source_count??0,contract_declaration_count:facts.contract_declaration_count??0,contract_declaration_counts_by_kind:facts.contract_declaration_counts_by_kind??{},configuration_key_count:facts.configuration_key_count??0,deployment_fact_count:facts.deployment_fact_count??0,deployment_fact_counts_by_kind:facts.deployment_fact_counts_by_kind??{},subsystem_count:facts.subsystem_count??0,subsystem_direct_member_counts:facts.subsystem_direct_member_counts??{},cross_language_subsystem_count:facts.cross_language_subsystem_count??0,cross_language_subsystems:facts.cross_language_subsystems??[],build_definition_count:facts.build_definition_count??0,build_definition_counts_by_system:facts.build_definition_counts_by_system??{},build_input_edge_count:facts.build_input_edge_count??0,build_target_count:facts.build_target_count??0,build_target_input_edge_count:facts.build_target_input_edge_count??0,build_target_dependency_edge_count:facts.build_target_dependency_edge_count??0,governance_boundary_count:facts.governance_boundary_count??0,governance_boundary_counts_by_kind:facts.governance_boundary_counts_by_kind??{},source_provenance_counts:facts.source_provenance_counts??{}};
-  const integrityPass=!dup.length&&!missing.length;
-  return {schema_version:"1.4",integrity_pass:integrityPass,identity_integrity_pass:!dup.length,identity_collision_count:dup.length,duplicate_node_ids:dup,undefined_edge_endpoints:missing,unacknowledged_blocking_findings:[] as string[],acknowledged_findings:[] as string[],semantic_findings:[] as unknown[],semantic_reconciliation_counts:{},integrity:{identity_integrity_pass:!dup.length,duplicate_node_ids:dup,identity_collision_count:dup.length,missing_semantic_edge_evidence:[] as string[],unacknowledged_blocking_findings:[] as string[],acknowledged_semantic_findings:[] as string[],known_violations:[] as string[],semantic_finding_count:0,unmapped_source_file_count:residuals.unmapped_source_file_count,relationship_unparsed_file_count:residuals.relationship_unparsed_file_count,evidence_precision_counts:residuals.evidence_precision_counts,unresolved_relationship_boundary_count:residuals.unresolved_relationship_boundary_count,stale_graph_source_count:stale.length,pass:integrityPass},residuals,note:"An acknowledgement means the detector already knows the finding. It is not a repair."};
-}
-export function decideGraph(graph:Record<string,unknown>, completeness:ReturnType<typeof auditGraph>){
-  const r=completeness.residuals;const structural:string[]=[];for(const [k,reason] of [["unmapped_source_file_count","unmapped_source_files"],["relationship_unparsed_file_count","relationship_unparsed_files"],["unresolved_relationship_boundary_count","runtime_or_build_context_required"],["unresolved_import_count","unresolved_references"],["stale_graph_source_count","stale_graph_sources"]] as const)if(Number(r[k]??0))structural.push(reason);
-  const artifact=completeness.integrity_pass, identity=completeness.identity_integrity_pass;const review=[...structural,"no_git_range"];const disposition=!artifact||!identity?"blocked":review.length?"review-required":"clear";
-  return {schema_version:"1.3",product:"G.R.A.F.T.+",package:"graft_plus",role:"fact-substrate",decision:{architecture_disposition:disposition,dimensions:{artifact_integrity:artifact?"passed":"blocked",identity_integrity:identity?"passed":"blocked",structural_coverage:structural.length?"gaps-visible":"no-known-gaps",architectural_reconstruction:!structural.length&&artifact?"bounded":"incomplete",change_evidence:"not-requested",proof_readiness:"not-established",execution_authority:"not-granted",merge_authority:"not-determined"},merge_authorization:"not-determined",full_ci_required:true,blocking_reasons:[...(!identity?["canonical_identity_collision"]:[]),...(completeness.undefined_edge_endpoints.length?["undefined_edge_endpoints"]:[])],review_reasons:[...new Set(review)].sort(),warnings:Object.keys(r.unresolved_import_classes??{}).length?["unresolved_references_classified"]:[]},grants_execution_authority:false,implementsPlan:false,completeness:{integrity_pass:artifact,identity_integrity_pass:identity,identity_collision_count:completeness.identity_collision_count,duplicate_node_ids:completeness.duplicate_node_ids,undefined_edge_endpoints:completeness.undefined_edge_endpoints,...r},residuals:r,impact:{changed_files:[],changed_node_ids:[],unmapped_changed_files:[],upstream_consumers:[],downstream_dependencies:[],affected_semantic_node_ids:[],dependency_semantic_node_ids:[],impacted_tests:[],relevant_invariant_ids:[]},inputs:{metrics:(graph.metrics as Record<string,unknown>)??{}},negatives:["This pack is a map. It is not a plan.","No single disposition substitutes for the independent assurance dimensions.","merge_authorization is not-determined even when disposition is clear.","An acknowledgement is not a repair.","Do not invent missing nodes or unresolved targets.","Unresolved references are classified residual evidence, not proof of missing files.","Overlay stays residual until a reviewed relationship is attached."]};
+import type { GraphEdge, GraphNode } from "./types.ts";
+
+const TEST_EDGE_TYPES = new Set(["tests", "tests_function"]);
+const STATIC_EDGE_TYPE = "imports";
+
+export function auditGraph(
+  graph: { nodes: GraphNode[]; edges: GraphEdge[]; facts: Record<string, unknown> },
+  files: Set<string>,
+) {
+  const counts = new Map<string, number>();
+  for (const node of graph.nodes) counts.set(node.id, (counts.get(node.id) ?? 0) + 1);
+  const duplicateNodeIds = [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([id]) => id)
+    .sort();
+  const identityCollisionCount = [...counts.values()]
+    .filter((count) => count > 1)
+    .reduce((total, count) => total + count - 1, 0);
+
+  const known = new Set(graph.nodes.map((node) => node.id));
+  const undefinedEdgeEndpoints = [
+    ...new Set(
+      graph.edges
+        .flatMap((edge) => [edge.from, edge.to])
+        .filter((endpoint) => !known.has(endpoint)),
+    ),
+  ].sort();
+
+  const mappedSources = new Set(
+    graph.nodes.map((node) => node.source).filter((source): source is string => Boolean(source)),
+  );
+  const unmappedSourceFiles = [...files].filter((source) => !mappedSources.has(source)).sort();
+  const staleGraphSources = graph.nodes
+    .filter((node) => node.source && !files.has(node.source))
+    .map((node) => ({ id: node.id, source: node.source }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  const unresolved =
+    (graph.facts.unresolved_imports as Array<{ specifier: string; from: string }> | undefined) ?? [];
+  const unresolvedClasses: Record<string, number> = {};
+  for (const row of unresolved) {
+    const classification = classifyUnresolvedReference(row.specifier, row.from);
+    unresolvedClasses[classification] = (unresolvedClasses[classification] ?? 0) + 1;
+  }
+
+  const missingSemanticEdgeEvidence: string[] = [];
+  for (const edge of graph.edges) {
+    if (edge.type === STATIC_EDGE_TYPE || TEST_EDGE_TYPES.has(edge.type)) continue;
+    if (!edge.evidence || !files.has(edge.evidence)) {
+      missingSemanticEdgeEvidence.push(
+        edge.evidence || `${edge.from}->${edge.to}:${edge.type}`,
+      );
+    }
+  }
+
+  const overlayNodes = graph.nodes.filter((node) => node.layer === "overlay");
+  const facts = graph.facts;
+  const residuals = {
+    overlay: overlayNodes.length ? "attached" : "residual",
+    identity_collision_count: identityCollisionCount,
+    duplicate_node_ids: duplicateNodeIds,
+    unresolved_import_count: unresolved.length,
+    unresolved_import_classes: Object.fromEntries(
+      Object.entries(unresolvedClasses).sort(([a], [b]) => a.localeCompare(b)),
+    ),
+    unresolved_package_roots: facts.unresolved_package_roots ?? [],
+    unmapped_source_file_count: unmappedSourceFiles.length,
+    unmapped_source_files: unmappedSourceFiles,
+    relationship_unparsed_file_count: Number(facts.relationship_unparsed_file_count ?? 0),
+    relationship_unparsed_files: facts.relationship_unparsed_files ?? [],
+    relationship_boundary_count: Number(facts.relationship_boundary_count ?? 0),
+    unresolved_relationship_boundary_count: Number(
+      facts.unresolved_relationship_boundary_count ?? 0,
+    ),
+    relationship_boundary_counts_by_kind: facts.relationship_boundary_counts_by_kind ?? {},
+    relationship_boundaries: facts.relationship_boundaries ?? [],
+    evidence_precision_counts: facts.evidence_precision_counts ?? {},
+    contract_source_count: Number(facts.contract_source_count ?? 0),
+    contract_declaration_count: Number(facts.contract_declaration_count ?? 0),
+    contract_declaration_counts_by_kind: facts.contract_declaration_counts_by_kind ?? {},
+    configuration_key_count: Number(facts.configuration_key_count ?? 0),
+    deployment_fact_count: Number(facts.deployment_fact_count ?? 0),
+    deployment_fact_counts_by_kind: facts.deployment_fact_counts_by_kind ?? {},
+    subsystem_count: Number(facts.subsystem_count ?? 0),
+    subsystem_direct_member_counts: facts.subsystem_direct_member_counts ?? {},
+    cross_language_subsystem_count: Number(facts.cross_language_subsystem_count ?? 0),
+    cross_language_subsystems: facts.cross_language_subsystems ?? [],
+    build_definition_count: Number(facts.build_definition_count ?? 0),
+    build_definition_counts_by_system: facts.build_definition_counts_by_system ?? {},
+    build_input_edge_count: Number(facts.build_input_edge_count ?? 0),
+    governance_boundary_count: Number(facts.governance_boundary_count ?? 0),
+    governance_boundary_counts_by_kind: facts.governance_boundary_counts_by_kind ?? {},
+    source_provenance_counts: facts.source_provenance_counts ?? {},
+    stale_graph_source_count: staleGraphSources.length,
+    stale_graph_sources: staleGraphSources,
+    known_violations: [] as string[],
+    unacknowledged_blocking_findings: [] as string[],
+    note:
+      "Residuals stay visible. An acknowledgement is not a repair. Overlay stays residual until a reviewed relationship is attached.",
+  };
+
+  const integrityPass =
+    duplicateNodeIds.length === 0 &&
+    undefinedEdgeEndpoints.length === 0 &&
+    missingSemanticEdgeEvidence.length === 0;
+
+  return {
+    schema_version: "1.4",
+    role: "instrument-integrity",
+    integrity_pass: integrityPass,
+    identity_integrity_pass: duplicateNodeIds.length === 0,
+    duplicate_node_ids: duplicateNodeIds,
+    identity_collision_count: identityCollisionCount,
+    undefined_edge_endpoints: undefinedEdgeEndpoints,
+    semantic_findings: [] as unknown[],
+    unacknowledged_blocking_findings: [] as string[],
+    acknowledged_findings: [] as string[],
+    integrity: {
+      identity_integrity_pass: duplicateNodeIds.length === 0,
+      duplicate_node_ids: duplicateNodeIds,
+      identity_collision_count: identityCollisionCount,
+      missing_semantic_edge_evidence: [...new Set(missingSemanticEdgeEvidence)].sort(),
+      unacknowledged_blocking_findings: [] as string[],
+      acknowledged_semantic_findings: [] as string[],
+      known_violations: [] as string[],
+      semantic_finding_count: 0,
+      unmapped_source_file_count: unmappedSourceFiles.length,
+      relationship_unparsed_file_count: Number(facts.relationship_unparsed_file_count ?? 0),
+      evidence_precision_counts: facts.evidence_precision_counts ?? {},
+      unresolved_relationship_boundary_count: Number(
+        facts.unresolved_relationship_boundary_count ?? 0,
+      ),
+      stale_graph_source_count: staleGraphSources.length,
+      pass: integrityPass,
+    },
+    residuals,
+    note:
+      "An acknowledgement means the detector already knows the finding. It is not a repair.",
+  };
 }
