@@ -46,13 +46,13 @@ export function GraftReconstruct() {
             <li>Public GitHub repositories reconstruct without a token.</li>
             <li>Every ingested path, contract, and resolved inner dependency is a fact, not a sample.</li>
             <li>Files GitHub will not return, or that exceed the text size limit, are named on the map.</li>
-            <li>The download is one zip: map, JSON pack, and the ingested tree. An AI can answer from that pack.</li>
+            <li>The download is one fact-only zip: receiver guide, ASCII topology, JSON evidence graph, factual change set, completeness, unresolved ledger, and receipt. Source is not included.</li>
           </ul>
         </div>
         <div className="mt-8">
           <h2 className="text-lg font-medium">What is not claimed</h2>
           <ul className="mt-3 space-y-2 text-sm text-muted">
-            <li>This is not a planner and not merge authority.</li>
+            <li>G.R.A.F.T.+ observes; it does not calculate blast radius, choose proof, classify risk, make architectural decisions, recommend changes, or authorize a merge.</li>
             <li>Ajenda and Omnipath are derivation records, not this workbench.</li>
             <li>Skip directories such as node_modules and .git are not source.</li>
           </ul>
