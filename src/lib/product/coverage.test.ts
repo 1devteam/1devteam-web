@@ -56,7 +56,7 @@ describe("production pack coverage", () => {
     assert.ok(deps.some((c) => /fastapi/.test(c) && /not resolved/.test(c)));
     assert.ok(deps.some((c) => /django\.db/.test(c) && /not resolved/.test(c)));
     assert.match(archive.markdown, /dependency-graph\.ascii\.v1\.txt/);
-    assert.match(archive.markdown, /not a plan/);
+    assert.match(archive.markdown, /receiving AI owns blast radius/i);
     assert.ok(!prepared.profile.facts.some((f) => f.kind === "gap"));
   });
 
