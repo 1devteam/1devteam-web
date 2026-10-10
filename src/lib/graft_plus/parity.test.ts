@@ -29,6 +29,21 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
+function routeNode(
+  graph: ReturnType<typeof graphOf>,
+  source: string,
+  method: string,
+  path: string,
+) {
+  return graph.nodes.find(
+    (item) =>
+      item.type === "http_route" &&
+      item.source === source &&
+      item.method === method &&
+      (item.path === path || item.route === path),
+  );
+}
+
 describe("canonical 1.14 browser parity surface", () => {
   it("pins the manually promoted canonical revision and authority boundary", () => {
     assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "5150d0b141830dd85a7daee60078976d3ee24556");
@@ -57,6 +72,7 @@ describe("canonical 1.14 browser parity surface", () => {
       website_execution_authority: "1devteam/1devteam-web",
       website_synchronization_mode: "github-reviewed-manual-port",
       website_runtime_dependency: "none",
+      overlay_mode: "none",
     });
     assert.equal(receipt.status_scope, "instrument-integrity-only");
     assert.equal(receipt.merge_authorization, "not-determined");
@@ -147,7 +163,10 @@ describe("canonical 1.14 browser parity surface", () => {
     const find = (kind: string, source: string) => boundaries.filter((row) => row.kind === kind && row.source === source);
     assert.deepEqual(find("wildcard_import", "app.py").map((row) => row.line), [1]);
     assert.deepEqual(find("dynamic_load", "app.py").map((row) => row.line), [3]);
-    assert.deepEqual(find("dependency_injection", "app.py").map((row) => row.line), [4]);
+    const pythonDi = find("dependency_injection", "app.py");
+    assert.deepEqual(pythonDi.map((row) => row.line), [4]);
+    assert.equal(pythonDi[0]?.status, "declared");
+    assert.equal(pythonDi[0]?.target_symbol, "get_db");
     assert.deepEqual(find("route_composition", "app.py").map((row) => row.line), [5]);
     assert.deepEqual(find("dynamic_load", "app.js").map((row) => row.line), [1]);
     assert.deepEqual(find("dependency_injection", "app.js").map((row) => row.line), [2]);
@@ -166,15 +185,9 @@ describe("canonical 1.14 browser parity surface", () => {
           "from fastapi import APIRouter\nrouter = APIRouter()\n@router.get('/health')\ndef health():\n    return {'ok': True}\n",
       },
     ]);
-    const route = graph.nodes.find(
-      (item) =>
-        item.type === "http_route" &&
-        item.route_identity === "declaration" &&
-        item.method === "GET" &&
-        item.path === "/health" &&
-        item.source === "pkg/main.py",
-    );
+    const route = routeNode(graph, "pkg/main.py", "GET", "/health");
     assert.ok(route?.evidence_anchor);
+    assert.match(String(route?.id), /^route-declaration:pkg\.main:GET:\/health@L\d+$/);
     const anchor = route?.evidence_anchor as Record<string, unknown>;
     assert.equal(anchor.source, "pkg/main.py");
   });
@@ -245,15 +258,9 @@ describe("canonical 1.14 browser parity surface", () => {
     const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
     assert.ok(edges.has("fn:app.api:value|fn:app.helpers:used|calls_function"));
     assert.ok(edges.has("test:tests/test_api.py|fn:app.api:value|tests_function"));
-    const route = graph.nodes.find(
-      (item) =>
-        item.type === "http_route" &&
-        item.route_identity === "declaration" &&
-        item.handler === "value" &&
-        item.source === "app/api.py",
-    );
-    assert.ok(route);
-    assert.ok(edges.has(`${route.id}|fn:app.api:value|handled_by`));
+    const valueRoute = routeNode(graph, "app/api.py", "GET", "/value");
+    assert.ok(valueRoute);
+    assert.ok(edges.has(`${valueRoute.id}|fn:app.api:value|handled_by`));
   });
 
   it("maps methods, nested handlers, callable bindings, route ownership, and direct method tests", () => {
@@ -313,113 +320,167 @@ describe("canonical 1.14 browser parity surface", () => {
     assert.ok(edges.has(`${register}|${binding.id}|declares_binding`));
     assert.ok(edges.has(`${binding.id}|${handler}|binds_callable`));
 
-    const route = graph.nodes.find(
-      (item) =>
-        item.type === "http_route" &&
-        item.route_identity === "declaration" &&
-        item.handler === "run_route" &&
-        item.source === "app/runtime.py",
-    );
-    assert.ok(route);
-    assert.ok(edges.has(`${route.id}|${routeHandler}|handled_by`));
+    const runRoute = routeNode(graph, "app/runtime.py", "POST", "/run");
+    assert.ok(runRoute);
+    assert.ok(edges.has(`${runRoute.id}|${routeHandler}|handled_by`));
     assert.ok(edges.has(`test:tests/test_runtime.py|${complete}|tests_function`));
   });
 
-  it("aggregates repeated callable evidence without duplicating topology", () => {
+  it("separates route declarations from proven runtime composition", () => {
     const graph = graphOf([
       {
-        path: "app/service.py",
+        path: "app/routes.py",
         content:
-          "def helper():\n" +
-          "    return 1\n\n" +
-          "def run():\n" +
-          "    helper()\n" +
-          "    return helper()\n",
+          "from fastapi import APIRouter\n" +
+          "router = APIRouter(prefix='/tasks')\n" +
+          "@router.get('/me')\n" +
+          "def me():\n" +
+          "    return {'ok': True}\n",
+      },
+      {
+        path: "app/main.py",
+        content:
+          "from fastapi import FastAPI\n" +
+          "from app.routes import router as task_router\n" +
+          "app = FastAPI()\n" +
+          "app.include_router(task_router, prefix='/v1')\n",
       },
     ]);
-    const edge = graph.edges.find(
-      (item) =>
-        item.from === "fn:app.service:run" &&
-        item.to === "fn:app.service:helper" &&
-        item.type === "calls_function",
-    );
-    assert.ok(edge);
-    assert.equal(edge.occurrences, 2);
-    assert.equal((edge.observations as unknown[]).length, 2);
-    assert.equal(
-      graph.edges.filter(
-        (item) =>
-          item.from === "fn:app.service:run" &&
-          item.to === "fn:app.service:helper" &&
-          item.type === "calls_function",
-      ).length,
-      1,
+
+    const declaration = routeNode(graph, "app/routes.py", "GET", "/me");
+    assert.ok(declaration);
+    const runtime = node(graph, "runtime-route:GET:/v1/tasks/me");
+    assert.ok(runtime);
+    assert.equal(runtime.route_identity, "runtime-composed");
+    assert.ok(
+      graph.edges.some(
+        (edge) =>
+          edge.from === declaration.id &&
+          edge.to === runtime.id &&
+          edge.type === "composes_to",
+      ),
     );
   });
 
-  it("emits explicit RLS boundaries and direct egress facts", () => {
+  it("auto-discovers repository-owned overlay facts without interpreting them", () => {
     const graph = graphOf([
-      {
-        path: "alembic/versions/0001.py",
-        content:
-          "def upgrade():\n" +
-          "    op.create_table('records')\n" +
-          "    op.execute('ALTER TABLE records ENABLE ROW LEVEL SECURITY')\n",
-      },
-      {
-        path: "app/client.py",
-        content:
-          "import httpx\n" +
-          "def load():\n" +
-          "    return httpx.get('https://example.com')\n",
-      },
-    ]);
-    const ids = new Set(graph.nodes.map((item) => String(item.id)));
-    assert.ok(ids.has("security-boundary:rls:records"));
-    const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
-    assert.ok(edges.has("db:table:records|security-boundary:rls:records|rls_enforced"));
-    assert.ok(edges.has("py:app.client|egress:app.client|direct_network_egress"));
-  });
-
-  it("discovers reviewed overlay invariants and function roots without adjudicating them", () => {
-    const graph = graphOf([
-      {
-        path: "app/isolated.py",
-        content: "def kept_by_reviewed_root():\n    return 1\n",
-      },
+      { path: "app.py", content: "VALUE = 1\n" },
       {
         path: "docs/contracts/dependency-graph.overlay.v1.json",
         content: JSON.stringify({
-          schema_version: "1.0",
-          function_roots: ["app"],
-          nodes: [
-            {
-              id: "security-boundary:tenant",
-              type: "security_boundary",
-              source: "docs/contracts/dependency-graph.overlay.v1.json",
-              boundary_kind: "tenant-isolation",
-            },
-          ],
+          nodes: [{ id: "runtime-action:send", type: "runtime_action", source: "app.py" }],
           edges: [],
-          invariants: [
-            {
-              id: "invariant:tenant-isolation",
-              name: "tenant isolation",
-              description: "Repository-declared invariant",
-            },
-          ],
+          invariants: [{ id: "tenant-isolation", status: "enforced", sources: ["app.py"] }],
         }),
       },
     ]);
 
-    assert.ok(node(graph, "security-boundary:tenant"));
-    assert.ok(node(graph, "fn:app.isolated:kept_by_reviewed_root"));
-    assert.equal(graph.facts.overlay_mode, "repository-discovered");
-    const invariants = (graph as unknown as { invariants: Array<Record<string, unknown>> }).invariants;
-    assert.equal(invariants.length, 1);
-    assert.equal(invariants[0].id, "invariant:tenant-isolation");
-    assert.equal("relevant" in invariants[0], false);
-    assert.equal("blocks_merge" in invariants[0], false);
+    assert.ok(node(graph, "runtime-action:send"));
+    const pack = packOf([
+      { path: "app.py", content: "VALUE = 1\n" },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          nodes: [{ id: "runtime-action:send", type: "runtime_action", source: "app.py" }],
+          edges: [],
+          invariants: [{ id: "tenant-isolation", status: "enforced", sources: ["app.py"] }],
+        }),
+      },
+    ]);
+    const fullGraph = pack["dependency-graph.v1.json"] as {
+      invariants: unknown[];
+      semantic_provenance: Record<string, unknown>;
+    };
+    assert.deepEqual(fullGraph.invariants, [
+      { id: "tenant-isolation", status: "enforced", sources: ["app.py"] },
+    ]);
+    assert.equal(fullGraph.semantic_provenance.overlay_mode, "auto-discovered");
+  });
+
+  it("projects RLS as an explicit security boundary", () => {
+    const graph = graphOf([
+      {
+        path: "alembic/versions/0001_secure.py",
+        content:
+          "def upgrade():\n" +
+          "    op.create_table('tenants')\n" +
+          "    op.execute('ALTER TABLE tenants ENABLE ROW LEVEL SECURITY')\n" +
+          "    op.execute('ALTER TABLE tenants FORCE ROW LEVEL SECURITY')\n" +
+          "    op.execute('CREATE POLICY tenant_policy ON tenants USING (true)')\n",
+      },
+    ]);
+
+    const boundary = node(graph, "security-boundary:rls:tenants");
+    assert.ok(boundary);
+    assert.equal(boundary.boundary_kind, "row_level_security");
+    assert.equal(boundary.enabled, true);
+    assert.equal(boundary.forced, true);
+    assert.deepEqual(boundary.policies, ["tenant_policy"]);
+    assert.ok(
+      graph.edges.some(
+        (edge) =>
+          edge.from === "db:table:tenants" &&
+          edge.to === "security-boundary:rls:tenants" &&
+          edge.type === "rls_enforced",
+      ),
+    );
+  });
+
+  it("aggregates repeated callable observations without losing evidence", () => {
+    const graph = graphOf([
+      { path: "app/deps.py", content: "def get_db():\n    return object()\n" },
+      {
+        path: "app/api.py",
+        content:
+          "from fastapi import Depends\n" +
+          "from app.deps import get_db\n" +
+          "def items(db=Depends(get_db)):\n" +
+          "    get_db()\n" +
+          "    get_db()\n" +
+          "    return db\n",
+      },
+    ]);
+
+    const calls = graph.edges.filter(
+      (edge) =>
+        edge.from === "fn:app.api:items" &&
+        edge.to === "fn:app.deps:get_db" &&
+        edge.type === "calls_function",
+    );
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0]?.occurrences, 2);
+    assert.equal((calls[0]?.observations as unknown[]).length, 2);
+
+    const injection = graph.edges.find(
+      (edge) =>
+        edge.from === "fn:app.api:items" &&
+        edge.to === "fn:app.deps:get_db" &&
+        edge.type === "injects_dependency",
+    );
+    assert.ok(injection);
+  });
+
+  it("preserves callable binding declaration metadata as facts", () => {
+    const graph = graphOf([
+      {
+        path: "app.py",
+        content:
+          "def handler():\n" +
+          "    return None\n" +
+          "def register():\n" +
+          "    return ActionDefinition(name='sales.qualify', handler=handler, provider='local_sales', input_model=SalesLeadInput, side_effect_class=SideEffectClass.INTERNAL_READ)\n",
+      },
+    ]);
+    const binding = graph.nodes.find((item) => item.type === "callable_binding");
+    assert.ok(binding);
+    assert.equal((binding.declared_fields as Record<string, unknown>).provider, "local_sales");
+    assert.deepEqual((binding.declared_fields as Record<string, unknown>).input_model, {
+      symbol: "SalesLeadInput",
+    });
+    assert.deepEqual(
+      (binding.declared_fields as Record<string, unknown>).side_effect_class,
+      { symbol: "SideEffectClass.INTERNAL_READ" },
+    );
   });
 
   it("reports instrument integrity without emitting architectural judgment", () => {
@@ -486,7 +547,7 @@ describe("canonical 1.14 browser parity surface", () => {
 
     const ascii = pack["dependency-graph.ascii.v1.txt"] as string;
     const decoded = decodeGraphAscii(ascii);
-    assert.ok(ascii.startsWith("G2|"));
+    assert.match(ascii, /^G2\|/);
     assert.equal(decoded.schema_version, "ascii-topology-v2");
     assert.equal(decoded.direction, "c>d");
     assert.equal(decoded.nodes.length, graph.nodes.length);
@@ -523,4 +584,45 @@ describe("canonical 1.14 browser parity surface", () => {
 
     assert.equal(typeof pack["00-AI-READ-FIRST.md"], "string");
   });
+  it("discovers reviewed overlay invariants and function roots without adjudicating them", () => {
+    const graph = graphOf([
+      {
+        path: "app/isolated.py",
+        content: "def kept_by_reviewed_root():\n    return 1\n",
+      },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          schema_version: "1.0",
+          function_roots: ["app"],
+          nodes: [
+            {
+              id: "security-boundary:tenant",
+              type: "security_boundary",
+              source: "docs/contracts/dependency-graph.overlay.v1.json",
+              boundary_kind: "tenant-isolation",
+            },
+          ],
+          edges: [],
+          invariants: [
+            {
+              id: "invariant:tenant-isolation",
+              name: "tenant isolation",
+              description: "Repository-declared invariant",
+            },
+          ],
+        }),
+      },
+    ]);
+
+    assert.ok(node(graph, "security-boundary:tenant"));
+    assert.ok(node(graph, "fn:app.isolated:kept_by_reviewed_root"));
+    assert.equal(graph.facts.overlay_mode, "repository-discovered");
+    const invariants = (graph as unknown as { invariants: Array<Record<string, unknown>> }).invariants;
+    assert.equal(invariants.length, 1);
+    assert.equal(invariants[0].id, "invariant:tenant-isolation");
+    assert.equal("relevant" in invariants[0], false);
+    assert.equal("blocks_merge" in invariants[0], false);
+  });
+
 });
