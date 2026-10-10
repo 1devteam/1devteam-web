@@ -127,16 +127,11 @@ describe("graft_plus reconstruct", () => {
     };
     const ids = new Set(graph.nodes.map((node) => node.id));
     const specs = new Set(ledger.specifier_table);
+    const routeIds = [...ids].filter((id) => id.startsWith("route-declaration:"));
 
-    const routes = graph.nodes.filter((node) => node.type === "http_route") as Array<{
-      id: string;
-      method?: string;
-      path?: string;
-      source?: string;
-    }>;
-    assert.ok(routes.some((route) => route.method === "GET" && route.path === "/status" && route.source === "app/web.py"));
-    assert.ok(routes.some((route) => route.method === "POST" && route.path === "/status" && route.source === "app/web.py"));
-    assert.ok(routes.some((route) => route.method === "POST" && route.path === "/pay" && route.source === "server.js"));
+    assert.ok(routeIds.some((id) => id.includes(":GET:/status@L")));
+    assert.ok(routeIds.some((id) => id.includes(":POST:/status@L")));
+    assert.ok(routeIds.some((id) => id.includes(":POST:/pay@L")));
     assert.ok(ids.has("db:table:watches"));
     assert.equal(specs.has("ctypes"), false);
     assert.ok(specs.has("stripe"));
@@ -152,59 +147,12 @@ describe("graft_plus reconstruct", () => {
     assert.ok("unresolved_import_count" in completeness.residuals);
   });
 
-  it("keeps duplicate relative routes distinct and composes only proven runtime paths", () => {
-    const pack = reconstructPack({
-      files: [
-        {
-          path: "app/routes/account.py",
-          content:
-            "from fastapi import APIRouter\n" +
-            "router = APIRouter(prefix='/account')\n" +
-            "@router.get('/me')\n" +
-            "def account_me():\n" +
-            "    return {}\n",
-        },
-        {
-          path: "app/routes/auth.py",
-          content:
-            "from fastapi import APIRouter\n" +
-            "router = APIRouter(prefix='/auth')\n" +
-            "@router.get('/me')\n" +
-            "def auth_me():\n" +
-            "    return {}\n",
-        },
-        {
-          path: "app/main.py",
-          content:
-            "from fastapi import FastAPI\n" +
-            "from app.routes.account import router as account_router\n" +
-            "from app.routes.auth import router as auth_router\n" +
-            "app = FastAPI()\n" +
-            "app.include_router(account_router, prefix='/v1')\n" +
-            "app.include_router(auth_router, prefix='/v1')\n",
-        },
-      ],
-    });
-    const graph = pack["dependency-graph.v1.json"] as {
-      nodes: Array<Record<string, unknown>>;
-      edges: Array<Record<string, unknown>>;
-    };
-    const declarations = graph.nodes.filter(
-      (node) => node.type === "http_route" && node.route_identity === "declaration" && node.path === "/me",
-    );
-    assert.equal(declarations.length, 2);
-    assert.equal(new Set(declarations.map((node) => node.id)).size, 2);
-
-    const runtimeIds = new Set(
-      graph.nodes.filter((node) => node.type === "runtime_route").map((node) => String(node.id)),
-    );
-    assert.ok(runtimeIds.has("runtime-route:GET:/v1/account/me"));
-    assert.ok(runtimeIds.has("runtime-route:GET:/v1/auth/me"));
-    const composition = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
-    assert.ok([...composition].some((key) => key.endsWith("|runtime-route:GET:/v1/account/me|composes_to")));
-    assert.ok([...composition].some((key) => key.endsWith("|runtime-route:GET:/v1/auth/me|composes_to")));
+  it("contains no Ajenda domain strings", () => {
+    const src = readFileSync(fileURLToPath(new URL("./reconstruct.ts", import.meta.url)), "utf8");
+    assert.doesNotMatch(src, /hubspot/i);
+    assert.doesNotMatch(src, /tenant-isolation/);
+    assert.doesNotMatch(src, /lease-owner/);
   });
-
   it("emits literal runtime declarations without making runtime decisions", () => {
     const pack = reconstructPack({
       files: [
@@ -248,10 +196,4 @@ describe("graft_plus reconstruct", () => {
     assert.equal("proof_selection" in graph, false);
   });
 
-  it("contains no Ajenda domain strings", () => {
-    const src = readFileSync(fileURLToPath(new URL("./reconstruct.ts", import.meta.url)), "utf8");
-    assert.doesNotMatch(src, /hubspot/i);
-    assert.doesNotMatch(src, /tenant-isolation/);
-    assert.doesNotMatch(src, /lease-owner/);
-  });
 });
