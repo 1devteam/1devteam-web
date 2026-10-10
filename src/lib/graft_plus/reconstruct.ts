@@ -11,6 +11,7 @@ import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
 import { buildUnresolvedLedger, compactGraph, UNRESOLVED_LEDGER_FILE } from "./residuals.ts";
 import { AI_RECEIVER_GUIDE } from "./receiver-guide.ts";
+import { discoverReviewedOverlay } from "./overlay.ts";
 import { collectRouteGraph } from "./routes.ts";
 import { collectRuntimeDeclarations } from "./runtime-declarations.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
@@ -394,6 +395,7 @@ export function reconstructPack(input: {
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
   const routeGraph = collectRouteGraph(files);
+  const reviewedOverlay = discoverReviewedOverlay(files);
   const generatedNodes = generated.nodes.filter((node) => node.type !== "http_route");
   const generatedRouteIds = new Set(
     generated.nodes.filter((node) => node.type === "http_route").map((node) => node.id),
@@ -440,6 +442,7 @@ export function reconstructPack(input: {
     ...generatedNodes,
     ...rlsNodes,
     ...routeGraph.nodes,
+    ...reviewedOverlay.nodes,
   ];
   let edges: Edge[] = [
     ...py.edges,
@@ -449,6 +452,7 @@ export function reconstructPack(input: {
     ...generatedEdges,
     ...rlsEdges,
     ...routeGraph.edges,
+    ...reviewedOverlay.edges,
   ];
 
   const sourceNodeIds = new Map<string, string>();
@@ -457,7 +461,7 @@ export function reconstructPack(input: {
   }
   const pythonBySource = new Map(py.nodes.map((node) => [node.source, node.id]));
 
-  const functions = collectFunctionGraph(files, pythonBySource);
+  const functions = collectFunctionGraph(files, pythonBySource, reviewedOverlay.functionRoots);
   nodes.push(...functions.nodes);
   edges.push(...functions.edges);
 
@@ -614,12 +618,12 @@ export function reconstructPack(input: {
         "dependency-provider-topology",
         "runtime-declaration-contracts",
       ],
-      function_roots: [] as string[],
-      overlay: null,
+      function_roots: reviewedOverlay.functionRoots,
+      overlay: reviewedOverlay.path,
     },
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
     edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to) || a.type.localeCompare(b.type)),
-    invariants: [] as unknown[],
+    invariants: reviewedOverlay.invariants,
     facts: {
       unresolved_imports: unresolved,
       unresolved_package_roots: roots,
@@ -630,6 +634,7 @@ export function reconstructPack(input: {
       ...configuration.facts,
       ...architecture.facts,
       ...runtimeDeclarations.facts,
+      overlay_mode: reviewedOverlay.mode,
       evidence_precision_counts: evidencePrecisionCounts,
     },
   };
