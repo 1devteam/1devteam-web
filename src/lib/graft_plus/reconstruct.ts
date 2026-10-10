@@ -744,9 +744,24 @@ export function reconstructPack(input: {
   const languages = collectLanguageGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
-  annotatePythonRoutes(files, generated.nodes);
-  let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...languages.nodes, ...surfaceNodes, ...generated.nodes];
-  let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...languages.edges, ...generated.edges];
+  const overlay = repositoryOverlay(files);
+  let nodes: Node[] = [
+    ...py.nodes,
+    ...fe.nodes,
+    ...tests.nodes,
+    ...languages.nodes,
+    ...surfaceNodes,
+    ...generated.nodes,
+    ...overlay.nodes,
+  ];
+  let edges: Edge[] = [
+    ...py.edges,
+    ...fe.edges,
+    ...tests.edges,
+    ...languages.edges,
+    ...generated.edges,
+    ...overlay.edges,
+  ];
 
   const sourceNodeIds = new Map<string, string>();
   for (const node of nodes) {
@@ -849,7 +864,7 @@ export function reconstructPack(input: {
     const key = JSON.stringify(edge, Object.keys(edge).sort());
     edgeByKey.set(key, edge);
   }
-  const kept = [...edgeByKey.values()];
+  const kept = aggregateOccurrenceEdges([...edgeByKey.values()]);
   attachEvidenceAnchors(files, nodes, kept);
 
   const evidencePrecisionCounts = {
@@ -865,14 +880,19 @@ export function reconstructPack(input: {
     }, {}),
   };
 
+  const semanticProvenance = {
+    ...SEMANTIC_PROVENANCE,
+    overlay_mode: overlay.file ? "auto-discovered" : "none",
+  };
+
   const graph = {
-    schema_version: "1.12",
+    schema_version: "1.13",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
     implementsPlan: IMPLEMENTS_PLAN,
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
-    semantic_provenance: SEMANTIC_PROVENANCE,
+    semantic_provenance: semanticProvenance,
     generated_from: {
       python_roots: files.some((file) => file.path.endsWith(".py")) ? ["."] : [],
       adapters: [
@@ -899,13 +919,15 @@ export function reconstructPack(input: {
         "cross-language-subsystem-joins",
         "governance-boundaries",
         "evidence-anchors",
+        "route-declaration-composition",
+        "dependency-provider-topology",
       ],
       function_roots: [] as string[],
-      overlay: null,
+      overlay: overlay.file?.path ?? null,
     },
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
     edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to) || a.type.localeCompare(b.type)),
-    invariants: [] as unknown[],
+    invariants: overlay.invariants,
     facts: {
       unresolved_imports: unresolved,
       unresolved_package_roots: roots,
@@ -938,7 +960,7 @@ export function reconstructPack(input: {
     package: "graft_plus",
     engine: GRAFT_EMBEDDED_ENGINE,
     role: "fact-substrate",
-    semantic_provenance: SEMANTIC_PROVENANCE,
+    semantic_provenance: semanticProvenance,
     website_sync: WEBSITE_SYNC_PROVENANCE,
     subject: input.origin?.url ?? `${input.origin?.owner ?? "local"}/${input.origin?.repo ?? "subject"}`,
     subject_sha: sha,
