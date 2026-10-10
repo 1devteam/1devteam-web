@@ -96,6 +96,7 @@ export function encodeGraphAscii(graph: {
   const typeIndex = new Map(nodeTypes.map((value, index) => [value, index]));
   const relationIndex = new Map(edgeTypes.map((value, index) => [value, index]));
   const sourceIndex = new Map(sources.map((value, index) => [value, index]));
+
   const nodeWidth = width(nodes.length);
   const relationWidth = width(edgeTypes.length);
   const typeWidth = width(nodeTypes.length);
@@ -147,16 +148,16 @@ export function decodeGraphAscii(text: string): {
   edges: Array<{ from: string; to: string; type: string }>;
 } {
   const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
-  if (!lines[0] || !(lines[0].startsWith("G1|") || lines[0].startsWith("G2|"))) {
-    throw new Error("unsupported ASCII graph header");
-  }
-  const version = lines[0].split("|", 1)[0]!;
-  const header = Object.fromEntries(lines[0].split("|").slice(1).map((part) => splitOnce(part, "="))) as Record<string, string>;
+  const version = lines[0]?.split("|", 1)[0];
+  if (version !== "G1" && version !== "G2") throw new Error("unsupported ASCII graph header");
+
+  const header = Object.fromEntries(lines[0]!.split("|").slice(1).map((part) => splitOnce(part, "="))) as Record<string, string>;
   const nodeCount = Number(header.n);
   const edgeCount = Number(header.e);
+  const sourceCount = Number(header.s ?? 0);
   const nodeWidth = Number(header.nw);
   const relationWidth = Number(header.rw);
-  const sourceCount = Number(header.s ?? 0);
+
   const nodeTypes = new Map<string, string>();
   const edgeTypes = new Map<string, string>();
   const sources = new Map<string, string>();
@@ -166,19 +167,19 @@ export function decodeGraphAscii(text: string): {
   for (const line of lines.slice(1)) {
     if (line.startsWith("T")) {
       const [key, value] = splitOnce(line.slice(1), "=");
-      nodeTypes.set(key!, unescapeValue(value));
+      nodeTypes.set(key, unescapeValue(value));
     } else if (line.startsWith("R")) {
-      const [key, value = ""] = line.slice(1).split("=", 2);
-      edgeTypes.set(key!, unescapeValue(value));
+      const [key, value] = splitOnce(line.slice(1), "=");
+      edgeTypes.set(key, unescapeValue(value));
     } else if (line.startsWith("S")) {
       const [key, value] = splitOnce(line.slice(1), "=");
-      sources.set(key!, unescapeValue(value));
+      sources.set(key, unescapeValue(value));
     } else if (line.startsWith("N")) {
       const [key, raw] = splitOnce(line.slice(1), "=");
       const fields = raw.split("|");
       if (fields.length !== 6) throw new Error("invalid ASCII node row");
       const [id, typeCode, source, subsystem, layer, relationshipStatus] = fields;
-      const decodedSource = version === "G2" && source ? sources.get(source!) ?? "" : unescapeValue(source!);
+      const decodedSource = version === "G2" && source ? sources.get(source)! : unescapeValue(source!);
       const node: Record<string, string> = {
         id: unescapeValue(id!),
         type: nodeTypes.get(typeCode!)!,
@@ -190,7 +191,7 @@ export function decodeGraphAscii(text: string): {
         relationship_status: unescapeValue(relationshipStatus!),
       };
       for (const [name, value] of Object.entries(optional)) if (value) node[name] = value;
-      nodesByCode.set(key!, node);
+      nodesByCode.set(key, node);
     } else if (line.startsWith("E=")) edgeChunks.push(line.slice(2));
     else if (line.startsWith("E+")) edgeChunks.push(line.slice(2));
     else throw new Error(`unknown ASCII graph row: ${line.slice(0, 16)}`);
@@ -198,6 +199,7 @@ export function decodeGraphAscii(text: string): {
 
   if (nodesByCode.size !== nodeCount) throw new Error("ASCII graph node count mismatch");
   if (version === "G2" && sources.size !== sourceCount) throw new Error("ASCII graph source dictionary count mismatch");
+
   const edgeStream = edgeChunks.join("");
   const recordWidth = nodeWidth + relationWidth + nodeWidth;
   if (edgeStream.length !== edgeCount * recordWidth) throw new Error("ASCII graph edge stream length mismatch");

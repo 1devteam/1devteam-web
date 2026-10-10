@@ -3,7 +3,7 @@ import { language } from "./inventory.ts";
 
 export type RelationshipBoundary = {
   kind:string; status:"declared"|"unresolved"; source:string; line:number; language:string;
-  evidence:string; reason:string; detector:string;
+  evidence:string; reason:string; detector:string; target_symbol?:string;
 };
 
 function compact(value:string){return value.trim().replace(/\s+/g," ").slice(0,240);}
@@ -27,7 +27,13 @@ export function collectRelationshipBoundaries(files:FileInput[]){
           const declared=/\b(?:__import__|importlib\.import_module|importlib\.util\.spec_from_file_location)\s*\(\s*["']/.test(text);
           rows.push(row("dynamic_load",declared?"declared":"unresolved",file.path,line,lang,text,"The dynamic import API requires runtime evaluation; a literal argument is recorded but not promoted to an edge.","python_source"));
         }
-        if(/\b(?:Depends|Inject|Provide)\s*\(|\b(?:container|injector)\.(?:get|provide|resolve)\s*\(/.test(text)) rows.push(row("dependency_injection","unresolved",file.path,line,lang,text,"Container or framework resolution selects the runtime provider.","python_source"));
+        const declaredDi=text.match(/\b(?:Depends|Inject|Provide)\s*\(\s*([A-Za-z_][A-Za-z0-9_.]*)/);
+        const dynamicDi=/\b(?:container|injector)\.(?:get|provide|resolve)\s*\(/.test(text);
+        if(declaredDi){
+          rows.push({...row("dependency_injection","declared",file.path,line,lang,text,"Source explicitly declares the dependency provider; callable topology may resolve it to a repository symbol.","python_source"),target_symbol:declaredDi[1]});
+        }else if(dynamicDi){
+          rows.push(row("dependency_injection","unresolved",file.path,line,lang,text,"Container or framework resolution selects the runtime provider.","python_source"));
+        }
         if(/\.(?:include_router|include|mount)\s*\(/.test(text)) rows.push(row("route_composition","declared",file.path,line,lang,text,"Source declares route composition; the graph does not synthesize a runtime-prefixed route.","python_source"));
       }
 
