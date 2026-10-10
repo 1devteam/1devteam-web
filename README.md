@@ -9,13 +9,15 @@ in private development; recovered and archival projects are labeled as such.
 **G.R.A.F.T.+** (Graph Reasoning for Architecture, Fidelity & Traceability) is
 the public reconstruction workbench on [`/graft`](https://1devteam.com/graft).
 Paste a public GitHub repository. It maps that SHA and returns one downloadable
-pack. It is a fact instrument, not a planner and not merge authority. The receiving
-AI owns blast radius, proof selection, risk, architecture, and recommendations.
+pack. It is a fact instrument, not a planner and not merge authority. Schema 1.12 also
+maps participating Python functions, class methods, nested handlers, direct tests, route
+ownership, and exact literal callable bindings. The receiving AI owns blast radius, proof
+selection, risk, architecture, and recommendations.
 
 The embedded browser engine is a **manual GitHub-reviewed port** of the semantic
 authority in `1devteam/graft_plus`; it is not a runtime dependency or automatic
 sync. The current website promotion checkpoint is
-`42e0b4208ec4eb815943ae0dfcba5605dee223f2` at canonical schema `1.11`.
+`956c9d4bd2deeffb1373a76bcca9953d9d24a0b0` at canonical schema `1.12`.
 See [`docs/GRAFT.md`](docs/GRAFT.md). `/wiki` serves the same workbench and
 canonicalizes to `/graft`. Dedicated `/wiki/:id` references remain.
 

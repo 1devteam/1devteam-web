@@ -29,11 +29,11 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
-describe("canonical 1.11 browser parity surface", () => {
+describe("canonical 1.12 browser parity surface", () => {
   it("pins the manually promoted canonical revision and authority boundary", () => {
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "42e0b4208ec4eb815943ae0dfcba5605dee223f2");
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.11");
-    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.11");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "956c9d4bd2deeffb1373a76bcca9953d9d24a0b0");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.12");
+    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.12");
     assert.equal(GRAFT_SYNC_MODE, "github-reviewed-manual-port");
     assert.equal(GRAFT_SYNC_STATUS, "synchronized");
 
@@ -53,7 +53,7 @@ describe("canonical 1.11 browser parity surface", () => {
     assert.deepEqual(graph.semantic_provenance, {
       semantic_authority: "1devteam/graft_plus",
       canonical_engine: "python-universal-shell",
-      canonical_schema_version: "1.11",
+      canonical_schema_version: "1.12",
       website_execution_authority: "1devteam/1devteam-web",
       website_synchronization_mode: "github-reviewed-manual-port",
       website_runtime_dependency: "none",
@@ -70,7 +70,7 @@ describe("canonical 1.11 browser parity surface", () => {
       "change_recommendation",
     ]);
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.11");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.12");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -241,6 +241,67 @@ describe("canonical 1.11 browser parity surface", () => {
     assert.ok(edges.has("route:GET /value|fn:app.api:value|handled_by"));
   });
 
+  it("maps methods, nested handlers, callable bindings, route ownership, and direct method tests", () => {
+    const graph = graphOf([
+      {
+        path: "app/runtime.py",
+        content:
+          "class Worker:\n" +
+          "    def complete(self):\n" +
+          "        return self._rollup()\n\n" +
+          "    def _rollup(self):\n" +
+          "        return 1\n\n" +
+          "def isolated_helper():\n" +
+          "    return 0\n\n" +
+          "def register():\n" +
+          "    def handler():\n" +
+          "        return Worker().complete()\n" +
+          "    return ActionDefinition(name='job.complete', handler=handler)\n\n" +
+          "@router.post('/run')\n" +
+          "def run_route():\n" +
+          "    return Worker().complete()\n",
+      },
+      {
+        path: "tests/test_runtime.py",
+        content:
+          "from app.runtime import Worker\n\n" +
+          "def test_complete():\n" +
+          "    worker = Worker()\n" +
+          "    assert worker.complete() == 1\n",
+      },
+    ]);
+
+    const nodes = new Map(graph.nodes.map((item) => [String(item.id), item]));
+    const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
+    const complete = "fn:app.runtime:Worker.complete";
+    const rollup = "fn:app.runtime:Worker._rollup";
+    const register = "fn:app.runtime:register";
+    const handler = "fn:app.runtime:register.handler";
+    const routeHandler = "fn:app.runtime:run_route";
+
+    assert.equal(nodes.get(complete)?.type, "python_method");
+    assert.equal(nodes.get(complete)?.owner_class, "Worker");
+    assert.equal(nodes.get(handler)?.type, "python_function");
+    assert.equal(nodes.get(handler)?.enclosing_function, "register");
+    assert.equal(nodes.get(routeHandler)?.route_handler, true);
+    assert.equal(nodes.has("fn:app.runtime:isolated_helper"), false);
+
+    assert.ok(edges.has(`${complete}|${rollup}|calls_function`));
+    assert.ok(edges.has(`${handler}|${complete}|calls_function`));
+    assert.ok(edges.has(`${routeHandler}|${complete}|calls_function`));
+
+    const binding = graph.nodes.find(
+      (item) => item.type === "callable_binding" && item.name === "job.complete",
+    );
+    assert.ok(binding);
+    assert.equal(binding.constructor, "ActionDefinition");
+    assert.ok(edges.has(`${register}|${binding.id}|declares_binding`));
+    assert.ok(edges.has(`${binding.id}|${handler}|binds_callable`));
+
+    assert.ok(edges.has(`route:POST /run|${routeHandler}|handled_by`));
+    assert.ok(edges.has(`test:tests/test_runtime.py|${complete}|tests_function`));
+  });
+
   it("reports instrument integrity without emitting architectural judgment", () => {
     const pack = packOf([{ path: "pkg/main.py", content: "import unknown_package\n" }]);
     const completeness = pack["graph-completeness-report.json"] as {
@@ -275,7 +336,7 @@ describe("canonical 1.11 browser parity surface", () => {
       },
     ]);
     const graph = pack["dependency-graph.v1.json"] as ReturnType<typeof graphOf>;
-    assert.equal(graph.schema_version, "1.11");
+    assert.equal(graph.schema_version, "1.12");
     const ids = new Set(graph.nodes.map((row) => String(row.id)));
     assert.ok(ids.has("build-target://app:util"));
     assert.ok(ids.has("build-target://app:app"));

@@ -12,9 +12,9 @@ The deployed public workbench is `/graft` in `1devteam/1devteam-web`.
 - **Website execution authority:** `1devteam/1devteam-web`
 - **Synchronization mode:** GitHub-reviewed **manual port**
 - **Runtime dependency between repos:** none
-- **Canonical website sync checkpoint:** `42e0b4208ec4eb815943ae0dfcba5605dee223f2`
-- **Canonical schema at checkpoint:** `1.11`
-- **Embedded browser schema:** `1.11`
+- **Canonical website sync checkpoint:** `956c9d4bd2deeffb1373a76bcca9953d9d24a0b0`
+- **Canonical schema at checkpoint:** `1.12`
+- **Embedded browser schema:** `1.12`
 
 The synchronization process is intentionally manual. It is not broken and it is not a runtime service connection.
 
@@ -61,7 +61,7 @@ No G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or external
 
 Cloudflare may host the website, but hosting is not graph authority and does not synchronize semantics.
 
-## Canonical 1.11 pack
+## Canonical 1.12 pack
 
 The browser port now follows the current canonical fact-only pack shape:
 
@@ -81,6 +81,28 @@ The browser port no longer exports G.R.A.F.T.-authored:
 - `graph-machine-index.v1.json`
 
 That removal is intentional. Those artifacts crossed from observation into reasoning or duplicated machine surfaces. Current G.R.A.F.T.+ leaves architecture, reachability, proof strategy, risk, and recommendations to the receiving model.
+
+## Schema 1.12 callable responsibility topology
+
+Schema 1.12 raises Python callable identity to a first-class factual layer without
+turning the pack into a source dump. A callable is emitted only when source
+evidence shows that it participates in behavior, including exact calls, direct
+tests, route ownership, entrypoint conventions, or exact literal callable
+bindings.
+
+The browser port now preserves:
+
+- top-level function identity;
+- class-qualified method identity;
+- nested handler identity;
+- exact callable-to-callable edges;
+- direct test-to-method/function edges;
+- route-to-handler ownership;
+- literal registration bindings such as `ActionDefinition(name=..., handler=...)`.
+
+A callable binding is declaration evidence only. It does not prove activation,
+runtime reachability, authorization, invocation, or safety. Those conclusions
+remain with the receiving AI and runtime proof.
 
 ## Reading the pack
 
@@ -104,7 +126,7 @@ Examples include:
 - source-backed modules and contracts;
 - resolved internal imports;
 - unresolved references;
-- function/call/test topology on selected supported surfaces;
+- participation-based Python callable topology: functions, class methods, nested handlers, exact calls, direct method tests, route ownership, and exact literal callable bindings;
 - HTTP routes;
 - package/workspace/build relationships;
 - migrations and tables;
