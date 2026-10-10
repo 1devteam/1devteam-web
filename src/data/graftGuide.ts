@@ -18,7 +18,7 @@ export const graftGuideSections: readonly GuideSection[] = [
     id: 'what-it-is',
     title: 'What it is',
     body: [
-      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, commits, README claimed intent, and structural surfaces.',
+      'G.R.A.F.T.+ — Graph Reasoning for Architecture, Fidelity & Traceability — maps a public GitHub repository at one SHA. The reconstruction is inventory, contracts, inner dependencies, unresolved imports, routes, wiring, participating Python functions and methods, direct tests, callable bindings, README claimed intent, and structural surfaces.',
       'The download mirrors the current graft_plus fact pack: AI receiver guide, compact ASCII topology, JSON evidence graph, factual change set, completeness report, unresolved-reference ledger, and receipt. Source is not in the zip. Overlay stays residual.',
       'Human-facing name: G.R.A.F.T.+. Repository and package identifier: graft_plus. G.R.A.F.T.1st is a related but distinct line that models intended architecture before substantial implementation. This page is G.R.A.F.T.+ only.',
     ],
