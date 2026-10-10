@@ -92,25 +92,30 @@ export function encodeGraphAscii(graph: {
 
   const nodeTypes = rankTypes(nodes.map((node) => String(node.type ?? "")));
   const edgeTypes = rankTypes(edges.map((edge) => String(edge.type ?? "")));
+  const sources = [...new Set(nodes.map((node) => String(node.source ?? "")).filter(Boolean))].sort();
   const typeIndex = new Map(nodeTypes.map((value, index) => [value, index]));
   const relationIndex = new Map(edgeTypes.map((value, index) => [value, index]));
+  const sourceIndex = new Map(sources.map((value, index) => [value, index]));
   const nodeWidth = width(nodes.length);
   const relationWidth = width(edgeTypes.length);
   const typeWidth = width(nodeTypes.length);
+  const sourceWidth = width(sources.length);
   const graphSha = sha256Hex(canonicalJson(graph));
 
   const lines = [
-    `G1|n=${nodes.length}|e=${edges.length}|nw=${nodeWidth}|rw=${relationWidth}|tw=${typeWidth}|d=c>d|h=${graphSha}`,
+    `G2|n=${nodes.length}|e=${edges.length}|s=${sources.length}|nw=${nodeWidth}|rw=${relationWidth}|tw=${typeWidth}|sw=${sourceWidth}|d=c>d|h=${graphSha}`,
   ];
 
   nodeTypes.forEach((value, index) => lines.push(`T${code(index, typeWidth)}=${escapeValue(value)}`));
   edgeTypes.forEach((value, index) => lines.push(`R${code(index, relationWidth)}=${escapeValue(value)}`));
+  sources.forEach((value, index) => lines.push(`S${code(index, sourceWidth)}=${escapeValue(value)}`));
 
   nodes.forEach((node, index) => {
+    const source = String(node.source ?? "");
     const fields = [
       escapeValue(node.id),
       code(typeIndex.get(String(node.type ?? ""))!, typeWidth),
-      escapeValue(node.source),
+      source ? code(sourceIndex.get(source)!, sourceWidth) : "",
       escapeValue(node.subsystem),
       escapeValue(node.layer),
       escapeValue(node.relationship_status),
@@ -135,21 +140,26 @@ export function encodeGraphAscii(graph: {
 }
 
 export function decodeGraphAscii(text: string): {
-  schema_version: "ascii-topology-v1";
+  schema_version: "ascii-topology-v1" | "ascii-topology-v2";
   direction: string;
   source_graph_sha256: string;
   nodes: Array<Record<string, string>>;
   edges: Array<{ from: string; to: string; type: string }>;
 } {
   const lines = text.split(/\r?\n/).filter((line) => line.length > 0);
-  if (!lines[0]?.startsWith("G1|")) throw new Error("unsupported ASCII graph header");
+  if (!lines[0] || !(lines[0].startsWith("G1|") || lines[0].startsWith("G2|"))) {
+    throw new Error("unsupported ASCII graph header");
+  }
+  const version = lines[0].split("|", 1)[0]!;
   const header = Object.fromEntries(lines[0].split("|").slice(1).map((part) => splitOnce(part, "="))) as Record<string, string>;
   const nodeCount = Number(header.n);
   const edgeCount = Number(header.e);
   const nodeWidth = Number(header.nw);
   const relationWidth = Number(header.rw);
+  const sourceCount = Number(header.s ?? 0);
   const nodeTypes = new Map<string, string>();
   const edgeTypes = new Map<string, string>();
+  const sources = new Map<string, string>();
   const nodesByCode = new Map<string, Record<string, string>>();
   const edgeChunks: string[] = [];
 
@@ -160,15 +170,19 @@ export function decodeGraphAscii(text: string): {
     } else if (line.startsWith("R")) {
       const [key, value = ""] = line.slice(1).split("=", 2);
       edgeTypes.set(key!, unescapeValue(value));
+    } else if (line.startsWith("S")) {
+      const [key, value] = splitOnce(line.slice(1), "=");
+      sources.set(key!, unescapeValue(value));
     } else if (line.startsWith("N")) {
       const [key, raw] = splitOnce(line.slice(1), "=");
       const fields = raw.split("|");
       if (fields.length !== 6) throw new Error("invalid ASCII node row");
       const [id, typeCode, source, subsystem, layer, relationshipStatus] = fields;
+      const decodedSource = version === "G2" && source ? sources.get(source!) ?? "" : unescapeValue(source!);
       const node: Record<string, string> = {
         id: unescapeValue(id!),
         type: nodeTypes.get(typeCode!)!,
-        source: unescapeValue(source!),
+        source: decodedSource,
       };
       const optional = {
         subsystem: unescapeValue(subsystem!),
@@ -183,6 +197,7 @@ export function decodeGraphAscii(text: string): {
   }
 
   if (nodesByCode.size !== nodeCount) throw new Error("ASCII graph node count mismatch");
+  if (version === "G2" && sources.size !== sourceCount) throw new Error("ASCII graph source dictionary count mismatch");
   const edgeStream = edgeChunks.join("");
   const recordWidth = nodeWidth + relationWidth + nodeWidth;
   if (edgeStream.length !== edgeCount * recordWidth) throw new Error("ASCII graph edge stream length mismatch");
@@ -201,7 +216,7 @@ export function decodeGraphAscii(text: string): {
   }
 
   return {
-    schema_version: "ascii-topology-v1",
+    schema_version: version === "G2" ? "ascii-topology-v2" : "ascii-topology-v1",
     direction: header.d!,
     source_graph_sha256: header.h!,
     nodes: Array.from({ length: nodeCount }, (_, index) => nodesByCode.get(code(index, nodeWidth))!),
