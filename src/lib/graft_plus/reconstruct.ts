@@ -11,6 +11,8 @@ import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
 import { buildUnresolvedLedger, compactGraph, UNRESOLVED_LEDGER_FILE } from "./residuals.ts";
 import { AI_RECEIVER_GUIDE } from "./receiver-guide.ts";
+import { collectRouteGraph } from "./routes.ts";
+import { collectRuntimeDeclarations } from "./runtime-declarations.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
 
@@ -28,9 +30,9 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.12" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "956c9d4bd2deeffb1373a76bcca9953d9d24a0b0" as const;
-export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.12" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.14" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "5150d0b141830dd85a7daee60078976d3ee24556" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.14" as const;
 export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
@@ -190,6 +192,53 @@ function frontendGraph(files: FileInput[]): { nodes: Node[]; edges: Edge[]; unre
     }
   }
   return { nodes, edges, unresolved };
+}
+
+function aggregateOccurrenceEdges(edges: Edge[]): Edge[] {
+  const aggregateTypes = new Set(["calls_function", "tests_function", "injects_dependency"]);
+  const grouped = new Map<string, Edge[]>();
+  const passthrough: Edge[] = [];
+
+  for (const edge of edges) {
+    if (!aggregateTypes.has(edge.type)) {
+      passthrough.push(edge);
+      continue;
+    }
+    const key = [edge.from, edge.to, edge.type, String(edge.layer ?? "")].join("|");
+    const rows = grouped.get(key) ?? [];
+    rows.push(edge);
+    grouped.set(key, rows);
+  }
+
+  const aggregated: Edge[] = [];
+  for (const key of [...grouped.keys()].sort()) {
+    const rows = grouped.get(key)!;
+    const first: Edge = { ...rows[0] };
+    const seen = new Set<string>();
+    const observations: Array<Record<string, unknown>> = [];
+    for (const row of rows) {
+      const observation: Record<string, unknown> = {};
+      for (const field of ["evidence", "start_line", "end_line", "symbol", "detector"] as const) {
+        if (row[field] !== undefined && row[field] !== null) observation[field] = row[field];
+      }
+      const token = JSON.stringify(observation, Object.keys(observation).sort());
+      if (seen.has(token)) continue;
+      seen.add(token);
+      observations.push(observation);
+    }
+    observations.sort(
+      (a, b) =>
+        String(a.evidence ?? "").localeCompare(String(b.evidence ?? "")) ||
+        Number(a.start_line ?? 0) - Number(b.start_line ?? 0) ||
+        Number(a.end_line ?? 0) - Number(b.end_line ?? 0) ||
+        String(a.symbol ?? "").localeCompare(String(b.symbol ?? "")),
+    );
+    if (observations[0]) Object.assign(first, observations[0]);
+    first.occurrences = observations.length || rows.length;
+    if (observations.length > 1) first.observations = observations;
+    aggregated.push(first);
+  }
+  return [...passthrough, ...aggregated];
 }
 
 function surfaces(files: FileInput[]): Node[] {
@@ -368,9 +417,63 @@ export function reconstructPack(input: {
   const languages = collectLanguageGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
-  annotatePythonRoutes(files, generated.nodes);
-  let nodes: Node[] = [...py.nodes, ...fe.nodes, ...tests.nodes, ...languages.nodes, ...surfaceNodes, ...generated.nodes];
-  let edges: Edge[] = [...py.edges, ...fe.edges, ...tests.edges, ...languages.edges, ...generated.edges];
+  const routeGraph = collectRouteGraph(files);
+  const generatedNodes = generated.nodes.filter((node) => node.type !== "http_route");
+  const generatedRouteIds = new Set(
+    generated.nodes.filter((node) => node.type === "http_route").map((node) => node.id),
+  );
+  const generatedEdges = generated.edges
+    .filter((edge) => !generatedRouteIds.has(edge.from) && !generatedRouteIds.has(edge.to))
+    .map((edge) =>
+      edge.type === "network_call" && String(edge.to).startsWith("egress:")
+        ? { ...edge, type: "direct_network_egress" }
+        : edge,
+    );
+
+  const rlsNodes: Node[] = [];
+  const rlsEdges: Edge[] = [];
+  for (const table of generatedNodes.filter((node) => node.type === "database_table" && node.rls_enabled === true)) {
+    const name = String(table.label ?? table.id.replace(/^db:table:/, ""));
+    const boundaryId = `security-boundary:rls:${name}`;
+    rlsNodes.push({
+      id: boundaryId,
+      type: "security_boundary",
+      source: table.source,
+      layer: "generated",
+      boundary_kind: "row_level_security",
+      table: name,
+      enabled: true,
+      detector: "migration_sql",
+    });
+    rlsEdges.push({
+      from: table.id,
+      to: boundaryId,
+      type: "rls_enforced",
+      evidence: table.source,
+      detector: "migration_sql",
+      layer: "generated",
+    });
+  }
+
+  let nodes: Node[] = [
+    ...py.nodes,
+    ...fe.nodes,
+    ...tests.nodes,
+    ...languages.nodes,
+    ...surfaceNodes,
+    ...generatedNodes,
+    ...rlsNodes,
+    ...routeGraph.nodes,
+  ];
+  let edges: Edge[] = [
+    ...py.edges,
+    ...fe.edges,
+    ...tests.edges,
+    ...languages.edges,
+    ...generatedEdges,
+    ...rlsEdges,
+    ...routeGraph.edges,
+  ];
 
   const sourceNodeIds = new Map<string, string>();
   for (const node of nodes) {
@@ -381,8 +484,15 @@ export function reconstructPack(input: {
   const functions = collectFunctionGraph(files, pythonBySource);
   nodes.push(...functions.nodes);
   edges.push(...functions.edges);
+
+  const runtimeDeclarations = collectRuntimeDeclarations(files, functions.nodes);
+  nodes.push(...runtimeDeclarations.nodes);
+  edges.push(...runtimeDeclarations.edges);
+
   const functionIds = new Set(functions.nodes.map((node) => node.id));
-  for (const route of generated.nodes.filter((node) => node.type === "http_route" && typeof node.handler === "string")) {
+  for (const route of routeGraph.nodes.filter(
+    (node) => node.type === "http_route" && typeof node.handler === "string",
+  )) {
     const module = moduleFor(route.source);
     const target = `fn:${module}:${route.handler}`;
     if (functionIds.has(target)) {
@@ -467,6 +577,7 @@ export function reconstructPack(input: {
 
   const roots = [...new Set(unresolved.map((r) => packageRoot(r.specifier)))].sort();
   const known = new Set(nodes.map((n) => n.id));
+  edges = aggregateOccurrenceEdges(edges);
   const edgeByKey = new Map<string, Edge>();
   for (const edge of edges) {
     if (!known.has(edge.from) || !known.has(edge.to)) continue;
@@ -490,7 +601,7 @@ export function reconstructPack(input: {
   };
 
   const graph = {
-    schema_version: "1.12",
+    schema_version: "1.14",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
@@ -523,6 +634,9 @@ export function reconstructPack(input: {
         "cross-language-subsystem-joins",
         "governance-boundaries",
         "evidence-anchors",
+        "route-declaration-composition",
+        "dependency-provider-topology",
+        "runtime-declaration-contracts",
       ],
       function_roots: [] as string[],
       overlay: null,
@@ -539,6 +653,7 @@ export function reconstructPack(input: {
       ...contracts.facts,
       ...configuration.facts,
       ...architecture.facts,
+      ...runtimeDeclarations.facts,
       evidence_precision_counts: evidencePrecisionCounts,
     },
   };
