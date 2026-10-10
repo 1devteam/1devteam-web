@@ -326,6 +326,163 @@ describe("canonical 1.13 browser parity surface", () => {
     assert.ok(edges.has(`test:tests/test_runtime.py|${complete}|tests_function`));
   });
 
+  it("separates route declarations from proven runtime composition", () => {
+    const graph = graphOf([
+      {
+        path: "app/routes.py",
+        content:
+          "from fastapi import APIRouter\n" +
+          "router = APIRouter(prefix='/tasks')\n" +
+          "@router.get('/me')\n" +
+          "def me():\n" +
+          "    return {'ok': True}\n",
+      },
+      {
+        path: "app/main.py",
+        content:
+          "from fastapi import FastAPI\n" +
+          "from app.routes import router as task_router\n" +
+          "app = FastAPI()\n" +
+          "app.include_router(task_router, prefix='/v1')\n",
+      },
+    ]);
+
+    const declaration = routeNode(graph, "app/routes.py", "GET", "/me");
+    assert.ok(declaration);
+    const runtime = node(graph, "runtime-route:GET:/v1/tasks/me");
+    assert.ok(runtime);
+    assert.equal(runtime.route_identity, "runtime-composed");
+    assert.ok(
+      graph.edges.some(
+        (edge) =>
+          edge.from === declaration.id &&
+          edge.to === runtime.id &&
+          edge.type === "composes_to",
+      ),
+    );
+  });
+
+  it("auto-discovers repository-owned overlay facts without interpreting them", () => {
+    const graph = graphOf([
+      { path: "app.py", content: "VALUE = 1\n" },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          nodes: [{ id: "runtime-action:send", type: "runtime_action", source: "app.py" }],
+          edges: [],
+          invariants: [{ id: "tenant-isolation", status: "enforced", sources: ["app.py"] }],
+        }),
+      },
+    ]);
+
+    assert.ok(node(graph, "runtime-action:send"));
+    const pack = packOf([
+      { path: "app.py", content: "VALUE = 1\n" },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          nodes: [{ id: "runtime-action:send", type: "runtime_action", source: "app.py" }],
+          edges: [],
+          invariants: [{ id: "tenant-isolation", status: "enforced", sources: ["app.py"] }],
+        }),
+      },
+    ]);
+    const fullGraph = pack["dependency-graph.v1.json"] as {
+      invariants: unknown[];
+      semantic_provenance: Record<string, unknown>;
+    };
+    assert.deepEqual(fullGraph.invariants, [
+      { id: "tenant-isolation", status: "enforced", sources: ["app.py"] },
+    ]);
+    assert.equal(fullGraph.semantic_provenance.overlay_mode, "auto-discovered");
+  });
+
+  it("projects RLS as an explicit security boundary", () => {
+    const graph = graphOf([
+      {
+        path: "alembic/versions/0001_secure.py",
+        content:
+          "def upgrade():\n" +
+          "    op.create_table('tenants')\n" +
+          "    op.execute('ALTER TABLE tenants ENABLE ROW LEVEL SECURITY')\n" +
+          "    op.execute('ALTER TABLE tenants FORCE ROW LEVEL SECURITY')\n" +
+          "    op.execute('CREATE POLICY tenant_policy ON tenants USING (true)')\n",
+      },
+    ]);
+
+    const boundary = node(graph, "security-boundary:rls:tenants");
+    assert.ok(boundary);
+    assert.equal(boundary.boundary_kind, "row_level_security");
+    assert.equal(boundary.enabled, true);
+    assert.equal(boundary.forced, true);
+    assert.deepEqual(boundary.policies, ["tenant_policy"]);
+    assert.ok(
+      graph.edges.some(
+        (edge) =>
+          edge.from === "db:table:tenants" &&
+          edge.to === "security-boundary:rls:tenants" &&
+          edge.type === "rls_enforced",
+      ),
+    );
+  });
+
+  it("aggregates repeated callable observations without losing evidence", () => {
+    const graph = graphOf([
+      { path: "app/deps.py", content: "def get_db():\n    return object()\n" },
+      {
+        path: "app/api.py",
+        content:
+          "from fastapi import Depends\n" +
+          "from app.deps import get_db\n" +
+          "def items(db=Depends(get_db)):\n" +
+          "    get_db()\n" +
+          "    get_db()\n" +
+          "    return db\n",
+      },
+    ]);
+
+    const calls = graph.edges.filter(
+      (edge) =>
+        edge.from === "fn:app.api:items" &&
+        edge.to === "fn:app.deps:get_db" &&
+        edge.type === "calls_function",
+    );
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0]?.occurrences, 2);
+    assert.equal((calls[0]?.observations as unknown[]).length, 2);
+
+    const injection = graph.edges.find(
+      (edge) =>
+        edge.from === "fn:app.api:items" &&
+        edge.to === "fn:app.deps:get_db" &&
+        edge.type === "injects_dependency",
+    );
+    assert.ok(injection);
+  });
+
+  it("preserves callable binding declaration metadata as facts", () => {
+    const graph = graphOf([
+      {
+        path: "app.py",
+        content:
+          "def handler():\n" +
+          "    return None\n" +
+          "def register():\n" +
+          "    return ActionDefinition(name='sales.qualify', handler=handler, provider='local_sales', input_model=SalesLeadInput, side_effect_class=SideEffectClass.INTERNAL_READ)\n",
+      },
+    ]);
+    const binding = graph.nodes.find((item) => item.type === "callable_binding");
+    assert.ok(binding);
+    assert.equal((binding.declared_fields as Record<string, unknown>).provider, "local_sales");
+    assert.deepEqual((binding.declared_fields as Record<string, unknown>).input_model, {
+      symbol: "SalesLeadInput",
+    });
+    assert.deepEqual(
+      (binding.declared_fields as Record<string, unknown>).side_effect_class,
+      { symbol: "SideEffectClass.INTERNAL_READ" },
+    );
+  });
+
   it("reports instrument integrity without emitting architectural judgment", () => {
     const pack = packOf([{ path: "pkg/main.py", content: "import unknown_package\n" }]);
     const completeness = pack["graph-completeness-report.json"] as {
