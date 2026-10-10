@@ -27,7 +27,7 @@ describe("graft_plus reconstruct", () => {
     };
     const ids = graph.nodes.map((node) => node.id);
 
-    assert.equal(graph.schema_version, "1.11");
+    assert.equal(graph.schema_version, "1.12");
     assert.ok(ids.includes("js:src/a.ts"));
     assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
@@ -96,12 +96,12 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.engine, "browser-universal-shell");
     assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
     assert.equal(receipt.semantic_provenance.canonical_engine, "python-universal-shell");
-    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.11");
+    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.12");
     assert.equal(receipt.semantic_provenance.website_execution_authority, "1devteam/1devteam-web");
     assert.equal(receipt.semantic_provenance.website_synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.semantic_provenance.website_runtime_dependency, "none");
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.11");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.12");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
