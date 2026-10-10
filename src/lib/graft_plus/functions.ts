@@ -175,16 +175,23 @@ function importRows(content: string) {
   const importedNames = new Map<string, { module: string; name: string }>();
   const importedModules = new Map<string, string>();
 
-  const fromPattern = /^\s*from\s+([A-Za-z0-9_.]+)\s+import\s+([^\n]+)/gm;
-  for (const match of content.matchAll(fromPattern)) {
-    const module = match[1];
-    for (const raw of match[2].replace(/[()]/g, "").split(",")) {
+  const addFromItems = (module: string, rawItems: string) => {
+    for (const raw of rawItems.replace(/[()]/g, "").split(",")) {
       const item = raw.trim();
       if (!item || item === "*") continue;
       const aliasMatch = item.match(/^([A-Za-z_][A-Za-z0-9_]*)(?:\s+as\s+([A-Za-z_][A-Za-z0-9_]*))?$/);
       if (!aliasMatch) continue;
       importedNames.set(aliasMatch[2] ?? aliasMatch[1], { module, name: aliasMatch[1] });
     }
+  };
+
+  const parenthesizedFrom = /^\s*from\s+([A-Za-z0-9_.]+)\s+import\s*\(([\s\S]*?)\)/gm;
+  for (const match of content.matchAll(parenthesizedFrom)) addFromItems(match[1], match[2]);
+
+  const fromPattern = /^\s*from\s+([A-Za-z0-9_.]+)\s+import\s+([^\n]+)/gm;
+  for (const match of content.matchAll(fromPattern)) {
+    if (match[2].trim() === "(") continue;
+    addFromItems(match[1], match[2]);
   }
 
   const importPattern = /^\s*import\s+([^\n]+)/gm;
