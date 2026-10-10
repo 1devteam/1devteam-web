@@ -337,6 +337,56 @@ function declaredFieldsFromArgs(
   return fields;
 }
 
+
+function callExpressions(text: string) {
+  const result: Array<{ constructor: string; args: string; offset: number; raw: string }> = [];
+  const namePattern = /[A-Za-z_][A-Za-z0-9_.]*/y;
+  for (let index = 0; index < text.length; index += 1) {
+    if (!/[A-Za-z_]/.test(text[index] ?? "")) continue;
+    namePattern.lastIndex = index;
+    const nameMatch = namePattern.exec(text);
+    if (!nameMatch) continue;
+    let cursor = namePattern.lastIndex;
+    while (/\s/.test(text[cursor] ?? "")) cursor += 1;
+    if (text[cursor] !== "(") {
+      index = namePattern.lastIndex - 1;
+      continue;
+    }
+
+    let depth = 1;
+    let quote = "";
+    let escaped = false;
+    let end = cursor + 1;
+    for (; end < text.length; end += 1) {
+      const char = text[end]!;
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (char === "\\") escaped = true;
+        else if (char === quote) quote = "";
+        continue;
+      }
+      if (char === "'" || char === '"') {
+        quote = char;
+        continue;
+      }
+      if (char === "(") depth += 1;
+      else if (char === ")") {
+        depth -= 1;
+        if (depth === 0) break;
+      }
+    }
+    if (depth !== 0) continue;
+    result.push({
+      constructor: nameMatch[0],
+      args: text.slice(cursor + 1, end),
+      offset: index,
+      raw: text.slice(index, end + 1),
+    });
+    index = end;
+  }
+  return result;
+}
+
 function bindingFromText(args: {
   text: string;
   line: number;
@@ -347,9 +397,8 @@ function bindingFromText(args: {
 }): Binding[] {
   const { text, line, source, module, owner, resolveName } = args;
   const bindings: Binding[] = [];
-  const callPattern = /([A-Za-z_][A-Za-z0-9_.]*)\s*\(([\s\S]{0,1200}?)\)/g;
-  for (const match of text.matchAll(callPattern)) {
-    const argsText = match[2];
+  for (const match of callExpressions(text)) {
+    const argsText = match.args;
     let identity: string | undefined;
     let identityKeyword: string | undefined;
     for (const key of BINDING_IDENTITY_KEYS) {
@@ -376,8 +425,9 @@ function bindingFromText(args: {
     const targetKey = resolveName(handlerName);
     if (!targetKey) continue;
 
-    const constructor = match[1];
-    const bindingId = `binding:${source}:${line}:0:${identity}`;
+    const constructor = match.constructor;
+    const bindingLine = line + text.slice(0, match.offset).split("\n").length - 1;
+    const bindingId = `binding:${source}:${bindingLine}:0:${identity}`;
     const node: GraphNode = {
       id: bindingId,
       type: "callable_binding",
@@ -387,8 +437,8 @@ function bindingFromText(args: {
       constructor,
       handler_keyword: handlerKeyword,
       identity_keyword: identityKeyword,
-      start_line: line,
-      end_line: line + match[0].split("\n").length - 1,
+      start_line: bindingLine,
+      end_line: bindingLine + match.raw.split("\n").length - 1,
       detector: "python_source",
       declared_fields: declaredFieldsFromArgs(argsText, handlerKeyword, identityKeyword),
     };
