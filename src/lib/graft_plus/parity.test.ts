@@ -381,6 +381,47 @@ describe("canonical 1.14 browser parity surface", () => {
     assert.ok(edges.has("py:app.client|egress:app.client|direct_network_egress"));
   });
 
+  it("discovers reviewed overlay invariants and function roots without adjudicating them", () => {
+    const graph = graphOf([
+      {
+        path: "app/isolated.py",
+        content: "def kept_by_reviewed_root():\n    return 1\n",
+      },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          schema_version: "1.0",
+          function_roots: ["app"],
+          nodes: [
+            {
+              id: "security-boundary:tenant",
+              type: "security_boundary",
+              source: "docs/contracts/dependency-graph.overlay.v1.json",
+              boundary_kind: "tenant-isolation",
+            },
+          ],
+          edges: [],
+          invariants: [
+            {
+              id: "invariant:tenant-isolation",
+              name: "tenant isolation",
+              description: "Repository-declared invariant",
+            },
+          ],
+        }),
+      },
+    ]);
+
+    assert.ok(node(graph, "security-boundary:tenant"));
+    assert.ok(node(graph, "fn:app.isolated:kept_by_reviewed_root"));
+    assert.equal(graph.facts.overlay_mode, "repository-discovered");
+    const invariants = (graph as unknown as { invariants: Array<Record<string, unknown>> }).invariants;
+    assert.equal(invariants.length, 1);
+    assert.equal(invariants[0].id, "invariant:tenant-isolation");
+    assert.equal("relevant" in invariants[0], false);
+    assert.equal("blocks_merge" in invariants[0], false);
+  });
+
   it("reports instrument integrity without emitting architectural judgment", () => {
     const pack = packOf([{ path: "pkg/main.py", content: "import unknown_package\n" }]);
     const completeness = pack["graph-completeness-report.json"] as {
