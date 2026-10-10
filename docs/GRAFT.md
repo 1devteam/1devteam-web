@@ -185,6 +185,7 @@ The browser port now carries canonical 1.13's observer-fidelity improvements:
 - explicit `Depends` / `Inject` / `Provide` providers can produce `injects_dependency` when the repository callable resolves;
 - repeated `calls_function`, `tests_function`, and `injects_dependency` observations aggregate into one topology edge with occurrence/evidence details;
 - RLS declarations produce explicit security-boundary facts;
+- repository-owned reviewed overlays are discovered at canonical paths so declared nodes, edges, invariants, and selected function roots remain visible without inference;
 - direct source-level network egress is labeled `direct_network_egress`;
 - the primary ASCII topology is G2 and interns repeated source paths.
 
