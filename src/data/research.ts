@@ -16,7 +16,7 @@ export const rdTools = [
     description:
       'G.R.A.F.T.+ reconstructs a public GitHub repository at one SHA into evidence-linked facts and one downloadable pack so an external language model can reason over inventory, contracts, dependencies, routes, wiring, and intent. Residuals stay visible. It is a fact substrate, not a planner and not merge authority.',
     operatingModel:
-      'Public repository → reconstruct one SHA → download the pack → feed graph-architecture-decision.json, then the graph, to an AI.',
+      'Public repository → reconstruct one SHA → download the fact pack → give the receipt and ASCII topology to an AI → let the AI calculate reach, proof, risk, and architecture.',
   },
   {
     name: 'G.R.A.F.T.1st',
@@ -66,12 +66,12 @@ export const researchEpochs = [
   {
     name: 'Graph Construction',
     description:
-      'The architecture graph and associated CI capabilities were introduced and expanded, including semantic overlays, blast-radius analysis, invariant mapping, proof selection, and governance controls.',
+      'The architecture graph and associated CI capabilities were introduced and expanded. The graph increasingly exposed source-backed structure, while blast radius, proof strategy, risk, and architectural judgment remained separate reasoning steps.',
   },
   {
     name: 'Graph-Assisted Development',
     description:
-      'Graph-derived architectural state, impact analysis, proof selection, completeness checks, and increasingly fine-grained decision ownership became available during active development.',
+      'Persistent graph state and increasingly fine-grained responsibility identity became available during active development. The receiving AI used that observed state to calculate impact, choose proof, and make architectural decisions.',
   },
 ] as const
 
@@ -97,7 +97,7 @@ export const researchNotes = [
     status: 'Observed workflow difference',
     title: 'Persistent architectural state changes the reasoning substrate',
     description:
-      'Before the graph existed, system structure had to be reconstructed repeatedly from code, tests, traces, and prior context. Graph-assisted work can expose nodes, edges, authority relationships, blast radius, invariants, and proof obligations as persistent machine-readable state.',
+      'Before the graph existed, system structure had to be reconstructed repeatedly from code, tests, traces, and prior context. Graph-assisted work can expose persistent machine-readable identities and relationships; the receiving AI derives blast radius, proof obligations, risk, and architectural judgment from that observed reality.',
   },
   {
     status: 'Observed measurement capability',
