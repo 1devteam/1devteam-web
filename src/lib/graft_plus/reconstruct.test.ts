@@ -27,7 +27,7 @@ describe("graft_plus reconstruct", () => {
     };
     const ids = graph.nodes.map((node) => node.id);
 
-    assert.equal(graph.schema_version, "1.12");
+    assert.equal(graph.schema_version, "1.13");
     assert.ok(ids.includes("js:src/a.ts"));
     assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
@@ -96,12 +96,12 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.engine, "browser-universal-shell");
     assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
     assert.equal(receipt.semantic_provenance.canonical_engine, "python-universal-shell");
-    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.12");
+    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.13");
     assert.equal(receipt.semantic_provenance.website_execution_authority, "1devteam/1devteam-web");
     assert.equal(receipt.semantic_provenance.website_synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.semantic_provenance.website_runtime_dependency, "none");
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.12");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.13");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -127,10 +127,11 @@ describe("graft_plus reconstruct", () => {
     };
     const ids = new Set(graph.nodes.map((node) => node.id));
     const specs = new Set(ledger.specifier_table);
+    const routeIds = [...ids].filter((id) => id.startsWith("route-declaration:"));
 
-    assert.ok(ids.has("route:GET /status"));
-    assert.ok(ids.has("route:POST /status"));
-    assert.ok(ids.has("route:POST /pay"));
+    assert.ok(routeIds.some((id) => id.includes(":GET:/status@L")));
+    assert.ok(routeIds.some((id) => id.includes(":POST:/status@L")));
+    assert.ok(routeIds.some((id) => id.includes(":POST:/pay@L")));
     assert.ok(ids.has("db:table:watches"));
     assert.equal(specs.has("ctypes"), false);
     assert.ok(specs.has("stripe"));

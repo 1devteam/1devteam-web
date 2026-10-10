@@ -12,9 +12,9 @@ The deployed public workbench is `/graft` in `1devteam/1devteam-web`.
 - **Website execution authority:** `1devteam/1devteam-web`
 - **Synchronization mode:** GitHub-reviewed **manual port**
 - **Runtime dependency between repos:** none
-- **Canonical website sync checkpoint:** `956c9d4bd2deeffb1373a76bcca9953d9d24a0b0`
-- **Canonical schema at checkpoint:** `1.12`
-- **Embedded browser schema:** `1.12`
+- **Canonical website sync checkpoint:** `8248b1054504069e79414278db793ffebd55e103`
+- **Canonical schema at checkpoint:** `1.13`
+- **Embedded browser schema:** `1.13`
 
 The synchronization process is intentionally manual. It is not broken and it is not a runtime service connection.
 
@@ -173,3 +173,37 @@ If the browser intentionally trails canonical semantics, provenance must say `be
 - `1devteam/graft_plus/docs/ARTIFACT.md` — canonical pack contract
 - [README](../README.md)
 - [Domain and mail](DOMAIN.md)
+
+
+## Schema 1.13 observer fidelity
+
+The browser engine is manually synchronized to canonical `1devteam/graft_plus` commit
+`8248b1054504069e79414278db793ffebd55e103`.
+
+Schema 1.13 increases observation without moving architectural judgment into the
+instrument:
+
+- HTTP route declarations retain source/module + line-qualified identity instead of
+  collapsing by method/path.
+- A separate `runtime_route` is emitted only where explicit router/application
+  composition can be proven. `composes_to` preserves the declaration-to-runtime
+  relationship.
+- Explicit dependency providers such as `Depends(get_db)` are visible as declared
+  DI boundaries and, when exactly resolvable, as `injects_dependency` callable
+  relationships. Dynamic container lookup remains unresolved.
+- Callable bindings retain source-declared metadata such as provider, input model,
+  side-effect class, and credential requirement without treating those declarations
+  as runtime activation or authority.
+- Repeated call/test/DI observations aggregate onto one topology edge with occurrence
+  count and retained source observations.
+- Repository-owned reviewed overlays at the conventional G.R.A.F.T. paths are
+  consumed as explicit facts, including declared invariants; the browser does not
+  invent policy.
+- RLS declarations are explicit security boundaries with `rls_enforced`; raw
+  observed network calls are `direct_network_egress`.
+- The stable `dependency-graph.ascii.v1.txt` artifact now carries a G2 stream with a
+  source-path dictionary. G1 remains decodable.
+
+The authority rule is unchanged: the graph observes repository reality. It does not
+calculate blast radius, choose proof, classify risk, recommend architecture, grant
+execution authority, or grant merge authority.
