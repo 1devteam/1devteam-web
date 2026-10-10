@@ -617,7 +617,7 @@ describe("canonical 1.14 browser parity surface", () => {
 
     assert.ok(node(graph, "security-boundary:tenant"));
     assert.ok(node(graph, "fn:app.isolated:kept_by_reviewed_root"));
-    assert.equal(graph.facts.overlay_mode, "repository-discovered");
+    assert.equal(graph.semantic_provenance.overlay_mode, "auto-discovered");
     const invariants = (graph as unknown as { invariants: Array<Record<string, unknown>> }).invariants;
     assert.equal(invariants.length, 1);
     assert.equal(invariants[0].id, "invariant:tenant-isolation");
