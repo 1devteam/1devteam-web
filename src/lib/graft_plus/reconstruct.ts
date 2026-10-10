@@ -11,8 +11,6 @@ import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
 import { buildUnresolvedLedger, compactGraph, UNRESOLVED_LEDGER_FILE } from "./residuals.ts";
 import { AI_RECEIVER_GUIDE } from "./receiver-guide.ts";
-import { discoverReviewedOverlay } from "./overlay.ts";
-import { collectRouteGraph } from "./routes.ts";
 import { collectRuntimeDeclarations } from "./runtime-declarations.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
@@ -195,53 +193,6 @@ function frontendGraph(files: FileInput[]): { nodes: Node[]; edges: Edge[]; unre
   return { nodes, edges, unresolved };
 }
 
-function aggregateOccurrenceEdges(edges: Edge[]): Edge[] {
-  const aggregateTypes = new Set(["calls_function", "tests_function", "injects_dependency"]);
-  const grouped = new Map<string, Edge[]>();
-  const passthrough: Edge[] = [];
-
-  for (const edge of edges) {
-    if (!aggregateTypes.has(edge.type)) {
-      passthrough.push(edge);
-      continue;
-    }
-    const key = [edge.from, edge.to, edge.type, String(edge.layer ?? "")].join("|");
-    const rows = grouped.get(key) ?? [];
-    rows.push(edge);
-    grouped.set(key, rows);
-  }
-
-  const aggregated: Edge[] = [];
-  for (const key of [...grouped.keys()].sort()) {
-    const rows = grouped.get(key)!;
-    const first: Edge = { ...rows[0] };
-    const seen = new Set<string>();
-    const observations: Array<Record<string, unknown>> = [];
-    for (const row of rows) {
-      const observation: Record<string, unknown> = {};
-      for (const field of ["evidence", "start_line", "end_line", "symbol", "detector"] as const) {
-        if (row[field] !== undefined && row[field] !== null) observation[field] = row[field];
-      }
-      const token = JSON.stringify(observation, Object.keys(observation).sort());
-      if (seen.has(token)) continue;
-      seen.add(token);
-      observations.push(observation);
-    }
-    observations.sort(
-      (a, b) =>
-        String(a.evidence ?? "").localeCompare(String(b.evidence ?? "")) ||
-        Number(a.start_line ?? 0) - Number(b.start_line ?? 0) ||
-        Number(a.end_line ?? 0) - Number(b.end_line ?? 0) ||
-        String(a.symbol ?? "").localeCompare(String(b.symbol ?? "")),
-    );
-    if (observations[0]) Object.assign(first, observations[0]);
-    first.occurrences = observations.length || rows.length;
-    if (observations.length > 1) first.observations = observations;
-    aggregated.push(first);
-  }
-  return [...passthrough, ...aggregated];
-}
-
 function surfaces(files: FileInput[]): Node[] {
   const nodes: Node[] = [];
   for (const file of files) {
@@ -260,73 +211,420 @@ function surfaces(files: FileInput[]): Node[] {
 function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
-  const tables = new Map<string, { sources: string[]; rls: boolean }>();
+  const tables = new Map<
+    string,
+    { sources: string[]; enabled: boolean; forced: boolean; policies: Set<string> }
+  >();
 
   for (const file of files) {
     if (!file.path.endsWith(".py") || skip(file.path)) continue;
     const isMigration = /(?:^|\/)(?:alembic|migrations)\/versions\/.+\.py$/.test(file.path);
-    if (isMigration) {
-      const id = `migration:${file.path.split("/").pop()?.replace(/\.py$/, "")}`;
-      nodes.push({ id, type: "migration", source: file.path, layer: "generated" });
-      const tableRe = /op\.(?:create_table|add_column|drop_table|alter_column)\(\s*["']([A-Za-z0-9_]+)/g;
-      let match: RegExpExecArray | null;
-      const found = new Set<string>();
-      while ((match = tableRe.exec(file.content))) found.add(match[1]);
-      const rlsRe = /ALTER\s+TABLE\s+([A-Za-z0-9_]+)\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY/gi;
-      while ((match = rlsRe.exec(file.content))) {
-        found.add(match[1]);
-        const row = tables.get(match[1]) ?? { sources: [], rls: false };
-        row.rls = true;
-        tables.set(match[1], row);
-      }
-      for (const table of found) {
-        const row = tables.get(table) ?? { sources: [], rls: false };
-        row.sources.push(file.path);
-        tables.set(table, row);
-        edges.push({ from: id, to: `db:table:${table}`, type: "creates_or_alters_table", evidence: file.path, layer: "generated" });
-      }
+    if (!isMigration) continue;
+    const id = `migration:${file.path.split("/").pop()?.replace(/\.py$/, "")}`;
+    nodes.push({ id, type: "migration", source: file.path, layer: "generated" });
+
+    const found = new Set<string>();
+    let match: RegExpExecArray | null;
+    const tableRe = /op\.(?:create_table|add_column|drop_table|alter_column)\(\s*["']([A-Za-z0-9_]+)/g;
+    while ((match = tableRe.exec(file.content))) found.add(match[1]);
+
+    const enableRe = /ALTER\s+TABLE\s+([A-Za-z0-9_]+)\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY/gi;
+    while ((match = enableRe.exec(file.content))) {
+      found.add(match[1]);
+      const row = tables.get(match[1]) ?? { sources: [], enabled: false, forced: false, policies: new Set<string>() };
+      row.enabled = true;
+      tables.set(match[1], row);
+    }
+
+    const forceRe = /ALTER\s+TABLE\s+([A-Za-z0-9_]+)\s+FORCE\s+ROW\s+LEVEL\s+SECURITY/gi;
+    while ((match = forceRe.exec(file.content))) {
+      found.add(match[1]);
+      const row = tables.get(match[1]) ?? { sources: [], enabled: false, forced: false, policies: new Set<string>() };
+      row.forced = true;
+      tables.set(match[1], row);
+    }
+
+    const policyRe = /CREATE\s+POLICY\s+([A-Za-z0-9_]+)\s+ON\s+([A-Za-z0-9_]+)/gi;
+    while ((match = policyRe.exec(file.content))) {
+      const [, policy, table] = match;
+      found.add(table);
+      const row = tables.get(table) ?? { sources: [], enabled: false, forced: false, policies: new Set<string>() };
+      row.policies.add(policy);
+      tables.set(table, row);
+    }
+
+    for (const table of found) {
+      const row = tables.get(table) ?? { sources: [], enabled: false, forced: false, policies: new Set<string>() };
+      row.sources.push(file.path);
+      tables.set(table, row);
+      edges.push({ from: id, to: `db:table:${table}`, type: "creates_or_alters_table", evidence: file.path, layer: "generated" });
     }
   }
+
   for (const [table, row] of [...tables.entries()].sort()) {
+    const source = row.sources.at(-1) ?? "";
     nodes.push({
       id: `db:table:${table}`,
       type: "database_table",
-      source: row.sources.at(-1) ?? "",
+      source,
       layer: "generated",
       label: table,
-      rls_enabled: row.rls,
+      rls_enabled: row.enabled,
+      rls_forced: row.forced,
+      rls_policies: [...row.policies].sort(),
     });
+    if (row.enabled || row.forced || row.policies.size) {
+      const boundary = `security-boundary:rls:${table}`;
+      nodes.push({
+        id: boundary,
+        type: "security_boundary",
+        source,
+        layer: "generated",
+        boundary_kind: "row_level_security",
+        table,
+        enabled: row.enabled,
+        forced: row.forced,
+        policies: [...row.policies].sort(),
+        detector: "migration_sql",
+      });
+      edges.push({
+        from: `db:table:${table}`,
+        to: boundary,
+        type: "rls_enforced",
+        evidence: source,
+        detector: "migration_sql",
+        layer: "generated",
+      });
+    }
   }
 
-  for (const file of files.filter((f) => productionPy(f.path))) {
-    const module = moduleFor(file.path);
-    let match: RegExpExecArray | null;
-    const routeRe = /@(?:[A-Za-z0-9_]+\.)(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)/gi;
-    while ((match = routeRe.exec(file.content))) {
-      const method = match[1].toUpperCase();
-      const route = match[2];
-      const id = `route:${method} ${route}`;
-      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method, route });
-      edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+  type RouterInfo = {
+    key: string;
+    module: string;
+    scope: string;
+    name: string;
+    prefix: string;
+    kind: "application" | "router";
+    source: string;
+    line: number;
+  };
+  type Declaration = {
+    id: string;
+    method: string;
+    path: string;
+    source: string;
+    module?: string;
+    handler?: string;
+    owner?: string;
+    scope: string;
+    line: number;
+    endLine: number;
+    detector: string;
+  };
+
+  const production = files.filter((file) => productionPy(file.path));
+  const routers = new Map<string, RouterInfo>();
+  const functionResults = new Map<string, string>();
+  const imports = new Map<string, Map<string, { module: string; name: string }>>();
+  const declarations: Declaration[] = [];
+  const includes: Array<{ parent: string; child: string; prefix: string; source: string; line: number }> = [];
+
+  const lineAt = (text: string, offset: number) => text.slice(0, offset).split("\n").length;
+  const joinPath = (...parts: string[]) => {
+    const clean = parts.filter(Boolean).map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean);
+    return clean.length ? `/${clean.join("/")}` : "/";
+  };
+
+  const scopesByFile = new Map<string, Array<{ name: string; start: number; end: number }>>();
+  for (const file of production) {
+    const lines = file.content.split("\n");
+    const scopes: Array<{ name: string; start: number; end: number }> = [];
+    for (let index = 0; index < lines.length; index += 1) {
+      const match = lines[index]?.match(/^(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+      if (!match) continue;
+      let endLine = lines.length;
+      for (let probe = index + 1; probe < lines.length; probe += 1) {
+        if (/^(?:async\s+)?def\s+|^class\s+/.test(lines[probe] ?? "")) {
+          endLine = probe;
+          break;
+        }
+      }
+      scopes.push({ name: match[1], start: index + 1, end: endLine });
     }
-    const flaskRe = /@(?:[A-Za-z0-9_]+)\.route\(\s*["']([^"']+)["'](?:[^)]*methods\s*=\s*\[([^\]]+)\])?/gi;
-    while ((match = flaskRe.exec(file.content))) {
-      const route = match[1];
-      const methods = match[2]
-        ? match[2].split(",").map((m) => m.replace(/['"\s]/g, "")).filter(Boolean)
+    scopesByFile.set(file.path, scopes);
+
+    const module = moduleFor(file.path);
+    const imported = new Map<string, { module: string; name: string }>();
+    const importRe = /^\s*from\s+([A-Za-z0-9_.]+)\s+import\s+([A-Za-z_][A-Za-z0-9_]*)(?:\s+as\s+([A-Za-z_][A-Za-z0-9_]*))?/gm;
+    for (const match of file.content.matchAll(importRe)) {
+      imported.set(match[3] ?? match[2], { module: match[1], name: match[2] });
+    }
+    imports.set(module, imported);
+
+    const assignmentRe = /^([ \t]*)([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(APIRouter|FastAPI)\s*\(([^\n)]*)\)/gm;
+    for (const match of file.content.matchAll(assignmentRe)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      const scope = scopes.find((item) => line >= item.start && line <= item.end)?.name ?? "module";
+      const prefix = match[4].match(/\bprefix\s*=\s*["']([^"']*)["']/)?.[1] ?? "";
+      const key = `${module}:${scope}:${match[2]}`;
+      routers.set(key, {
+        key,
+        module,
+        scope,
+        name: match[2],
+        prefix,
+        kind: match[3] === "FastAPI" ? "application" : "router",
+        source: file.path,
+        line,
+      });
+    }
+  }
+
+  for (const file of production) {
+    const module = moduleFor(file.path);
+    const scopes = scopesByFile.get(file.path) ?? [];
+    for (const scope of scopes) {
+      const text = file.content.split("\n").slice(scope.start - 1, scope.end).join("\n");
+      const returned = [...text.matchAll(/^\s*return\s+([A-Za-z_][A-Za-z0-9_]*)\s*$/gm)].map((match) => match[1]);
+      const keys = returned
+        .map((name) => `${module}:${scope.name}:${name}`)
+        .filter((key) => routers.has(key));
+      if (new Set(keys).size === 1) functionResults.set(`${module}:${scope.name}`, keys[0]);
+    }
+  }
+
+  const resolveRouter = (module: string, scope: string, raw: string): string | undefined => {
+    const expression = raw.trim().replace(/,$/, "");
+    const call = expression.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)$/)?.[1];
+    const name = call ?? expression.match(/^([A-Za-z_][A-Za-z0-9_]*)$/)?.[1];
+    if (name) {
+      const local = `${module}:${scope}:${name}`;
+      if (routers.has(local)) return local;
+      const top = `${module}:module:${name}`;
+      if (routers.has(top)) return top;
+      const imported = imports.get(module)?.get(name);
+      if (imported) {
+        const importedRouter = `${imported.module}:module:${imported.name}`;
+        if (routers.has(importedRouter)) return importedRouter;
+        return functionResults.get(`${imported.module}:${imported.name}`);
+      }
+      return functionResults.get(`${module}:${name}`);
+    }
+  };
+
+  for (const file of production) {
+    const module = moduleFor(file.path);
+    const scopes = scopesByFile.get(file.path) ?? [];
+    const scopeFor = (line: number) => scopes.find((item) => line >= item.start && line <= item.end)?.name ?? "module";
+
+    const routeRe = /@([A-Za-z_][A-Za-z0-9_]*)\.(get|post|put|patch|delete|head|options|websocket)\(\s*["']([^"']+)["'][^\n]*\)\s*\n\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)/gi;
+    for (const match of file.content.matchAll(routeRe)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      const method = match[2].toUpperCase();
+      const pathValue = match[3];
+      const id = `route-declaration:${module}:${method}:${pathValue}@L${line}`;
+      declarations.push({
+        id,
+        method,
+        path: pathValue,
+        source: file.path,
+        module,
+        handler: match[4],
+        owner: match[1],
+        scope: scopeFor(line),
+        line,
+        endLine: line + match[0].split("\n").length - 1,
+        detector: "python_source",
+      });
+    }
+
+    const flaskRe = /@([A-Za-z_][A-Za-z0-9_]*)\.route\(\s*["']([^"']+)["']([^\n]*)\)\s*\n\s*(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)/gi;
+    for (const match of file.content.matchAll(flaskRe)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      const methodsMatch = match[3].match(/methods\s*=\s*\[([^\]]+)\]/);
+      const methods = methodsMatch
+        ? methodsMatch[1].split(",").map((value) => value.replace(/["'\s]/g, "")).filter(Boolean)
         : ["GET"];
-      for (const method of methods) {
-        const id = `route:${method.toUpperCase()} ${route}`;
-        nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: method.toUpperCase(), route });
-        edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+      for (const rawMethod of methods) {
+        const method = rawMethod.toUpperCase();
+        const id = `route-declaration:${module}:${method}:${match[2]}@L${line}`;
+        declarations.push({
+          id,
+          method,
+          path: match[2],
+          source: file.path,
+          module,
+          handler: match[4],
+          owner: match[1],
+          scope: scopeFor(line),
+          line,
+          endLine: line + match[0].split("\n").length - 1,
+          detector: "python_source",
+        });
       }
     }
+
     const djangoRe = /\b(?:path|re_path|url)\(\s*["']([^"']+)/g;
-    while ((match = djangoRe.exec(file.content))) {
-      const id = `route:ANY ${match[1]}`;
-      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: "ANY", route: match[1] });
-      edges.push({ from: `py:${module}`, to: id, type: "exposes_route", evidence: file.path, layer: "generated" });
+    for (const match of file.content.matchAll(djangoRe)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      declarations.push({
+        id: `route-declaration:${module}:ANY:${match[1]}@L${line}`,
+        method: "ANY",
+        path: match[1],
+        source: file.path,
+        module,
+        scope: scopeFor(line),
+        line,
+        endLine: line,
+        detector: "python_source",
+      });
     }
+
+    const includeRe = /([A-Za-z_][A-Za-z0-9_]*)\.include_router\(\s*([A-Za-z_][A-Za-z0-9_]*(?:\(\))?)([^\n]*)/g;
+    for (const match of file.content.matchAll(includeRe)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      const scope = scopeFor(line);
+      const parent = resolveRouter(module, scope, match[1]);
+      const child = resolveRouter(module, scope, match[2]);
+      if (!parent || !child) continue;
+      includes.push({
+        parent,
+        child,
+        prefix: match[3].match(/\bprefix\s*=\s*["']([^"']*)["']/)?.[1] ?? "",
+        source: file.path,
+        line,
+      });
+    }
+  }
+
+  const jsRoute = /\b(?:app|router|api)\.(get|post|put|patch|delete|all)\(\s*['"]([^'"]+)/gi;
+  for (const file of files.filter((item) => /\.(js|mjs|ts|tsx)$/.test(item.path) && !skip(item.path))) {
+    for (const match of file.content.matchAll(jsRoute)) {
+      const line = lineAt(file.content, match.index ?? 0);
+      const method = match[1].toUpperCase();
+      declarations.push({
+        id: `route-declaration:js:${file.path}:${method}:${match[2]}@L${line}`,
+        method,
+        path: match[2],
+        source: file.path,
+        scope: "module",
+        line,
+        endLine: line,
+        detector: "javascript_route_pattern",
+      });
+    }
+  }
+
+  const declarationRouter = new Map<string, string>();
+  for (const declaration of declarations) {
+    nodes.push({
+      id: declaration.id,
+      type: "http_route",
+      route_identity: "declaration",
+      source: declaration.source,
+      layer: "generated",
+      method: declaration.method,
+      route: declaration.path,
+      path: declaration.path,
+      handler: declaration.handler,
+      router_owner: declaration.owner,
+      start_line: declaration.line,
+      end_line: declaration.endLine,
+      detector: declaration.detector,
+    });
+    if (declaration.module) {
+      edges.push({
+        from: `py:${declaration.module}`,
+        to: declaration.id,
+        type: "declares_route",
+        evidence: declaration.source,
+        start_line: declaration.line,
+        end_line: declaration.endLine,
+        symbol: declaration.handler,
+        detector: declaration.detector,
+        layer: "generated",
+      });
+    }
+    if (declaration.module && declaration.owner) {
+      const resolved = resolveRouter(declaration.module, declaration.scope, declaration.owner);
+      if (resolved) declarationRouter.set(declaration.id, resolved);
+    }
+  }
+
+  const children = new Set(includes.map((item) => item.child));
+  const includesByParent = new Map<string, typeof includes>();
+  for (const include of includes) {
+    const list = includesByParent.get(include.parent) ?? [];
+    list.push(include);
+    includesByParent.set(include.parent, list);
+  }
+  const routesByRouter = new Map<string, Declaration[]>();
+  for (const declaration of declarations) {
+    const router = declarationRouter.get(declaration.id);
+    if (!router) continue;
+    const list = routesByRouter.get(router) ?? [];
+    list.push(declaration);
+    routesByRouter.set(router, list);
+  }
+
+  const runtimeNodes = new Map<string, Node>();
+  const walk = (routerKey: string, prefix: string, trail: Set<string>) => {
+    if (trail.has(routerKey)) return;
+    const router = routers.get(routerKey);
+    if (!router) return;
+    const current = joinPath(prefix, router.prefix);
+    const nextTrail = new Set(trail);
+    nextTrail.add(routerKey);
+
+    for (const declaration of routesByRouter.get(routerKey) ?? []) {
+      const fullPath = joinPath(current, declaration.path);
+      const runtimeId = `runtime-route:${declaration.method}:${fullPath}`;
+      const existing = runtimeNodes.get(runtimeId);
+      if (existing) {
+        const sources = new Set<string>(Array.isArray(existing.sources) ? existing.sources as string[] : []);
+        sources.add(declaration.source);
+        existing.sources = [...sources].sort();
+      } else {
+        runtimeNodes.set(runtimeId, {
+          id: runtimeId,
+          type: "runtime_route",
+          source: declaration.source,
+          sources: [declaration.source],
+          layer: "generated",
+          route_identity: "runtime-composed",
+          method: declaration.method,
+          path: fullPath,
+          route: fullPath,
+          composition_proven: true,
+          detector: "python_source_route_composition",
+        });
+      }
+      edges.push({
+        from: declaration.id,
+        to: runtimeId,
+        type: "composes_to",
+        evidence: declaration.source,
+        start_line: declaration.line,
+        end_line: declaration.endLine,
+        symbol: declaration.handler,
+        detector: "python_source_route_composition",
+        layer: "generated",
+      });
+    }
+
+    for (const include of includesByParent.get(routerKey) ?? []) {
+      walk(include.child, joinPath(current, include.prefix), nextTrail);
+    }
+  };
+
+  for (const [key, router] of routers) {
+    if (router.kind === "application" && !children.has(key)) walk(key, "", new Set());
+  }
+  nodes.push(...runtimeNodes.values());
+
+  for (const file of production) {
+    const module = moduleFor(file.path);
+    let match: RegExpExecArray | null;
     const tableRe = /__tablename__\s*=\s*["']([A-Za-z0-9_]+)/g;
     while ((match = tableRe.exec(file.content))) {
       const id = `db:table:${match[1]}`;
@@ -336,7 +634,7 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
     if (NETWORK_LIBS.test(file.content) && /\.(get|post|put|patch|delete|request)\s*\(/.test(file.content)) {
       const sink = `egress:${module}`;
       nodes.push({ id: sink, type: "network_egress_sink", source: file.path, layer: "generated", classification: "unclassified" });
-      edges.push({ from: `py:${module}`, to: sink, type: "network_call", evidence: file.path, layer: "generated" });
+      edges.push({ from: `py:${module}`, to: sink, type: "direct_network_egress", evidence: file.path, layer: "generated" });
     }
     const modelRe = /^class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*(?:BaseModel|Protocol|TypedDict|Enum)/gm;
     while ((match = modelRe.exec(file.content))) {
@@ -354,21 +652,9 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
     }
   }
 
-  const jsRoute = /\b(?:app|router|api)\.(get|post|put|patch|delete|all)\(\s*['"]([^'"]+)/gi;
-  for (const file of files.filter((f) => /\.(js|mjs|ts)$/.test(f.path) && !skip(f.path))) {
-    let match: RegExpExecArray | null;
-    jsRoute.lastIndex = 0;
-    while ((match = jsRoute.exec(file.content))) {
-      const id = `route:${match[1].toUpperCase()} ${match[2]}`;
-      nodes.push({ id, type: "http_route", source: file.path, layer: "generated", method: match[1].toUpperCase(), route: match[2] });
-    }
-  }
-
   const tsRe = /export\s+(?:interface|type)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
-  for (const file of files.filter((f) => /\.(ts|tsx)$/.test(f.path) && !skip(f.path))) {
-    let match: RegExpExecArray | null;
-    tsRe.lastIndex = 0;
-    while ((match = tsRe.exec(file.content))) {
+  for (const file of files.filter((item) => /\.(ts|tsx)$/.test(item.path) && !skip(item.path))) {
+    for (const match of file.content.matchAll(tsRe)) {
       nodes.push({
         id: `contract:${file.path}:${match[1]}`,
         type: "contract",
@@ -382,6 +668,99 @@ function semantic(files: FileInput[]): { nodes: Node[]; edges: Edge[] } {
   return { nodes, edges };
 }
 
+function aggregateOccurrenceEdges(edges: Edge[]): Edge[] {
+  const aggregateTypes = new Set(["calls_function", "tests_function", "injects_dependency"]);
+  const grouped = new Map<string, Edge[]>();
+  const passthrough: Edge[] = [];
+  for (const edge of edges) {
+    if (!aggregateTypes.has(edge.type)) {
+      passthrough.push(edge);
+      continue;
+    }
+    const key = `${edge.from}|${edge.to}|${edge.type}|${edge.layer}`;
+    const rows = grouped.get(key) ?? [];
+    rows.push(edge);
+    grouped.set(key, rows);
+  }
+
+  const aggregated: Edge[] = [];
+  for (const rows of grouped.values()) {
+    const first = { ...rows[0] };
+    const observations = [...new Map(rows.map((row) => {
+      const observation = {
+        evidence: row.evidence,
+        start_line: row.start_line,
+        end_line: row.end_line,
+        symbol: row.symbol,
+        detector: row.detector,
+      };
+      return [JSON.stringify(observation), observation];
+    })).values()].sort((a, b) =>
+      String(a.evidence ?? "").localeCompare(String(b.evidence ?? "")) ||
+      Number(a.start_line ?? 0) - Number(b.start_line ?? 0) ||
+      String(a.symbol ?? "").localeCompare(String(b.symbol ?? "")),
+    );
+    first.occurrences = observations.length || rows.length;
+    if (observations.length > 1) first.observations = observations;
+    aggregated.push(first);
+  }
+  return [...passthrough, ...aggregated];
+}
+
+function repositoryOverlay(files: FileInput[]) {
+  const conventional = [
+    "docs/contracts/dependency-graph.overlay.v1.json",
+    ".graft/dependency-graph.overlay.v1.json",
+    ".graft/overlay.json",
+  ];
+  const file = conventional.map((path) => files.find((item) => item.path === path)).find(Boolean);
+  if (!file) {
+    return {
+      file: undefined,
+      nodes: [] as Node[],
+      edges: [] as Edge[],
+      invariants: [] as unknown[],
+      functionRoots: [] as string[],
+    };
+  }
+  try {
+    const payload = JSON.parse(file.content) as {
+      nodes?: Array<Record<string, unknown>>;
+      edges?: Array<Record<string, unknown>>;
+      invariants?: unknown[];
+      function_roots?: Array<string | { path?: string; source?: string }>;
+    };
+    const functionRoots = [...new Set(
+      (payload.function_roots ?? [])
+        .map((item) =>
+          typeof item === "string"
+            ? item
+            : item && typeof item === "object"
+              ? item.path ?? item.source
+              : undefined,
+        )
+        .filter((value): value is string => typeof value === "string" && Boolean(value.replace(/^\\/+|\\/+$/g, "")))
+        .map((value) => value.replace(/^\\/+|\\/+$/g, "")),
+    )].sort();
+    return {
+      file,
+      nodes: (payload.nodes ?? []).map((node) => ({ ...node, layer: "overlay" })) as Node[],
+      edges: (payload.edges ?? []).map((edge) => ({ ...edge, layer: "overlay" })) as Edge[],
+      invariants: payload.invariants ?? [],
+      functionRoots,
+    };
+  } catch {
+    return {
+      file,
+      nodes: [] as Node[],
+      edges: [] as Edge[],
+      invariants: [] as unknown[],
+      functionRoots: [] as string[],
+    };
+  }
+}
+
+
 export function reconstructPack(input: {
   files: FileInput[];
   origin?: { owner?: string; repo?: string; ref?: string; sha?: string; url?: string };
@@ -394,65 +773,23 @@ export function reconstructPack(input: {
   const languages = collectLanguageGraph(files);
   const surfaceNodes = surfaces(files);
   const generated = semantic(files);
-  const routeGraph = collectRouteGraph(files);
-  const reviewedOverlay = discoverReviewedOverlay(files);
-  const generatedNodes = generated.nodes.filter((node) => node.type !== "http_route");
-  const generatedRouteIds = new Set(
-    generated.nodes.filter((node) => node.type === "http_route").map((node) => node.id),
-  );
-  const generatedEdges = generated.edges
-    .filter((edge) => !generatedRouteIds.has(edge.from) && !generatedRouteIds.has(edge.to))
-    .map((edge) =>
-      edge.type === "network_call" && String(edge.to).startsWith("egress:")
-        ? { ...edge, type: "direct_network_egress" }
-        : edge,
-    );
-
-  const rlsNodes: Node[] = [];
-  const rlsEdges: Edge[] = [];
-  for (const table of generatedNodes.filter((node) => node.type === "database_table" && node.rls_enabled === true)) {
-    const name = String(table.label ?? table.id.replace(/^db:table:/, ""));
-    const boundaryId = `security-boundary:rls:${name}`;
-    rlsNodes.push({
-      id: boundaryId,
-      type: "security_boundary",
-      source: table.source,
-      layer: "generated",
-      boundary_kind: "row_level_security",
-      table: name,
-      enabled: true,
-      detector: "migration_sql",
-    });
-    rlsEdges.push({
-      from: table.id,
-      to: boundaryId,
-      type: "rls_enforced",
-      evidence: table.source,
-      detector: "migration_sql",
-      layer: "generated",
-    });
-  }
-
+  const overlay = repositoryOverlay(files);
   let nodes: Node[] = [
     ...py.nodes,
     ...fe.nodes,
     ...tests.nodes,
     ...languages.nodes,
     ...surfaceNodes,
-    ...generatedNodes,
-    ...rlsNodes,
-    ...routeGraph.nodes,
-    ...reviewedOverlay.nodes,
+    ...generated.nodes,
+    ...overlay.nodes,
   ];
   let edges: Edge[] = [
     ...py.edges,
     ...fe.edges,
     ...tests.edges,
     ...languages.edges,
-    ...generatedEdges,
-    ...rlsEdges,
-    ...routeGraph.edges,
-    ...reviewedOverlay.edges,
+    ...generated.edges,
+    ...overlay.edges,
   ];
 
   const sourceNodeIds = new Map<string, string>();
@@ -461,7 +798,7 @@ export function reconstructPack(input: {
   }
   const pythonBySource = new Map(py.nodes.map((node) => [node.source, node.id]));
 
-  const functions = collectFunctionGraph(files, pythonBySource, reviewedOverlay.functionRoots);
+  const functions = collectFunctionGraph(files, pythonBySource, overlay.functionRoots);
   nodes.push(...functions.nodes);
   edges.push(...functions.edges);
 
@@ -470,9 +807,7 @@ export function reconstructPack(input: {
   edges.push(...runtimeDeclarations.edges);
 
   const functionIds = new Set(functions.nodes.map((node) => node.id));
-  for (const route of routeGraph.nodes.filter(
-    (node) => node.type === "http_route" && typeof node.handler === "string",
-  )) {
+  for (const route of generated.nodes.filter((node) => node.type === "http_route" && typeof node.handler === "string")) {
     const module = moduleFor(route.source);
     const target = `fn:${module}:${route.handler}`;
     if (functionIds.has(target)) {
@@ -557,14 +892,13 @@ export function reconstructPack(input: {
 
   const roots = [...new Set(unresolved.map((r) => packageRoot(r.specifier)))].sort();
   const known = new Set(nodes.map((n) => n.id));
-  edges = aggregateOccurrenceEdges(edges);
   const edgeByKey = new Map<string, Edge>();
   for (const edge of edges) {
     if (!known.has(edge.from) || !known.has(edge.to)) continue;
     const key = JSON.stringify(edge, Object.keys(edge).sort());
     edgeByKey.set(key, edge);
   }
-  const kept = [...edgeByKey.values()];
+  const kept = aggregateOccurrenceEdges([...edgeByKey.values()]);
   attachEvidenceAnchors(files, nodes, kept);
 
   const evidencePrecisionCounts = {
@@ -580,6 +914,11 @@ export function reconstructPack(input: {
     }, {}),
   };
 
+  const semanticProvenance = {
+    ...SEMANTIC_PROVENANCE,
+    overlay_mode: overlay.file ? "auto-discovered" : "none",
+  };
+
   const graph = {
     schema_version: "1.14",
     product: "G.R.A.F.T.+",
@@ -587,7 +926,7 @@ export function reconstructPack(input: {
     role: "fact-substrate",
     implementsPlan: IMPLEMENTS_PLAN,
     grants_execution_authority: GRANTS_EXECUTION_AUTHORITY,
-    semantic_provenance: SEMANTIC_PROVENANCE,
+    semantic_provenance: semanticProvenance,
     generated_from: {
       python_roots: files.some((file) => file.path.endsWith(".py")) ? ["."] : [],
       adapters: [
@@ -618,12 +957,12 @@ export function reconstructPack(input: {
         "dependency-provider-topology",
         "runtime-declaration-contracts",
       ],
-      function_roots: reviewedOverlay.functionRoots,
-      overlay: reviewedOverlay.path,
+      function_roots: overlay.functionRoots,
+      overlay: overlay.file?.path ?? null,
     },
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
     edges: kept.sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to) || a.type.localeCompare(b.type)),
-    invariants: reviewedOverlay.invariants,
+    invariants: overlay.invariants,
     facts: {
       unresolved_imports: unresolved,
       unresolved_package_roots: roots,
@@ -634,7 +973,6 @@ export function reconstructPack(input: {
       ...configuration.facts,
       ...architecture.facts,
       ...runtimeDeclarations.facts,
-      overlay_mode: reviewedOverlay.mode,
       evidence_precision_counts: evidencePrecisionCounts,
     },
   };
@@ -658,7 +996,7 @@ export function reconstructPack(input: {
     package: "graft_plus",
     engine: GRAFT_EMBEDDED_ENGINE,
     role: "fact-substrate",
-    semantic_provenance: SEMANTIC_PROVENANCE,
+    semantic_provenance: semanticProvenance,
     website_sync: WEBSITE_SYNC_PROVENANCE,
     subject: input.origin?.url ?? `${input.origin?.owner ?? "local"}/${input.origin?.repo ?? "subject"}`,
     subject_sha: sha,
