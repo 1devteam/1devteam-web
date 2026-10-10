@@ -262,6 +262,36 @@ function resolveSimpleName(args: {
   }
 }
 
+function declaredBindingFields(argsText: string, identityKeyword: string, handlerKeyword: string) {
+  const fields: Record<string, unknown> = {};
+  const keywordPattern = /\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^,\n)]+(?:\([^)]*\))?)/g;
+  for (const match of argsText.matchAll(keywordPattern)) {
+    const key = match[1];
+    if (key === identityKeyword || key === handlerKeyword) continue;
+    const raw = match[2].trim();
+    const quoted = raw.match(/^["']([^"']*)["']$/);
+    if (quoted) {
+      fields[key] = quoted[1];
+      continue;
+    }
+    const constructor = raw.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\((.*)\)$/s);
+    if (constructor) {
+      const keywords: Record<string, unknown> = {};
+      for (const inner of constructor[2].matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*["']([^"']*)["']/g)) {
+        keywords[inner[1]] = inner[2];
+      }
+      fields[key] = Object.keys(keywords).length
+        ? { call: constructor[1], keywords }
+        : { call: constructor[1] };
+      continue;
+    }
+    if (/^[A-Za-z_][A-Za-z0-9_.]*$/.test(raw)) {
+      fields[key] = { symbol: raw };
+    }
+  }
+  return fields;
+}
+
 function bindingFromText(args: {
   text: string;
   line: number;
@@ -312,6 +342,7 @@ function bindingFromText(args: {
       constructor,
       handler_keyword: handlerKeyword,
       identity_keyword: identityKeyword,
+      declared_fields: declaredBindingFields(argsText, identityKeyword, handlerKeyword),
       start_line: line,
       end_line: line + match[0].split("\n").length - 1,
       detector: "python_source",
@@ -432,6 +463,25 @@ export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<str
 
       const seenCalls = new Set<string>();
       for (const row of bodyRows) {
+        const injection = row.text.match(/\b(?:Depends|Inject|Provide)\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)/);
+        if (injection) {
+          const targetKey = resolveName(injection[1]);
+          if (targetKey && targetKey !== symbol.key) {
+            participants.add(symbol.key);
+            participants.add(targetKey);
+            callEdges.push({
+              from: symbol.node.id,
+              to: `fn:${targetKey}`,
+              type: "injects_dependency",
+              evidence: file.path,
+              start_line: row.line,
+              end_line: row.line,
+              symbol: injection[1],
+              detector: "python_source",
+              layer: "generated",
+            });
+          }
+        }
         const constructorMethod = /\b([A-Za-z_][A-Za-z0-9_]*)\s*\([^\n)]*\)\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;
         for (const match of row.text.matchAll(constructorMethod)) {
           const className = match[1];
