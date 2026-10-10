@@ -303,7 +303,7 @@ function declaredValue(raw: string): unknown {
   if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
   if (/^[A-Za-z_][A-Za-z0-9_.]*$/.test(value)) return { symbol: value };
 
-  const call = value.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\((.*)\)?$/s);
+  const call = value.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\(([\s\S]*)\)$/);
   if (call) {
     const keywords: Record<string, unknown> = {};
     for (const part of splitTopLevelArguments(call[2])) {
