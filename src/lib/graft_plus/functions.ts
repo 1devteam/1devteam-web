@@ -476,7 +476,11 @@ function bindingFromText(args: {
   return bindings;
 }
 
-export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<string, string>) {
+export function collectFunctionGraph(
+  files: FileInput[],
+  pythonBySource: Map<string, string>,
+  functionRoots: string[] = [],
+) {
   const production = files.filter((file) => isProductionPython(file.path));
   const definitionsList = production.flatMap(parseDefinitions);
   const definitions = new Map(definitionsList.map((symbol) => [symbol.key, symbol]));
@@ -772,7 +776,13 @@ export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<str
   }
 
   for (const symbol of definitionsList) {
-    if (symbol.node.route_handler === true || symbol.name === "main") participants.add(symbol.key);
+    if (
+      symbol.node.route_handler === true ||
+      symbol.name === "main" ||
+      functionRoots.some((root) => symbol.source === root || symbol.source.startsWith(root + "/"))
+    ) {
+      participants.add(symbol.key);
+    }
   }
 
   const nodes = [...participants]
