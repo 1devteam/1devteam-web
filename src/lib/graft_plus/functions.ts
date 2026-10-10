@@ -262,6 +262,81 @@ function resolveSimpleName(args: {
   }
 }
 
+
+function splitTopLevelArguments(text: string): string[] {
+  const result: string[] = [];
+  let start = 0;
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index]!;
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === quote) quote = "";
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+    if ("([{".includes(char)) depth += 1;
+    else if (")]}".includes(char)) depth = Math.max(0, depth - 1);
+    else if (char === "," && depth === 0) {
+      result.push(text.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  const tail = text.slice(start).trim();
+  if (tail) result.push(tail);
+  return result;
+}
+
+function declaredValue(raw: string): unknown {
+  const value = raw.trim();
+  const quoted = value.match(/^(['"])([\s\S]*)\1$/);
+  if (quoted) return quoted[2];
+  if (value === "True" || value === "true") return true;
+  if (value === "False" || value === "false") return false;
+  if (value === "None" || value === "null") return null;
+  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+  if (/^[A-Za-z_][A-Za-z0-9_.]*$/.test(value)) return { symbol: value };
+
+  const call = value.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\((.*)\)?$/s);
+  if (call) {
+    const keywords: Record<string, unknown> = {};
+    for (const part of splitTopLevelArguments(call[2])) {
+      const assignment = part.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([\s\S]+)$/);
+      if (!assignment) continue;
+      keywords[assignment[1]] = declaredValue(assignment[2]);
+    }
+    return Object.keys(keywords).length ? { call: call[1], keywords } : { call: call[1] };
+  }
+
+  const collection = value.match(/^[([{]([\s\S]*)[)\]}]$/);
+  if (collection) {
+    return splitTopLevelArguments(collection[1]).map((item) => declaredValue(item));
+  }
+  return { expression: value.slice(0, 240) };
+}
+
+function declaredFieldsFromArgs(
+  argsText: string,
+  handlerKeyword: string,
+  identityKeyword: string,
+): Record<string, unknown> {
+  const fields: Record<string, unknown> = {};
+  for (const part of splitTopLevelArguments(argsText)) {
+    const assignment = part.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([\s\S]+)$/);
+    if (!assignment) continue;
+    const key = assignment[1];
+    if (key === handlerKeyword || key === identityKeyword) continue;
+    fields[key] = declaredValue(assignment[2]);
+  }
+  return fields;
+}
+
 function bindingFromText(args: {
   text: string;
   line: number;
@@ -315,6 +390,7 @@ function bindingFromText(args: {
       start_line: line,
       end_line: line + match[0].split("\n").length - 1,
       detector: "python_source",
+      declared_fields: declaredFieldsFromArgs(argsText, handlerKeyword, identityKeyword),
     };
     const ownerId = owner?.node.id ?? `py:${module}`;
     bindings.push({
@@ -432,6 +508,25 @@ export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<str
 
       const seenCalls = new Set<string>();
       for (const row of bodyRows) {
+        const injectionPattern = /\b(?:Depends|Inject|Provide)\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)/g;
+        for (const match of row.text.matchAll(injectionPattern)) {
+          const provider = match[1];
+          const targetKey = resolveName(provider);
+          if (!targetKey || targetKey === symbol.key) continue;
+          participants.add(symbol.key);
+          participants.add(targetKey);
+          callEdges.push({
+            from: symbol.node.id,
+            to: `fn:${targetKey}`,
+            type: "injects_dependency",
+            evidence: file.path,
+            start_line: row.line,
+            end_line: row.line,
+            symbol: provider,
+            detector: "python_source",
+            layer: "generated",
+          });
+        }
         const constructorMethod = /\b([A-Za-z_][A-Za-z0-9_]*)\s*\([^\n)]*\)\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/g;
         for (const match of row.text.matchAll(constructorMethod)) {
           const className = match[1];
