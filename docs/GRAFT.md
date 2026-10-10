@@ -12,9 +12,9 @@ The deployed public workbench is `/graft` in `1devteam/1devteam-web`.
 - **Website execution authority:** `1devteam/1devteam-web`
 - **Synchronization mode:** GitHub-reviewed **manual port**
 - **Runtime dependency between repos:** none
-- **Canonical website sync checkpoint:** `956c9d4bd2deeffb1373a76bcca9953d9d24a0b0`
-- **Canonical schema at checkpoint:** `1.12`
-- **Embedded browser schema:** `1.12`
+- **Canonical website sync checkpoint:** `5150d0b141830dd85a7daee60078976d3ee24556`
+- **Canonical schema at checkpoint:** `1.14`
+- **Embedded browser schema:** `1.14`
 
 The synchronization process is intentionally manual. It is not broken and it is not a runtime service connection.
 
@@ -61,7 +61,7 @@ No G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or external
 
 Cloudflare may host the website, but hosting is not graph authority and does not synchronize semantics.
 
-## Canonical 1.12 pack
+## Canonical 1.14 pack
 
 The browser port now follows the current canonical fact-only pack shape:
 
@@ -173,3 +173,34 @@ If the browser intentionally trails canonical semantics, provenance must say `be
 - `1devteam/graft_plus/docs/ARTIFACT.md` — canonical pack contract
 - [README](../README.md)
 - [Domain and mail](DOMAIN.md)
+
+
+## Schema 1.13 observer fidelity
+
+The browser port now carries canonical 1.13's observer-fidelity improvements:
+
+- HTTP route declarations have source-qualified identities, so equal relative paths in different modules remain distinct facts;
+- fully composed `runtime_route` identities are emitted only when explicit router/application composition proves the path;
+- `composes_to` separates declaration identity from proven runtime route identity;
+- explicit `Depends` / `Inject` / `Provide` providers can produce `injects_dependency` when the repository callable resolves;
+- repeated `calls_function`, `tests_function`, and `injects_dependency` observations aggregate into one topology edge with occurrence/evidence details;
+- RLS declarations produce explicit security-boundary facts;
+- direct source-level network egress is labeled `direct_network_egress`;
+- the primary ASCII topology is G2 and interns repeated source paths.
+
+These are observer facts, not architecture or risk judgments.
+
+## Schema 1.14 literal runtime declarations
+
+Schema 1.14 adds the remaining generic factual layer learned from the Ajenda refactoring work without importing Ajenda catalogs or policy.
+
+When repository source explicitly declares the fields, the browser port can emit:
+
+- `business_job`, `runtime_action`, `runtime_input`, and `runtime_artifact`;
+- action input-model, provider, side-effect-class, and credential-requirement facts;
+- literal job dependencies;
+- relationships such as `candidate_action`, `requires_input`, `requires_artifact`, `produced_by`, `declares_input_model`, `declares_side_effect_class`, `uses_provider`, `requires_credential`, and `credential_for_provider`.
+
+A candidate action remains a source declaration, not proof that it is selected at runtime. A credential requirement remains a declaration, not proof of availability or authorization. G.R.A.F.T.+ still does not calculate blast radius, select proof, classify risk, choose architecture, recommend a correction, or grant authority.
+
+The website remains an embedded execution port. Semantic authority remains `1devteam/graft_plus`; synchronization remains a reviewed manual port with no runtime dependency between repositories.
