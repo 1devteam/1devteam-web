@@ -28,9 +28,9 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.12" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "956c9d4bd2deeffb1373a76bcca9953d9d24a0b0" as const;
-export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.12" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.13" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "8248b1054504069e79414278db793ffebd55e103" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.13" as const;
 export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
