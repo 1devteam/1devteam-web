@@ -12,9 +12,9 @@ The deployed public workbench is `/graft` in `1devteam/1devteam-web`.
 - **Website execution authority:** `1devteam/1devteam-web`
 - **Synchronization mode:** GitHub-reviewed **manual port**
 - **Runtime dependency between repos:** none
-- **Canonical website sync checkpoint:** `8248b1054504069e79414278db793ffebd55e103`
-- **Canonical schema at checkpoint:** `1.13`
-- **Embedded browser schema:** `1.13`
+- **Canonical website sync checkpoint:** `5150d0b141830dd85a7daee60078976d3ee24556`
+- **Canonical schema at checkpoint:** `1.14`
+- **Embedded browser schema:** `1.14`
 
 The synchronization process is intentionally manual. It is not broken and it is not a runtime service connection.
 
@@ -61,7 +61,7 @@ No G.R.A.F.T.+ backend service, Cloudflare Tunnel, localhost origin, or external
 
 Cloudflare may host the website, but hosting is not graph authority and does not synchronize semantics.
 
-## Canonical 1.12 pack
+## Canonical 1.14 pack
 
 The browser port now follows the current canonical fact-only pack shape:
 
@@ -178,7 +178,7 @@ If the browser intentionally trails canonical semantics, provenance must say `be
 ## Schema 1.13 observer fidelity
 
 The browser engine is manually synchronized to canonical `1devteam/graft_plus` commit
-`8248b1054504069e79414278db793ffebd55e103`.
+`5150d0b141830dd85a7daee60078976d3ee24556`.
 
 Schema 1.13 increases observation without moving architectural judgment into the
 instrument:
@@ -207,3 +207,18 @@ instrument:
 The authority rule is unchanged: the graph observes repository reality. It does not
 calculate blast radius, choose proof, classify risk, recommend architecture, grant
 execution authority, or grant merge authority.
+
+## Schema 1.14 literal runtime declarations
+
+Schema 1.14 adds the remaining generic factual layer learned from the Ajenda refactoring work without importing Ajenda catalogs or policy.
+
+When repository source explicitly declares the fields, the browser port can emit:
+
+- `business_job`, `runtime_action`, `runtime_input`, and `runtime_artifact`;
+- action input-model, provider, side-effect-class, and credential-requirement facts;
+- literal job dependencies;
+- relationships such as `candidate_action`, `requires_input`, `requires_artifact`, `produced_by`, `declares_input_model`, `declares_side_effect_class`, `uses_provider`, `requires_credential`, and `credential_for_provider`.
+
+A candidate action remains a source declaration, not proof that it is selected at runtime. A credential requirement remains a declaration, not proof of availability or authorization. G.R.A.F.T.+ still does not calculate blast radius, select proof, classify risk, choose architecture, recommend a correction, or grant authority.
+
+The website remains an embedded execution port. Semantic authority remains `1devteam/graft_plus`; synchronization remains a reviewed manual port with no runtime dependency between repositories.

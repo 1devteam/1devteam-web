@@ -11,6 +11,7 @@ import { collectPackageTopology, inventoryNodes } from "./inventory.ts";
 import { collectLanguageGraph } from "./languages.ts";
 import { buildUnresolvedLedger, compactGraph, UNRESOLVED_LEDGER_FILE } from "./residuals.ts";
 import { AI_RECEIVER_GUIDE } from "./receiver-guide.ts";
+import { collectRuntimeDeclarations } from "./runtime-declarations.ts";
 import type { FileInput, GraphEdge, GraphNode, UnresolvedReference } from "./types.ts";
 export type { FileInput } from "./types.ts";
 
@@ -28,9 +29,9 @@ export const GRAFT_SEMANTIC_AUTHORITY = "1devteam/graft_plus" as const;
 export const GRAFT_EXECUTION_AUTHORITY = "1devteam/1devteam-web" as const;
 export const GRAFT_SYNC_MODE = "github-reviewed-manual-port" as const;
 export const GRAFT_EMBEDDED_ENGINE = "browser-universal-shell" as const;
-export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.13" as const;
-export const GRAFT_CANONICAL_REFERENCE_SHA = "8248b1054504069e79414278db793ffebd55e103" as const;
-export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.13" as const;
+export const GRAFT_EMBEDDED_SCHEMA_VERSION = "1.14" as const;
+export const GRAFT_CANONICAL_REFERENCE_SHA = "5150d0b141830dd85a7daee60078976d3ee24556" as const;
+export const GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION = "1.14" as const;
 export const GRAFT_SYNC_STATUS = "synchronized" as const;
 
 const SEMANTIC_PROVENANCE = {
@@ -713,21 +714,49 @@ function repositoryOverlay(files: FileInput[]) {
     ".graft/overlay.json",
   ];
   const file = conventional.map((path) => files.find((item) => item.path === path)).find(Boolean);
-  if (!file) return { file: undefined, nodes: [] as Node[], edges: [] as Edge[], invariants: [] as unknown[] };
+  if (!file) {
+    return {
+      file: undefined,
+      nodes: [] as Node[],
+      edges: [] as Edge[],
+      invariants: [] as unknown[],
+      functionRoots: [] as string[],
+    };
+  }
   try {
     const payload = JSON.parse(file.content) as {
       nodes?: Array<Record<string, unknown>>;
       edges?: Array<Record<string, unknown>>;
       invariants?: unknown[];
+      function_roots?: Array<string | { path?: string; source?: string }>;
     };
+    const functionRoots = [...new Set(
+      (payload.function_roots ?? [])
+        .map((item) =>
+          typeof item === "string"
+            ? item
+            : item && typeof item === "object"
+              ? item.path ?? item.source
+              : undefined,
+        )
+        .filter((value): value is string => typeof value === "string" && Boolean(value.replace(/^\/+|\/+$/g, "")))
+        .map((value) => value.replace(/^\/+|\/+$/g, "")),
+    )].sort();
     return {
       file,
       nodes: (payload.nodes ?? []).map((node) => ({ ...node, layer: "overlay" })) as Node[],
       edges: (payload.edges ?? []).map((edge) => ({ ...edge, layer: "overlay" })) as Edge[],
       invariants: payload.invariants ?? [],
+      functionRoots,
     };
   } catch {
-    return { file, nodes: [] as Node[], edges: [] as Edge[], invariants: [] as unknown[] };
+    return {
+      file,
+      nodes: [] as Node[],
+      edges: [] as Edge[],
+      invariants: [] as unknown[],
+      functionRoots: [] as string[],
+    };
   }
 }
 
@@ -769,9 +798,14 @@ export function reconstructPack(input: {
   }
   const pythonBySource = new Map(py.nodes.map((node) => [node.source, node.id]));
 
-  const functions = collectFunctionGraph(files, pythonBySource);
+  const functions = collectFunctionGraph(files, pythonBySource, overlay.functionRoots);
   nodes.push(...functions.nodes);
   edges.push(...functions.edges);
+
+  const runtimeDeclarations = collectRuntimeDeclarations(files, functions.nodes);
+  nodes.push(...runtimeDeclarations.nodes);
+  edges.push(...runtimeDeclarations.edges);
+
   const functionIds = new Set(functions.nodes.map((node) => node.id));
   for (const route of generated.nodes.filter((node) => node.type === "http_route" && typeof node.handler === "string")) {
     const module = moduleFor(route.source);
@@ -886,7 +920,7 @@ export function reconstructPack(input: {
   };
 
   const graph = {
-    schema_version: "1.13",
+    schema_version: "1.14",
     product: "G.R.A.F.T.+",
     package: "graft_plus",
     role: "fact-substrate",
@@ -921,8 +955,9 @@ export function reconstructPack(input: {
         "evidence-anchors",
         "route-declaration-composition",
         "dependency-provider-topology",
+        "runtime-declaration-contracts",
       ],
-      function_roots: [] as string[],
+      function_roots: overlay.functionRoots,
       overlay: overlay.file?.path ?? null,
     },
     nodes: nodes.sort((a, b) => a.id.localeCompare(b.id)),
@@ -937,6 +972,7 @@ export function reconstructPack(input: {
       ...contracts.facts,
       ...configuration.facts,
       ...architecture.facts,
+      ...runtimeDeclarations.facts,
       evidence_precision_counts: evidencePrecisionCounts,
     },
   };

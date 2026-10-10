@@ -27,7 +27,7 @@ describe("graft_plus reconstruct", () => {
     };
     const ids = graph.nodes.map((node) => node.id);
 
-    assert.equal(graph.schema_version, "1.13");
+    assert.equal(graph.schema_version, "1.14");
     assert.ok(ids.includes("js:src/a.ts"));
     assert.ok(ids.includes("js:src/b.ts"));
     assert.ok(ids.includes("ci:.github/workflows/ci.yml"));
@@ -96,12 +96,12 @@ describe("graft_plus reconstruct", () => {
     assert.equal(receipt.engine, "browser-universal-shell");
     assert.equal(receipt.semantic_provenance.semantic_authority, "1devteam/graft_plus");
     assert.equal(receipt.semantic_provenance.canonical_engine, "python-universal-shell");
-    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.13");
+    assert.equal(receipt.semantic_provenance.canonical_schema_version, "1.14");
     assert.equal(receipt.semantic_provenance.website_execution_authority, "1devteam/1devteam-web");
     assert.equal(receipt.semantic_provenance.website_synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.semantic_provenance.website_runtime_dependency, "none");
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.13");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.14");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -153,4 +153,47 @@ describe("graft_plus reconstruct", () => {
     assert.doesNotMatch(src, /tenant-isolation/);
     assert.doesNotMatch(src, /lease-owner/);
   });
+  it("emits literal runtime declarations without making runtime decisions", () => {
+    const pack = reconstructPack({
+      files: [
+        {
+          path: "app/runtime.py",
+          content:
+            "def qualify(payload):\n" +
+            "    return payload\n\n" +
+            "def register():\n" +
+            "    return ActionDefinition(name='sales.qualify', handler=qualify, provider='local_sales', input_model=SalesLeadInput, side_effect_class=SideEffectClass.INTERNAL_READ, credential_requirement=CredentialRequirement(provider='crm'))\n\n" +
+            "JOB = BusinessJob(job_key='qualify_lead', required_inputs=('company_name',), produced_outputs=('qualification_score',), candidate_actions=('sales.qualify',))\n",
+        },
+      ],
+    });
+    const graph = pack["dependency-graph.v1.json"] as {
+      nodes: Array<Record<string, unknown>>;
+      edges: Array<Record<string, unknown>>;
+      facts: Record<string, unknown>;
+      [key: string]: unknown;
+    };
+    const ids = new Set(graph.nodes.map((node) => String(node.id)));
+    for (const id of [
+      "job:qualify_lead",
+      "action:sales.qualify",
+      "input:company_name",
+      "artifact:qualification_score",
+      "input-contract:SalesLeadInput",
+      "provider:local_sales",
+      "provider:crm",
+      "side-effect-class:SideEffectClass.INTERNAL_READ",
+      "credential-requirement:sales.qualify",
+    ]) {
+      assert.ok(ids.has(id), id);
+    }
+    const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
+    assert.ok(edges.has("job:qualify_lead|action:sales.qualify|candidate_action"));
+    assert.ok(edges.has("artifact:qualification_score|job:qualify_lead|produced_by"));
+    assert.ok(edges.has("action:sales.qualify|credential-requirement:sales.qualify|requires_credential"));
+    assert.equal("decision" in graph, false);
+    assert.equal("risk" in graph, false);
+    assert.equal("proof_selection" in graph, false);
+  });
+
 });

@@ -262,34 +262,128 @@ function resolveSimpleName(args: {
   }
 }
 
-function declaredBindingFields(argsText: string, identityKeyword: string, handlerKeyword: string) {
-  const fields: Record<string, unknown> = {};
-  const keywordPattern = /\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([^,\n)]+(?:\([^)]*\))?)/g;
-  for (const match of argsText.matchAll(keywordPattern)) {
-    const key = match[1];
-    if (key === identityKeyword || key === handlerKeyword) continue;
-    const raw = match[2].trim();
-    const quoted = raw.match(/^["']([^"']*)["']$/);
-    if (quoted) {
-      fields[key] = quoted[1];
+function splitTopLevelArguments(text: string): string[] {
+  const result: string[] = [];
+  let start = 0;
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index]!;
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === quote) quote = "";
       continue;
     }
-    const constructor = raw.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\((.*)\)$/s);
-    if (constructor) {
-      const keywords: Record<string, unknown> = {};
-      for (const inner of constructor[2].matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*=\s*["']([^"']*)["']/g)) {
-        keywords[inner[1]] = inner[2];
-      }
-      fields[key] = Object.keys(keywords).length
-        ? { call: constructor[1], keywords }
-        : { call: constructor[1] };
+    if (char === "'" || char === '"') {
+      quote = char;
       continue;
     }
-    if (/^[A-Za-z_][A-Za-z0-9_.]*$/.test(raw)) {
-      fields[key] = { symbol: raw };
+    if ("([{".includes(char)) depth += 1;
+    else if (")]}".includes(char)) depth = Math.max(0, depth - 1);
+    else if (char === "," && depth === 0) {
+      result.push(text.slice(start, index).trim());
+      start = index + 1;
     }
   }
+  const tail = text.slice(start).trim();
+  if (tail) result.push(tail);
+  return result;
+}
+
+function declaredValue(raw: string): unknown {
+  const value = raw.trim();
+  const quoted = value.match(/^(['"])([\s\S]*)\1$/);
+  if (quoted) return quoted[2];
+  if (value === "True" || value === "true") return true;
+  if (value === "False" || value === "false") return false;
+  if (value === "None" || value === "null") return null;
+  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+  if (/^[A-Za-z_][A-Za-z0-9_.]*$/.test(value)) return { symbol: value };
+
+  const call = value.match(/^([A-Za-z_][A-Za-z0-9_.]*)\s*\(([\s\S]*)\)$/);
+  if (call) {
+    const keywords: Record<string, unknown> = {};
+    for (const part of splitTopLevelArguments(call[2])) {
+      const assignment = part.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([\s\S]+)$/);
+      if (!assignment) continue;
+      keywords[assignment[1]] = declaredValue(assignment[2]);
+    }
+    return Object.keys(keywords).length ? { call: call[1], keywords } : { call: call[1] };
+  }
+
+  const collection = value.match(/^[([{]([\s\S]*)[)\]}]$/);
+  if (collection) {
+    return splitTopLevelArguments(collection[1]).map((item) => declaredValue(item));
+  }
+  return { expression: value.slice(0, 240) };
+}
+
+function declaredFieldsFromArgs(
+  argsText: string,
+  handlerKeyword: string,
+  identityKeyword: string,
+): Record<string, unknown> {
+  const fields: Record<string, unknown> = {};
+  for (const part of splitTopLevelArguments(argsText)) {
+    const assignment = part.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([\s\S]+)$/);
+    if (!assignment) continue;
+    const key = assignment[1];
+    if (key === handlerKeyword || key === identityKeyword) continue;
+    fields[key] = declaredValue(assignment[2]);
+  }
   return fields;
+}
+
+
+function callExpressions(text: string) {
+  const result: Array<{ constructor: string; args: string; offset: number; raw: string }> = [];
+  const namePattern = /[A-Za-z_][A-Za-z0-9_.]*/y;
+  for (let index = 0; index < text.length; index += 1) {
+    if (!/[A-Za-z_]/.test(text[index] ?? "")) continue;
+    namePattern.lastIndex = index;
+    const nameMatch = namePattern.exec(text);
+    if (!nameMatch) continue;
+    let cursor = namePattern.lastIndex;
+    while (/\s/.test(text[cursor] ?? "")) cursor += 1;
+    if (text[cursor] !== "(") {
+      index = namePattern.lastIndex - 1;
+      continue;
+    }
+
+    let depth = 1;
+    let quote = "";
+    let escaped = false;
+    let end = cursor + 1;
+    for (; end < text.length; end += 1) {
+      const char = text[end]!;
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (char === "\\") escaped = true;
+        else if (char === quote) quote = "";
+        continue;
+      }
+      if (char === "'" || char === '"') {
+        quote = char;
+        continue;
+      }
+      if (char === "(") depth += 1;
+      else if (char === ")") {
+        depth -= 1;
+        if (depth === 0) break;
+      }
+    }
+    if (depth !== 0) continue;
+    result.push({
+      constructor: nameMatch[0],
+      args: text.slice(cursor + 1, end),
+      offset: index,
+      raw: text.slice(index, end + 1),
+    });
+    index = end;
+  }
+  return result;
 }
 
 function bindingFromText(args: {
@@ -302,9 +396,8 @@ function bindingFromText(args: {
 }): Binding[] {
   const { text, line, source, module, owner, resolveName } = args;
   const bindings: Binding[] = [];
-  const callPattern = /([A-Za-z_][A-Za-z0-9_.]*)\s*\(([\s\S]{0,1200}?)\)/g;
-  for (const match of text.matchAll(callPattern)) {
-    const argsText = match[2];
+  for (const match of callExpressions(text)) {
+    const argsText = match.args;
     let identity: string | undefined;
     let identityKeyword: string | undefined;
     for (const key of BINDING_IDENTITY_KEYS) {
@@ -331,8 +424,9 @@ function bindingFromText(args: {
     const targetKey = resolveName(handlerName);
     if (!targetKey) continue;
 
-    const constructor = match[1];
-    const bindingId = `binding:${source}:${line}:0:${identity}`;
+    const constructor = match.constructor;
+    const bindingLine = line + text.slice(0, match.offset).split("\n").length - 1;
+    const bindingId = `binding:${source}:${bindingLine}:0:${identity}`;
     const node: GraphNode = {
       id: bindingId,
       type: "callable_binding",
@@ -342,10 +436,10 @@ function bindingFromText(args: {
       constructor,
       handler_keyword: handlerKeyword,
       identity_keyword: identityKeyword,
-      declared_fields: declaredBindingFields(argsText, identityKeyword, handlerKeyword),
-      start_line: line,
-      end_line: line + match[0].split("\n").length - 1,
+      start_line: bindingLine,
+      end_line: bindingLine + match.raw.split("\n").length - 1,
       detector: "python_source",
+      declared_fields: declaredFieldsFromArgs(argsText, handlerKeyword, identityKeyword),
     };
     const ownerId = owner?.node.id ?? `py:${module}`;
     bindings.push({
@@ -381,7 +475,11 @@ function bindingFromText(args: {
   return bindings;
 }
 
-export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<string, string>) {
+export function collectFunctionGraph(
+  files: FileInput[],
+  pythonBySource: Map<string, string>,
+  functionRoots: string[] = [],
+) {
   const production = files.filter((file) => isProductionPython(file.path));
   const definitionsList = production.flatMap(parseDefinitions);
   const definitions = new Map(definitionsList.map((symbol) => [symbol.key, symbol]));
@@ -680,7 +778,13 @@ export function collectFunctionGraph(files: FileInput[], pythonBySource: Map<str
   }
 
   for (const symbol of definitionsList) {
-    if (symbol.node.route_handler === true || symbol.name === "main") participants.add(symbol.key);
+    if (
+      symbol.node.route_handler === true ||
+      symbol.name === "main" ||
+      functionRoots.some((root) => symbol.source === root || symbol.source.startsWith(root + "/"))
+    ) {
+      participants.add(symbol.key);
+    }
   }
 
   const nodes = [...participants]

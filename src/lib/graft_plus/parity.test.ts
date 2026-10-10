@@ -44,11 +44,11 @@ function routeNode(
   );
 }
 
-describe("canonical 1.13 browser parity surface", () => {
+describe("canonical 1.14 browser parity surface", () => {
   it("pins the manually promoted canonical revision and authority boundary", () => {
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "8248b1054504069e79414278db793ffebd55e103");
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.13");
-    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.13");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "5150d0b141830dd85a7daee60078976d3ee24556");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.14");
+    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.14");
     assert.equal(GRAFT_SYNC_MODE, "github-reviewed-manual-port");
     assert.equal(GRAFT_SYNC_STATUS, "synchronized");
 
@@ -68,7 +68,7 @@ describe("canonical 1.13 browser parity surface", () => {
     assert.deepEqual(graph.semantic_provenance, {
       semantic_authority: "1devteam/graft_plus",
       canonical_engine: "python-universal-shell",
-      canonical_schema_version: "1.13",
+      canonical_schema_version: "1.14",
       website_execution_authority: "1devteam/1devteam-web",
       website_synchronization_mode: "github-reviewed-manual-port",
       website_runtime_dependency: "none",
@@ -86,7 +86,7 @@ describe("canonical 1.13 browser parity surface", () => {
       "change_recommendation",
     ]);
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.13");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.14");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -517,7 +517,7 @@ describe("canonical 1.13 browser parity surface", () => {
       },
     ]);
     const graph = pack["dependency-graph.v1.json"] as ReturnType<typeof graphOf>;
-    assert.equal(graph.schema_version, "1.13");
+    assert.equal(graph.schema_version, "1.14");
     const ids = new Set(graph.nodes.map((row) => String(row.id)));
     assert.ok(ids.has("build-target://app:util"));
     assert.ok(ids.has("build-target://app:app"));
@@ -584,4 +584,45 @@ describe("canonical 1.13 browser parity surface", () => {
 
     assert.equal(typeof pack["00-AI-READ-FIRST.md"], "string");
   });
+  it("discovers reviewed overlay invariants and function roots without adjudicating them", () => {
+    const graph = graphOf([
+      {
+        path: "app/isolated.py",
+        content: "def kept_by_reviewed_root():\n    return 1\n",
+      },
+      {
+        path: "docs/contracts/dependency-graph.overlay.v1.json",
+        content: JSON.stringify({
+          schema_version: "1.0",
+          function_roots: ["app"],
+          nodes: [
+            {
+              id: "security-boundary:tenant",
+              type: "security_boundary",
+              source: "docs/contracts/dependency-graph.overlay.v1.json",
+              boundary_kind: "tenant-isolation",
+            },
+          ],
+          edges: [],
+          invariants: [
+            {
+              id: "invariant:tenant-isolation",
+              name: "tenant isolation",
+              description: "Repository-declared invariant",
+            },
+          ],
+        }),
+      },
+    ]);
+
+    assert.ok(node(graph, "security-boundary:tenant"));
+    assert.ok(node(graph, "fn:app.isolated:kept_by_reviewed_root"));
+    assert.equal(graph.semantic_provenance.overlay_mode, "auto-discovered");
+    const invariants = (graph as unknown as { invariants: Array<Record<string, unknown>> }).invariants;
+    assert.equal(invariants.length, 1);
+    assert.equal(invariants[0].id, "invariant:tenant-isolation");
+    assert.equal("relevant" in invariants[0], false);
+    assert.equal("blocks_merge" in invariants[0], false);
+  });
+
 });
