@@ -739,8 +739,8 @@ function repositoryOverlay(files: FileInput[]) {
               ? item.path ?? item.source
               : undefined,
         )
-        .filter((value): value is string => typeof value === "string" && Boolean(value.replace(/^\\/+|\\/+$/g, "")))
-        .map((value) => value.replace(/^\\/+|\\/+$/g, "")),
+        .filter((value): value is string => typeof value === "string" && Boolean(value.replace(/^\/+|\/+$/g, "")))
+        .map((value) => value.replace(/^\/+|\/+$/g, "")),
     )].sort();
     return {
       file,
