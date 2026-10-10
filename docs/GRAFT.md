@@ -177,19 +177,36 @@ If the browser intentionally trails canonical semantics, provenance must say `be
 
 ## Schema 1.13 observer fidelity
 
-The browser port now carries canonical 1.13's observer-fidelity improvements:
+The browser engine is manually synchronized to canonical `1devteam/graft_plus` commit
+`5150d0b141830dd85a7daee60078976d3ee24556`.
 
-- HTTP route declarations have source-qualified identities, so equal relative paths in different modules remain distinct facts;
-- fully composed `runtime_route` identities are emitted only when explicit router/application composition proves the path;
-- `composes_to` separates declaration identity from proven runtime route identity;
-- explicit `Depends` / `Inject` / `Provide` providers can produce `injects_dependency` when the repository callable resolves;
-- repeated `calls_function`, `tests_function`, and `injects_dependency` observations aggregate into one topology edge with occurrence/evidence details;
-- RLS declarations produce explicit security-boundary facts;
-- repository-owned reviewed overlays are discovered at canonical paths so declared nodes, edges, invariants, and selected function roots remain visible without inference;
-- direct source-level network egress is labeled `direct_network_egress`;
-- the primary ASCII topology is G2 and interns repeated source paths.
+Schema 1.13 increases observation without moving architectural judgment into the
+instrument:
 
-These are observer facts, not architecture or risk judgments.
+- HTTP route declarations retain source/module + line-qualified identity instead of
+  collapsing by method/path.
+- A separate `runtime_route` is emitted only where explicit router/application
+  composition can be proven. `composes_to` preserves the declaration-to-runtime
+  relationship.
+- Explicit dependency providers such as `Depends(get_db)` are visible as declared
+  DI boundaries and, when exactly resolvable, as `injects_dependency` callable
+  relationships. Dynamic container lookup remains unresolved.
+- Callable bindings retain source-declared metadata such as provider, input model,
+  side-effect class, and credential requirement without treating those declarations
+  as runtime activation or authority.
+- Repeated call/test/DI observations aggregate onto one topology edge with occurrence
+  count and retained source observations.
+- Repository-owned reviewed overlays at the conventional G.R.A.F.T. paths are
+  consumed as explicit facts, including declared invariants; the browser does not
+  invent policy.
+- RLS declarations are explicit security boundaries with `rls_enforced`; raw
+  observed network calls are `direct_network_egress`.
+- The stable `dependency-graph.ascii.v1.txt` artifact now carries a G2 stream with a
+  source-path dictionary. G1 remains decodable.
+
+The authority rule is unchanged: the graph observes repository reality. It does not
+calculate blast radius, choose proof, classify risk, recommend architecture, grant
+execution authority, or grant merge authority.
 
 ## Schema 1.14 literal runtime declarations
 
