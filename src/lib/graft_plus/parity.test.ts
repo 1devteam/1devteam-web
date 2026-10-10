@@ -29,11 +29,26 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
-describe("canonical 1.12 browser parity surface", () => {
+function routeNode(
+  graph: ReturnType<typeof graphOf>,
+  source: string,
+  method: string,
+  path: string,
+) {
+  return graph.nodes.find(
+    (item) =>
+      item.type === "http_route" &&
+      item.source === source &&
+      item.method === method &&
+      (item.path === path || item.route === path),
+  );
+}
+
+describe("canonical 1.13 browser parity surface", () => {
   it("pins the manually promoted canonical revision and authority boundary", () => {
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "956c9d4bd2deeffb1373a76bcca9953d9d24a0b0");
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.12");
-    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.12");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "8248b1054504069e79414278db793ffebd55e103");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.13");
+    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.13");
     assert.equal(GRAFT_SYNC_MODE, "github-reviewed-manual-port");
     assert.equal(GRAFT_SYNC_STATUS, "synchronized");
 
@@ -53,10 +68,11 @@ describe("canonical 1.12 browser parity surface", () => {
     assert.deepEqual(graph.semantic_provenance, {
       semantic_authority: "1devteam/graft_plus",
       canonical_engine: "python-universal-shell",
-      canonical_schema_version: "1.12",
+      canonical_schema_version: "1.13",
       website_execution_authority: "1devteam/1devteam-web",
       website_synchronization_mode: "github-reviewed-manual-port",
       website_runtime_dependency: "none",
+      overlay_mode: "none",
     });
     assert.equal(receipt.status_scope, "instrument-integrity-only");
     assert.equal(receipt.merge_authorization, "not-determined");
@@ -70,7 +86,7 @@ describe("canonical 1.12 browser parity surface", () => {
       "change_recommendation",
     ]);
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.12");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.13");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -147,7 +163,10 @@ describe("canonical 1.12 browser parity surface", () => {
     const find = (kind: string, source: string) => boundaries.filter((row) => row.kind === kind && row.source === source);
     assert.deepEqual(find("wildcard_import", "app.py").map((row) => row.line), [1]);
     assert.deepEqual(find("dynamic_load", "app.py").map((row) => row.line), [3]);
-    assert.deepEqual(find("dependency_injection", "app.py").map((row) => row.line), [4]);
+    const pythonDi = find("dependency_injection", "app.py");
+    assert.deepEqual(pythonDi.map((row) => row.line), [4]);
+    assert.equal(pythonDi[0]?.status, "declared");
+    assert.equal(pythonDi[0]?.target_symbol, "get_db");
     assert.deepEqual(find("route_composition", "app.py").map((row) => row.line), [5]);
     assert.deepEqual(find("dynamic_load", "app.js").map((row) => row.line), [1]);
     assert.deepEqual(find("dependency_injection", "app.js").map((row) => row.line), [2]);
@@ -166,8 +185,9 @@ describe("canonical 1.12 browser parity surface", () => {
           "from fastapi import APIRouter\nrouter = APIRouter()\n@router.get('/health')\ndef health():\n    return {'ok': True}\n",
       },
     ]);
-    const route = node(graph, "route:GET /health");
+    const route = routeNode(graph, "pkg/main.py", "GET", "/health");
     assert.ok(route?.evidence_anchor);
+    assert.match(String(route?.id), /^route-declaration:pkg\.main:GET:\/health@L\d+$/);
     const anchor = route?.evidence_anchor as Record<string, unknown>;
     assert.equal(anchor.source, "pkg/main.py");
   });
@@ -238,7 +258,9 @@ describe("canonical 1.12 browser parity surface", () => {
     const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
     assert.ok(edges.has("fn:app.api:value|fn:app.helpers:used|calls_function"));
     assert.ok(edges.has("test:tests/test_api.py|fn:app.api:value|tests_function"));
-    assert.ok(edges.has("route:GET /value|fn:app.api:value|handled_by"));
+    const valueRoute = routeNode(graph, "app/api.py", "GET", "/value");
+    assert.ok(valueRoute);
+    assert.ok(edges.has(`${valueRoute.id}|fn:app.api:value|handled_by`));
   });
 
   it("maps methods, nested handlers, callable bindings, route ownership, and direct method tests", () => {
@@ -298,7 +320,9 @@ describe("canonical 1.12 browser parity surface", () => {
     assert.ok(edges.has(`${register}|${binding.id}|declares_binding`));
     assert.ok(edges.has(`${binding.id}|${handler}|binds_callable`));
 
-    assert.ok(edges.has(`route:POST /run|${routeHandler}|handled_by`));
+    const runRoute = routeNode(graph, "app/runtime.py", "POST", "/run");
+    assert.ok(runRoute);
+    assert.ok(edges.has(`${runRoute.id}|${routeHandler}|handled_by`));
     assert.ok(edges.has(`test:tests/test_runtime.py|${complete}|tests_function`));
   });
 
@@ -336,7 +360,7 @@ describe("canonical 1.12 browser parity surface", () => {
       },
     ]);
     const graph = pack["dependency-graph.v1.json"] as ReturnType<typeof graphOf>;
-    assert.equal(graph.schema_version, "1.12");
+    assert.equal(graph.schema_version, "1.13");
     const ids = new Set(graph.nodes.map((row) => String(row.id)));
     assert.ok(ids.has("build-target://app:util"));
     assert.ok(ids.has("build-target://app:app"));
@@ -366,6 +390,8 @@ describe("canonical 1.12 browser parity surface", () => {
 
     const ascii = pack["dependency-graph.ascii.v1.txt"] as string;
     const decoded = decodeGraphAscii(ascii);
+    assert.match(ascii, /^G2\|/);
+    assert.equal(decoded.schema_version, "ascii-topology-v2");
     assert.equal(decoded.direction, "c>d");
     assert.equal(decoded.nodes.length, graph.nodes.length);
     assert.equal(decoded.edges.length, graph.edges.length);
