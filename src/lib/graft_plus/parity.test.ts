@@ -29,11 +29,11 @@ function node(graph: ReturnType<typeof graphOf>, id: string) {
   return graph.nodes.find((item) => item.id === id);
 }
 
-describe("canonical 1.12 browser parity surface", () => {
+describe("canonical 1.14 browser parity surface", () => {
   it("pins the manually promoted canonical revision and authority boundary", () => {
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "956c9d4bd2deeffb1373a76bcca9953d9d24a0b0");
-    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.12");
-    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.12");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SHA, "5150d0b141830dd85a7daee60078976d3ee24556");
+    assert.equal(GRAFT_CANONICAL_REFERENCE_SCHEMA_VERSION, "1.14");
+    assert.equal(GRAFT_EMBEDDED_SCHEMA_VERSION, "1.14");
     assert.equal(GRAFT_SYNC_MODE, "github-reviewed-manual-port");
     assert.equal(GRAFT_SYNC_STATUS, "synchronized");
 
@@ -53,7 +53,7 @@ describe("canonical 1.12 browser parity surface", () => {
     assert.deepEqual(graph.semantic_provenance, {
       semantic_authority: "1devteam/graft_plus",
       canonical_engine: "python-universal-shell",
-      canonical_schema_version: "1.12",
+      canonical_schema_version: "1.14",
       website_execution_authority: "1devteam/1devteam-web",
       website_synchronization_mode: "github-reviewed-manual-port",
       website_runtime_dependency: "none",
@@ -70,7 +70,7 @@ describe("canonical 1.12 browser parity surface", () => {
       "change_recommendation",
     ]);
     assert.equal(receipt.website_sync.canonical_reference_sha, GRAFT_CANONICAL_REFERENCE_SHA);
-    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.12");
+    assert.equal(receipt.website_sync.canonical_reference_schema_version, "1.14");
     assert.equal(receipt.website_sync.synchronization_mode, "github-reviewed-manual-port");
     assert.equal(receipt.website_sync.synchronization_status, "synchronized");
     assert.equal(receipt.website_sync.parity_claimed, true);
@@ -166,7 +166,14 @@ describe("canonical 1.12 browser parity surface", () => {
           "from fastapi import APIRouter\nrouter = APIRouter()\n@router.get('/health')\ndef health():\n    return {'ok': True}\n",
       },
     ]);
-    const route = node(graph, "route:GET /health");
+    const route = graph.nodes.find(
+      (item) =>
+        item.type === "http_route" &&
+        item.route_identity === "declaration" &&
+        item.method === "GET" &&
+        item.path === "/health" &&
+        item.source === "pkg/main.py",
+    );
     assert.ok(route?.evidence_anchor);
     const anchor = route?.evidence_anchor as Record<string, unknown>;
     assert.equal(anchor.source, "pkg/main.py");
@@ -238,7 +245,15 @@ describe("canonical 1.12 browser parity surface", () => {
     const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
     assert.ok(edges.has("fn:app.api:value|fn:app.helpers:used|calls_function"));
     assert.ok(edges.has("test:tests/test_api.py|fn:app.api:value|tests_function"));
-    assert.ok(edges.has("route:GET /value|fn:app.api:value|handled_by"));
+    const route = graph.nodes.find(
+      (item) =>
+        item.type === "http_route" &&
+        item.route_identity === "declaration" &&
+        item.handler === "value" &&
+        item.source === "app/api.py",
+    );
+    assert.ok(route);
+    assert.ok(edges.has(`${route.id}|fn:app.api:value|handled_by`));
   });
 
   it("maps methods, nested handlers, callable bindings, route ownership, and direct method tests", () => {
@@ -298,8 +313,72 @@ describe("canonical 1.12 browser parity surface", () => {
     assert.ok(edges.has(`${register}|${binding.id}|declares_binding`));
     assert.ok(edges.has(`${binding.id}|${handler}|binds_callable`));
 
-    assert.ok(edges.has(`route:POST /run|${routeHandler}|handled_by`));
+    const route = graph.nodes.find(
+      (item) =>
+        item.type === "http_route" &&
+        item.route_identity === "declaration" &&
+        item.handler === "run_route" &&
+        item.source === "app/runtime.py",
+    );
+    assert.ok(route);
+    assert.ok(edges.has(`${route.id}|${routeHandler}|handled_by`));
     assert.ok(edges.has(`test:tests/test_runtime.py|${complete}|tests_function`));
+  });
+
+  it("aggregates repeated callable evidence without duplicating topology", () => {
+    const graph = graphOf([
+      {
+        path: "app/service.py",
+        content:
+          "def helper():\n" +
+          "    return 1\n\n" +
+          "def run():\n" +
+          "    helper()\n" +
+          "    return helper()\n",
+      },
+    ]);
+    const edge = graph.edges.find(
+      (item) =>
+        item.from === "fn:app.service:run" &&
+        item.to === "fn:app.service:helper" &&
+        item.type === "calls_function",
+    );
+    assert.ok(edge);
+    assert.equal(edge.occurrences, 2);
+    assert.equal((edge.observations as unknown[]).length, 2);
+    assert.equal(
+      graph.edges.filter(
+        (item) =>
+          item.from === "fn:app.service:run" &&
+          item.to === "fn:app.service:helper" &&
+          item.type === "calls_function",
+      ).length,
+      1,
+    );
+  });
+
+  it("emits explicit RLS boundaries and direct egress facts", () => {
+    const graph = graphOf([
+      {
+        path: "alembic/versions/0001.py",
+        content:
+          "def upgrade():\n" +
+          "    op.create_table('records')\n" +
+          "    op.execute('ALTER TABLE records ENABLE ROW LEVEL SECURITY')\n",
+      },
+      {
+        path: "app/client.py",
+        content:
+          "import httpx\n" +
+          "def load():\n" +
+          "    return httpx.get('https://example.com')\n",
+      },
+    ]);
+    const ids = new Set(graph.nodes.map((item) => String(item.id)));
+    assert.ok(ids.has("security-boundary:rls:records"));
+    const edges = new Set(graph.edges.map((edge) => `${edge.from}|${edge.to}|${edge.type}`));
+    assert.ok(edges.has("db:table:records|security-boundary:rls:records|rls_enforced"));
+    assert.ok(edges.has("py:app.client|egress:app.client|direct_network_egress"));
   });
 
   it("reports instrument integrity without emitting architectural judgment", () => {
@@ -336,7 +415,7 @@ describe("canonical 1.12 browser parity surface", () => {
       },
     ]);
     const graph = pack["dependency-graph.v1.json"] as ReturnType<typeof graphOf>;
-    assert.equal(graph.schema_version, "1.12");
+    assert.equal(graph.schema_version, "1.14");
     const ids = new Set(graph.nodes.map((row) => String(row.id)));
     assert.ok(ids.has("build-target://app:util"));
     assert.ok(ids.has("build-target://app:app"));
@@ -366,6 +445,8 @@ describe("canonical 1.12 browser parity surface", () => {
 
     const ascii = pack["dependency-graph.ascii.v1.txt"] as string;
     const decoded = decodeGraphAscii(ascii);
+    assert.ok(ascii.startsWith("G2|"));
+    assert.equal(decoded.schema_version, "ascii-topology-v2");
     assert.equal(decoded.direction, "c>d");
     assert.equal(decoded.nodes.length, graph.nodes.length);
     assert.equal(decoded.edges.length, graph.edges.length);
