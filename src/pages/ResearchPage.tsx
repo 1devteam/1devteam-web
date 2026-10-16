@@ -6,6 +6,7 @@ import {
   researchPolicy,
   researchProgram,
   rdTools,
+  futureResearch,
 } from '@/data/research'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
@@ -133,6 +134,26 @@ export function ResearchPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Intended future relationship</p>
             <p className="mt-3 font-mono text-base font-medium leading-relaxed text-[var(--text)]">G.R.A.F.T.1st → intended architecture → implementation → G.R.A.F.T.+ → reconstructed architecture → drift analysis</p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">This remains a development hypothesis, not a completed research finding.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-pad border-t border-[var(--border)]" aria-labelledby="future-research-heading">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.35fr_0.65fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Future R&amp;D work</p>
+            <h2 id="future-research-heading" className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">{futureResearch.title}</h2>
+            <p className="mt-3 text-sm font-medium text-[var(--brand)]">{futureResearch.status}</p>
+          </div>
+          <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p>{futureResearch.description}</p>
+            <p>{futureResearch.aim}</p>
+            <p>{futureResearch.collaboration}</p>
+            <div className="flex flex-wrap items-center gap-5 pt-2">
+              <a href={futureResearch.researchUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[var(--brand)] hover:underline">Read the research foundation →</a>
+              <Link to="/contact" className="text-sm font-semibold text-[var(--brand)] hover:underline">Discuss collaboration or support →</Link>
+            </div>
+            <p className="text-sm text-[var(--text-subtle)]">Proposed research, not a demonstrated predictive capability.</p>
           </div>
         </div>
       </section>
