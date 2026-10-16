@@ -118,3 +118,16 @@ export const researchNotes = [
       'PRIDE-style requirements for complete reasoning predate the graph, while CI and proof infrastructure also matured over time. Neither can be credited to graph assistance without separate evidence.',
   },
 ] as const
+
+export const futureResearch = {
+  title: 'Entangled Software: Perceiving Emergent Behavior Before It Happens',
+  status: 'Future R&D · collaborators and research support welcome',
+  description:
+    '1DevTeam is developing a research direction for understanding how interactions among software components produce unexpected system-wide behavior. The proposed approach combines architecture mapping, continuous multiscale information-flow observation, and controlled experiments to detect how small changes propagate through a system.',
+  aim:
+    'Starting with fully characterized baseline systems, the study will introduce individual mechanisms against matched controls, repeat experiments, and investigate whether recurring mathematical relationships can predict interactions not yet observed. The goal is to develop evidence-based foresight into architectural change, emergent capabilities, and system-level risk.',
+  collaboration:
+    'We welcome conversations with research collaborators, systems engineers, academic partners, and organizations interested in supporting exploratory work through funding, compute resources, experimental infrastructure, or joint studies.',
+  researchUrl:
+    'https://github.com/1devteam/rd-program/blob/main/studies/emergent-interaction-foresight/research-foundation-2026-10-15.md',
+} as const
