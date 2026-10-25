@@ -131,3 +131,14 @@ export const futureResearch = {
   researchUrl:
     'https://github.com/1devteam/rd-program/blob/main/studies/emergent-interaction-foresight/research-foundation-2026-10-15.md',
 } as const
+
+export const substrateResearch = {
+  title: 'Machine-Native Substrate',
+  status: 'Experimental architecture and reference kernel · research ongoing',
+  description:
+    'Substrate investigates a persistent computational workspace designed for AI to represent, operate, simulate, verify, and evolve complex systems. Software engineering is an initial application, not the boundary of the research.',
+  evidence:
+    'The project repository contains architectural specifications and experimental executable components, but does not claim a complete cognitive runtime, production isolation, or demonstrated performance advantage.',
+  architectureUrl: 'https://github.com/1devteam/machine-native-substrate',
+  researchUrl: 'https://github.com/1devteam/rd-program/tree/main/studies/machine-native-substrate',
+} as const
