@@ -7,6 +7,7 @@ import {
   researchProgram,
   rdTools,
   futureResearch,
+  substrateResearch,
 } from '@/data/research'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
@@ -134,6 +135,24 @@ export function ResearchPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Intended future relationship</p>
             <p className="mt-3 font-mono text-base font-medium leading-relaxed text-[var(--text)]">G.R.A.F.T.1st → intended architecture → implementation → G.R.A.F.T.+ → reconstructed architecture → drift analysis</p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">This remains a development hypothesis, not a completed research finding.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]" aria-labelledby="substrate-research-heading">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.35fr_0.65fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Active R&amp;D program</p>
+            <h2 id="substrate-research-heading" className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">{substrateResearch.title}</h2>
+            <p className="mt-3 text-sm font-medium text-[var(--brand)]">{substrateResearch.status}</p>
+          </div>
+          <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p>{substrateResearch.description}</p>
+            <p>{substrateResearch.evidence}</p>
+            <div className="flex flex-wrap gap-6 text-sm font-semibold text-[var(--brand)]">
+              <a href={substrateResearch.architectureUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Architecture and implementation →</a>
+              <a href={substrateResearch.researchUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Research and protocols →</a>
+            </div>
           </div>
         </div>
       </section>
