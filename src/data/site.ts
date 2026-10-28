@@ -29,6 +29,7 @@ export function inboxForInterest(interest: string) {
 
 export const navLinks = [
   { label: 'Work', href: '/work' },
+  { label: 'R&D', href: '/research' },
   { label: 'G.R.A.F.T.+', href: '/graft' },
   { label: 'Products', href: '/products' },
   { label: 'Services', href: '/services' },

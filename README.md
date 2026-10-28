@@ -9,7 +9,7 @@ in private development; recovered and archival projects are labeled as such.
 **G.R.A.F.T.+** (Graph Reasoning for Architecture, Fidelity & Traceability) is
 the public reconstruction workbench on [`/graft`](https://1devteam.com/graft).
 Paste a public GitHub repository. It maps that SHA and returns one downloadable
-pack. It is a fact instrument, not a planner and not merge authority. Schema 1.12 also
+pack. It is a fact instrument, not a planner and not merge authority. Schema 1.14 also
 maps participating Python functions, class methods, nested handlers, direct tests, route
 ownership, and exact literal callable bindings. The receiving AI owns blast radius, proof
 selection, risk, architecture, and recommendations.
@@ -17,7 +17,7 @@ selection, risk, architecture, and recommendations.
 The embedded browser engine is a **manual GitHub-reviewed port** of the semantic
 authority in `1devteam/graft_plus`; it is not a runtime dependency or automatic
 sync. The current website promotion checkpoint is
-`956c9d4bd2deeffb1373a76bcca9953d9d24a0b0` at canonical schema `1.12`.
+`5150d0b141830dd85a7daee60078976d3ee24556` at canonical schema `1.14`.
 See [`docs/GRAFT.md`](docs/GRAFT.md). `/wiki` serves the same workbench and
 canonicalizes to `/graft`. Dedicated `/wiki/:id` references remain.
 
@@ -53,7 +53,7 @@ does not display a false server-side delivery confirmation.
 | `/graft` | G.R.A.F.T.+ workbench: paste a public repo, download one pack |
 | `/wiki` | Same workbench (canonical `/graft`) |
 | `/wiki/:id` | Expanded technical references (PRIDE, Snapshot, graph, blast radius, …) |
-| `/research` | First formal R&D program, study framing, G.R.A.F.T.+, and G.R.A.F.T.1st |
+| `/research` | Dated Ajenda, G.R.A.F.T.+, and Substrate progress, plus formal studies and experimental boundaries |
 | `/services` | Custom client evaluation |
 | `/enterprise` | Enterprise buyer landing |
 | `/products` | Product portfolio |

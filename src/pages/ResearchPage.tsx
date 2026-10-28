@@ -7,6 +7,9 @@ import {
   researchProgram,
   rdTools,
   futureResearch,
+  substrateResearch,
+  researchPortfolio,
+  researchPortfolioIntro,
 } from '@/data/research'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
@@ -18,19 +21,42 @@ export function ResearchPage() {
     <>
       <Seo
         title="Research & Development"
-        description="1DevTeam R&D Program #1 studies architectural reasoning scope and corrective PR cascades in AI-assisted software development."
+        description="Research on governed execution, machine-native architecture observation, and AI-native computational systems, with evidence limits and source lineage."
         path="/research"
       />
       <PageHero
-        eyebrow="1DevTeam R&D Program #1"
-        title="Architectural reasoning scope and corrective PR cascades"
-        description={researchProgram.summary}
+        eyebrow="1DevTeam Research & Development"
+        title="Machine-native systems. Source-backed progress."
+        description={researchPortfolioIntro}
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg"><a href="/#architecture-graph">Interactive graph</a></Button>
           <Button asChild variant="outline" size="lg"><Link to="/work">Technical evidence</Link></Button>
         </div>
       </PageHero>
+
+      <section className="section-pad" aria-labelledby="research-portfolio-heading">
+        <div className="container-site">
+          <div className="max-w-4xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Engineering status · 28 October 2026</p>
+            <h2 id="research-portfolio-heading" className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Three systems, separate evidence and authority</h2>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text-muted)]">These are source-backed implementation checkpoints, not controlled comparative research results or production readiness certificates. Open drafts and unmeasured hypotheses remain distinct from merged engineering work.</p>
+          </div>
+          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            {researchPortfolio.map((project) => (
+              <article key={project.name} className="rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] p-6">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">{project.scope}</p>
+                <h3 className="mt-3 text-xl font-semibold tracking-tight">{project.name}</h3>
+                <p className="mt-3 text-sm font-semibold text-[var(--text)]">{project.status}</p>
+                <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">{project.description}</p>
+                <p className="mt-4 text-sm leading-relaxed text-[var(--text-subtle)]">{project.accessNote}</p>
+                <a href={project.evidenceUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">{project.evidenceLabel} →</a>
+              </article>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-[var(--text-subtle)]">The authoritative R&amp;D program and Substrate implementation repositories are access-controlled; external readers may need permission to inspect those sources. Public Ajenda and G.R.A.F.T.+ engineering records remain linked above.</p>
+        </div>
+      </section>
 
       <section className="section-pad">
         <div className="container-site grid gap-12 lg:grid-cols-[0.35fr_0.65fr]">
@@ -63,7 +89,7 @@ export function ResearchPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Study epochs</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">Preserving the intervention boundary</h2>
             <p className="mt-3 text-[17px] leading-relaxed text-[var(--text-muted)]">
-              The periods before, during, and after graph introduction remain distinct development conditions. Earlier work is not retroactively described as an immature form of graph assistance.
+              This is the original longitudinal Ajenda study within the broader R&amp;D program. The periods before, during, and after graph introduction remain distinct. Earlier work is not retroactively described as graph assistance.
             </p>
           </div>
 
@@ -134,6 +160,24 @@ export function ResearchPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Intended future relationship</p>
             <p className="mt-3 font-mono text-base font-medium leading-relaxed text-[var(--text)]">G.R.A.F.T.1st → intended architecture → implementation → G.R.A.F.T.+ → reconstructed architecture → drift analysis</p>
             <p className="mt-3 text-base leading-relaxed text-[var(--text-muted)]">This remains a development hypothesis, not a completed research finding.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-pad border-t border-[var(--border)] bg-[var(--surface)]" aria-labelledby="substrate-research-heading">
+        <div className="container-site grid gap-12 lg:grid-cols-[0.35fr_0.65fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--brand)]">Active R&amp;D program</p>
+            <h2 id="substrate-research-heading" className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">{substrateResearch.title}</h2>
+            <p className="mt-3 text-sm font-medium text-[var(--brand)]">{substrateResearch.status}</p>
+          </div>
+          <div className="max-w-4xl space-y-5 text-[17px] leading-relaxed text-[var(--text-muted)]">
+            <p>{substrateResearch.description}</p>
+            <p>{substrateResearch.evidence}</p>
+            <div className="flex flex-wrap gap-6 text-sm font-semibold text-[var(--brand)]">
+              <a href={substrateResearch.architectureUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Architecture and implementation →</a>
+              <a href={substrateResearch.researchUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">Research and protocols →</a>
+            </div>
           </div>
         </div>
       </section>

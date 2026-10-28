@@ -75,7 +75,9 @@ export function AjendaPage() {
         <div className="container-site grid gap-10 lg:grid-cols-2">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Current status</h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">Ajenda AI is under active private development and is locally operational. This site does not represent Ajenda as a generally available hosted service or claim customer deployment that has not occurred.</p>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">Ajenda AI is under active development. Its governed execution and business-intelligence capabilities have bounded implementation and test evidence, including customer-attested measurements, continuing needs, canonical outcome lineage, and observational business-impact recurrence. These are not claims of a generally available hosted service, independently verified customer outcomes, or production readiness.</p>
+            <p className="mt-4 text-base leading-relaxed text-[var(--text-muted)]">The source-verified public-research rebuild remains a draft. Unmerged worker-side measurement admission and incomplete provider/browser work are not counted as shipped capabilities.</p>
+            <a href="https://github.com/1devteam/ajenda-ai/pull/631" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-semibold text-[var(--brand)] hover:underline">Inspect merged business-impact evidence →</a>
           </div>
           <div className="rounded-[var(--radius-md)] border border-[var(--border)] bg-white p-6 md:p-8">
             <h3 className="text-lg font-semibold">Part of 1DevTeam</h3>

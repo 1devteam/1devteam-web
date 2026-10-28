@@ -131,3 +131,52 @@ export const futureResearch = {
   researchUrl:
     'https://github.com/1devteam/rd-program/blob/main/studies/emergent-interaction-foresight/research-foundation-2026-10-15.md',
 } as const
+
+export const substrateResearch = {
+  title: 'Machine-Native Substrate',
+  status: 'Experimental reference kernel · bounded correction search merged · independent research ongoing',
+  description:
+    'Substrate investigates a persistent computational workspace designed for AI to represent, operate, simulate, verify, and evolve complex systems. Software engineering is an initial application, not the boundary of the research.',
+  evidence:
+    'Merged work includes machine-facing typed Worlds, durable state and replay, counterfactual trials, separate acceptance interfaces, and bounded deterministic correction search (PR #58). Multi-step correction (PR #59) remains draft. Independent model efficiency comparisons, production isolation, and a complete cognitive runtime have not been demonstrated. Repository access may require permission.',
+  architectureUrl: 'https://github.com/1devteam/machine-native-substrate',
+  researchUrl: 'https://github.com/1devteam/rd-program/tree/main/studies/machine-native-substrate',
+} as const
+
+// Dated cross-project portfolio status. Engineering sources govern capability
+// claims; rd-program governs independent study results (and is private).
+export const researchPortfolio = [
+  {
+    name: 'Ajenda AI',
+    scope: 'Governed execution and business intelligence',
+    status: 'Merged, bounded engineering capabilities · not production-certified',
+    description:
+      'The intelligence spine now includes tenant-scoped measurements, continuing needs, canonical runtime evidence, reviewed response lineage, and observational impact recurrence. The public-research rebuild remains a draft; provider and commercial outcomes are not assumed.',
+    evidenceLabel: 'Merged intelligence-spine evidence',
+    evidenceUrl: 'https://github.com/1devteam/ajenda-ai/pull/631',
+    accessNote: 'Open-source engineering record; separate unfinished work remains in PR #636.',
+  },
+  {
+    name: 'G.R.A.F.T.+',
+    scope: 'Machine-native architecture observation',
+    status: 'Canonical schema 1.14 · reviewed browser implementation',
+    description:
+      'The canonical engine reconstructs source-anchored declarations, participating callable topology, routes, dependencies, security boundaries and runtime contracts. The website runs a separately reviewed embedded browser port. The receiving AI makes design and risk judgments.',
+    evidenceLabel: 'Canonical schema 1.14',
+    evidenceUrl: 'https://github.com/1devteam/graft_plus/pull/25',
+    accessNote: 'The observer does not plan, grant execution authority or approve merges.',
+  },
+  {
+    name: 'Machine-Native Substrate',
+    scope: 'AI-native computational environment',
+    status: 'Experimental kernel · bounded correction search merged',
+    description:
+      'Typed Worlds can be constructed, executed, replayed, compared and tested in disposable trials. A bounded deterministic structural correction search is merged; multi-step repair is proposed. The general AI-native workspace and independent cost advantages remain research objectives.',
+    evidenceLabel: 'Engineering source (restricted access)',
+    evidenceUrl: 'https://github.com/1devteam/machine-native-substrate/pull/58',
+    accessNote: 'Private repository; access requires permission. No independent blinded model benchmark has been completed.',
+  },
+] as const
+
+export const researchPortfolioIntro =
+  'Research connects three distinct systems: Ajenda AI as a governed execution environment, G.R.A.F.T.+ as an observational fact instrument, and Substrate as an experimental AI-native computational workspace. Each maintains separate implementation authority and evidence limits.'
